@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict # Add ConfigDict
 from typing import Optional, List
 from datetime import date, datetime # Added date
 from .database import UserRole # Ensure UserRole is available if needed for nested schemas
@@ -32,15 +32,12 @@ class UserInDBBase(UserBase):
     id: int
     # role: UserRole # Already in UserBase
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
 class UserSchema(UserBase): # Renamed from User to UserSchema to avoid conflict with model
     id: int
 
-    class Config:
-        orm_mode = True
-        # from_attributes = True # Use this for Pydantic v2 if orm_mode is deprecated
+    model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
 # Token Data Schema (for dependency)
 class TokenData(BaseModel):
@@ -69,15 +66,13 @@ class PatientUpdate(PatientBase):
 class PatientSchema(PatientBase):
     id: int
     creator_id: int
-    assigned_doctor_id: Optional[int] = None # Changed from assigned_cadre_id
+    assigned_doctor_id: Optional[int] = None 
     created_at: datetime
     updated_at: datetime
     creator: Optional[UserSchema] = None # Nested schema for creator info
-    assigned_doctor: Optional[UserSchema] = None # Nested schema for assigned doctor info. Changed from assigned_cadre
+    assigned_doctor: Optional[UserSchema] = None # Nested schema for assigned doctor info.
 
-    class Config:
-        orm_mode = True
-        # from_attributes = True # Use this for Pydantic v2
+    model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
 # Appointment Schemas (New)
 class AppointmentBase(BaseModel):
@@ -102,8 +97,7 @@ class AppointmentSchema(AppointmentBase):
     # doctor: UserSchema  # Potentially include doctor details
     # patient: PatientSchema # Potentially include patient details
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
 # New schema for EMR updates
 class PatientEMRUpdate(BaseModel):
@@ -121,5 +115,4 @@ class ChatMessageSchema(ChatMessageBase):
     response: Optional[str] = None # Chatbot's response
     user_id: Optional[int] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2

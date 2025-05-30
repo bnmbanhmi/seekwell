@@ -1,1 +1,31 @@
 node_modules
+
+# Node / JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# IDE / Editor specific
+.vscode/
+.idea/
+
+# Sensitive files
+.env
+*.env
+
+# Log files
+*.log

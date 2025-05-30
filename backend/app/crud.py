@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional # Added Optional
 from . import models, schemas # Updated to schemas
-from .database import pwd_context
+from .database import pwd_context, UserRole # Add this import
 
 # User CRUD operations
 def get_user(db: Session, user_id: int):
@@ -30,7 +30,7 @@ def create_user(db: Session, user: schemas.UserCreate): # Changed from UserCreat
     db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate): # Added
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
     db_user = get_user(db, user_id)
     if not db_user:
         return None
@@ -50,10 +50,19 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate): # A
     db.refresh(db_user)
     return db_user
 
-def delete_user(db: Session, user_id: int): # Added
-    db_user = get_user(db, user_id)
+def delete_user(db: Session, user_id: int):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if not db_user:
         return None
+
+    # If the user is a doctor, nullify their assignment in Patient records
+    # Compare the string value of the role stored in the DB
+    if str(db_user.role) == UserRole.DOCTOR.value:
+        db.query(models.Patient).filter(models.Patient.assigned_doctor_id == user_id).update({models.Patient.assigned_doctor_id: None}, synchronize_session=False)
+
+    # Nullify creator_id in Patient records where this user is the creator
+    db.query(models.Patient).filter(models.Patient.creator_id == user_id).update({models.Patient.creator_id: None}, synchronize_session=False)
+
     db.delete(db_user)
     db.commit()
     return db_user

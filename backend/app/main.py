@@ -6,8 +6,8 @@ from .routers import auth, users, chat, patients # Import the new patients route
 from . import models # Import models to ensure tables are known to Base
 
 app = FastAPI(
-    title="SeekWell API",
-    description="API for SeekWell, a healthcare access platform for rural communities.",
+    title="Clinic Management API",
+    description="API for Clinic Management, a healthcare access platform for rural communities.",
     version="0.1.0"
 )
 
@@ -38,4 +38,4 @@ app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Inc
 
 @app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": "Welcome to SeekWell API"}
+    return {"message": "Welcome to Clinic Management API"}

@@ -19,17 +19,6 @@ class UserRole(str, enum.Enum):
     CLINIC_STAFF = "CLINIC_STAFF"
     ADMIN = "ADMIN"
 
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=True)  # Optional for now
-    hashed_password = Column(String, nullable=False)
-    role = Column(SQLAlchemyEnum(UserRole), nullable=False, default=UserRole.PATIENT) # Default to PATIENT
-    full_name = Column(String, nullable=True)
-    # Add other relevant fields for User
-
 def get_db():
     db = SessionLocal()
     try:

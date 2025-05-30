@@ -12,7 +12,7 @@ interface Patient {
     phone_number?: string;
     emr_summary?: string;
     creator_id: number;
-    assigned_staff_id?: number | null; // Changed from assigned_cadre_id
+    assigned_staff_id?: number | null;
     created_at: string;
     updated_at: string;
 }
@@ -206,7 +206,7 @@ const DashboardPage: React.FC = () => {
     return (
         <div style={{ padding: '25px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 50px)', fontSize: baseFontSize, backgroundColor: '#f4f7f6' }}>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px solid #cdd5de' }}>
-                <h2 style={{ fontSize: headingFontSize, color: '#2c3e50', margin: 0 }}>Welcome Staff to SeekWell Dashboard</h2> {/* Changed "cán bộ" to "Staff" */}
+                <h2 style={{ fontSize: headingFontSize, color: '#2c3e50', margin: 0 }}>Welcome Staff to Dashboard</h2>
                 <button 
                     onClick={handleLogout} 
                     style={{

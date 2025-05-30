@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '20px', boxSizing: 'border-box' }}>
-            <h2>Đăng nhập Cadre SeekWell</h2>
+            <h2>Đăng nhập Phần mềm Quản lý phòng khám</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '320px', gap: '12px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                 <div>
                     <label htmlFor="username" style={{ marginBottom: '4px', display: 'block' }}>Tên đăng nhập:</label>

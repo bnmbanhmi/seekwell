@@ -6,7 +6,6 @@ from typing import cast # Added cast
 
 from app import crud, models, schemas # Added schemas
 from app.database import get_db
-# Changed get_current_active_cadre to get_current_active_user
 from app.dependencies import get_current_active_user 
 from app.config import settings
 import google.generativeai as genai
@@ -105,7 +104,7 @@ async def send_chat_message(
 
     # Construct the prompt for the AI
     prompt = f"""
-    Bạn là một trợ lý AI y tế hữu ích làm việc cho SeekWell, một dịch vụ nhằm cải thiện khả năng tiếp cận chăm sóc sức khỏe ở các vùng nông thôn Việt Nam.
+    Bạn là một trợ lý AI y tế hữu ích làm việc cho một phòng khám.
     Bạn đang hỗ trợ một cán bộ y tế ({current_user.role.value} - {current_user.email}). Vui lòng trả lời bằng tiếng Việt.
     Định dạng câu trả lời của bạn bằng Markdown.
 
@@ -116,7 +115,7 @@ async def send_chat_message(
 
     Cán bộ nói: "{chat_message.message.strip() if chat_message.message and chat_message.message.strip() else "Cán bộ không cung cấp tin nhắn mới. Vui lòng xem lại EMR và đưa ra nhận xét tổng quan nếu có, hoặc hỏi thêm thông tin nếu cần."}"
 
-    Dựa trên thông tin trên và lời nhắn của cán bộ (nếu có), hãy đưa ra lời khuyên hoặc thông tin liên quan.
+    Dựa trên thông tin trên và lời nhắn của nhân viên hoặc bác sĩ (nếu có), hãy đưa ra lời khuyên hoặc thông tin liên quan.
     LƯU Ý QUAN TRỌNG: Bạn không thay thế bác sĩ chuyên nghiệp. Nếu tình hình có vẻ nghiêm trọng hoặc bạn không chắc chắn, hãy luôn khuyên cán bộ y tế tham khảo ý kiến bác sĩ hoặc đưa bệnh nhân đến cơ sở y tế gần nhất.
     """
 
