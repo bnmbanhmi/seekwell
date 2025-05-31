@@ -12,8 +12,7 @@ from app.dependencies import (
 )
 
 router = APIRouter(
-    prefix="/patients",
-    tags=["Patients"]
+    tags=["Patients"] # Removed prefix="/patients"
 )
 
 @router.post("/", response_model=schemas.PatientSchema, status_code=status.HTTP_201_CREATED)
@@ -31,10 +30,9 @@ def create_new_patient(
     existing_patient = crud.get_patient_by_user_id(db, user_id=patient_in.user_id) # This function needs to be added to crud.py
     if existing_patient:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Patient profile already exists for user id {patient_in.user_id}")
-
+    
     creator_id = cast(int, current_user.id)
-    return crud.create_patient(db=db, patient=patient_in, creator_id=creator_id)
-
+    return crud.create_patient(db=db, patient_in=patient_in, creator_id=creator_id)
 
 @router.get("/", response_model=List[schemas.PatientSchema])
 def list_all_patients(

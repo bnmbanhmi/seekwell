@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum as SQLAlchemyEnum, Date, Text, DateTime, ForeignKey # Add Date, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship # Add relationship
+from sqlalchemy.ext.hybrid import hybrid_property # Add hybrid_property
 from .database import Base, UserRole # Import Base and UserRole from database.py
 from datetime import datetime # Add datetime
 from typing import Optional # Added Optional for type hinting
@@ -45,11 +46,20 @@ class Patient(Base):
     creator_id = Column(Integer, ForeignKey("users.id"), nullable=True) 
     assigned_doctor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
     # Relationships will be updated below to use direct class references
-    user = relationship(User, foreign_keys=[user_id], back_populates="patient_profile")
-    creator = relationship(User, foreign_keys=[creator_id], back_populates="created_patients")
-    assigned_doctor = relationship(User, foreign_keys=[assigned_doctor_id], back_populates="assigned_patients")
+    user = relationship("User", foreign_keys=[user_id], back_populates="patient_profile")
+    creator = relationship("User", foreign_keys=[creator_id], back_populates="created_patients")
+    assigned_doctor = relationship("User", foreign_keys=[assigned_doctor_id], back_populates="assigned_patients")
     appointments = relationship("Appointment", back_populates="patient") # Will be updated
+
+    @hybrid_property
+    def full_name(self):
+        if self.user:
+            return self.user.full_name
+        return None
 
     __table_args__ = {'extend_existing': True}
 

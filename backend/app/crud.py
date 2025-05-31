@@ -81,13 +81,27 @@ def get_patient_by_user_id(db: Session, user_id: int) -> Optional[models.Patient
     """Retrieve a patient by their associated user_id."""
     return db.query(models.Patient).filter(models.Patient.user_id == user_id).first()
 
-def create_patient(db: Session, patient: schemas.PatientCreate, creator_id: int) -> models.Patient:
-    db_patient = models.Patient(
-        **patient.model_dump(), 
-        creator_id=creator_id,
-        # Ensure assigned_doctor_id is handled if present in PatientCreate, or set later
-        # assigned_doctor_id=patient.assigned_doctor_id if hasattr(patient, 'assigned_doctor_id') else None
-    )
+def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: int) -> models.Patient:
+    # Selectively create the patient data for the model
+    # Fields from PatientCreate that are in Patient model: user_id, gender, emr_summary, assigned_doctor_id
+    # Fields like full_name, date_of_birth, address, phone_number are in PatientBase but not Patient model.
+    # These details are expected to be on the linked User model.
+    # Patient model also has 'age' and 'medical_history' which are not in PatientCreate.
+    # These would need to be added to PatientCreate or updated separately if they are to be set at creation.
+
+    patient_data_for_model = {
+        "user_id": patient_in.user_id,
+        "gender": patient_in.gender, # This comes from PatientBase
+        "emr_summary": patient_in.emr_summary, # This comes from PatientBase
+        "assigned_doctor_id": patient_in.assigned_doctor_id, # This comes from PatientCreate
+        "creator_id": creator_id
+    }
+    
+    # Optional fields: if not provided in patient_in, they might be None.
+    # SQLAlchemy handles None for nullable fields. If a field is not nullable and has no default,
+    # it must be provided.
+
+    db_patient = models.Patient(**patient_data_for_model)
     db.add(db_patient)
     db.commit()
     db.refresh(db_patient)
