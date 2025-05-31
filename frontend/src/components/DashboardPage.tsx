@@ -24,6 +24,8 @@ interface ChatMessage {
     text: string;
 }
 
+BACKEND_URL = 'http://localhost:8000'; // Adjust this to 
+
 // Custom Markdown renderers
 
 // For <p>
