@@ -206,7 +206,7 @@ const DashboardPage: React.FC = () => {
     return (
         <div style={{ padding: '25px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 50px)', fontSize: baseFontSize, backgroundColor: '#f4f7f6' }}>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px solid #cdd5de' }}>
-                <h2 style={{ fontSize: headingFontSize, color: '#2c3e50', margin: 0 }}>Welcome Staff to Dashboard</h2>
+                <h2 style={{ fontSize: headingFontSize, color: '#2c3e50', margin: 0 }}>Welcome to Dashboard</h2>
                 <button 
                     onClick={handleLogout} 
                     style={{
