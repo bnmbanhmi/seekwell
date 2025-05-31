@@ -14,9 +14,11 @@ const t = (key: string, params?: object) => {
     return key;
 };
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
+    const [mail, setMail] = useState('');
     const [password, setPassword] = useState('');
+    const [fullname, setFullname] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -27,47 +29,40 @@ const LoginPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const formData = new URLSearchParams();
-            formData.append('username', username);
-            formData.append('password', password);
-
-            const response = await axios.post('http://127.0.0.1:8000/auth/token', formData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+            const response = await axios.post('http://127.0.0.1:8000/auth/register', {
+                username,
+                mail,
+                password,
+                fullname,
             });
 
-            if (response.data.access_token) {
-                localStorage.setItem('accessToken', response.data.access_token);
-                navigate('/dashboard');
+            if (response.status === 201 || response.status === 200) {
+                navigate('/login');
             }
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
-                const status = err.response.status;
-                if (status === 401 || status === 403) {
-                    setError('Tên đăng nhập hoặc mật khẩu không đúng, hoặc vai trò không được phép.');
-                } else {
-                    setError(`Đăng nhập thất bại: ${err.response.data.detail || 'Lỗi máy chủ'}`);
-                }
+                setError(
+                    err.response.data.detail ||
+                    'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.'
+                );
             } else {
-                setError('Đăng nhập thất bại. Đã xảy ra lỗi không mong muốn.');
+                setError('Đăng ký thất bại. Đã xảy ra lỗi không mong muốn.');
             }
-            console.error("Login error:", err);
+            console.error("Register error:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRegister = () => {
-        // Navigate to RegisterPage.tsx (usually mapped to '/register' route)
-        navigate('/register');
+    const handleLogin = () => {
+        navigate('/login');
     };
 
     return (
         <div style={styles.container}>
             <div style={styles.card}>
-                <h2 style={styles.heading}>Đăng nhập hệ thống</h2>
-                <p style={styles.subHeading}>Quản lý phòng khám chuyên nghiệp và hiệu quả</p>
+                <h2 style={styles.heading}>Đăng ký tài khoản</h2>
+                <p style={styles.subHeading}>Tạo tài khoản bệnh nhân</p>
 
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <div style={styles.formGroup}>
@@ -80,6 +75,32 @@ const LoginPage: React.FC = () => {
                             required
                             style={styles.input}
                             placeholder="Nhập tên đăng nhập"
+                        />
+                    </div>
+
+                    <div style={styles.formGroup}>
+                        <label htmlFor="mail" style={styles.label}>Email</label>
+                        <input
+                            type="email"
+                            id="mail"
+                            value={mail}
+                            onChange={(e) => setMail(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Nhập email"
+                        />
+                    </div>
+
+                    <div style={styles.formGroup}>
+                        <label htmlFor="fullname" style={styles.label}>Họ và tên</label>
+                        <input
+                            type="text"
+                            id="fullname"
+                            value={fullname}
+                            onChange={(e) => setFullname(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Nhập họ và tên"
                         />
                     </div>
 
@@ -103,17 +124,17 @@ const LoginPage: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{ ...styles.button, backgroundColor: '#007bff' }}
+                        style={{ ...styles.button, backgroundColor: '#28a745' }}
                     >
-                        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                        {loading ? 'Đang đăng ký...' : 'Đăng ký'}
                     </button>
 
                     <button
                         type="button"
-                        onClick={handleRegister}
+                        onClick={handleLogin}
                         style={{ ...styles.button, backgroundColor: '#6c757d' }}
                     >
-                        Đăng ký tài khoản
+                        Đã có tài khoản? Đăng nhập
                     </button>
                 </form>
             </div>
@@ -191,4 +212,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-export default LoginPage;
+export default RegisterPage;
