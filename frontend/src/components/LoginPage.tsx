@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
             if (axios.isAxiosError(err) && err.response) {
                 const status = err.response.status;
                 if (status === 401 || status === 403) {
-                    setError('Tên đăng nhập hoặc mật khẩu không đúng, hoặc vai trò không được phép.');
+                    setError('Email hoặc mật khẩu không đúng, hoặc vai trò không được phép.');
                 } else {
                     setError(`Đăng nhập thất bại: ${err.response.data.detail || 'Lỗi máy chủ'}`);
                 }
@@ -71,7 +71,7 @@ const LoginPage: React.FC = () => {
 
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <div style={styles.formGroup}>
-                        <label htmlFor="username" style={styles.label}>Tên đăng nhập</label>
+                        <label htmlFor="username" style={styles.label}>Email</label>
                         <input
                             type="text"
                             id="username"
@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             required
                             style={styles.input}
-                            placeholder="Nhập tên đăng nhập"
+                            placeholder="Nhập Email"
                         />
                     </div>
 

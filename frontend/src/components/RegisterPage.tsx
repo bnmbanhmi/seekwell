@@ -29,11 +29,21 @@ const RegisterPage: React.FC = () => {
         setLoading(true);
 
         try {
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+            formData.append('mail', mail);
+            formData.append('fullname', fullname);
+
             const response = await axios.post('http://127.0.0.1:8000/auth/register', {
                 username,
-                mail,
+                email: mail,
                 password,
-                fullname,
+                full_name: fullname,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             });
 
             if (response.status === 201 || response.status === 200) {
@@ -41,12 +51,14 @@ const RegisterPage: React.FC = () => {
             }
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
-                setError(
-                    err.response.data.detail ||
-                    'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.'
-                );
-            } else {
-                setError('Đăng ký thất bại. Đã xảy ra lỗi không mong muốn.');
+                const detail = err.response.data.detail;
+
+                if (Array.isArray(detail)) {
+                    // Join all error messages into a single string
+                    setError(detail.map((e: any) => e.msg).join(' | '));
+                } else {
+                    setError(detail || 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
+                }
             }
             console.error("Register error:", err);
         } finally {
