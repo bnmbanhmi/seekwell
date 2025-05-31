@@ -50,8 +50,8 @@ The project is organized into two main directories:
 2.  **Navigate to the backend directory and create/activate a virtual environment**:
     ```bash
     cd backend
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
     ```
 
 3.  **Install dependencies**:
@@ -98,7 +98,7 @@ The project is organized into two main directories:
 
 ### Backend
 
-1.  Ensure your virtual environment in `backend/venv` is activated.
+1.  Ensure your virtual environment in `backend/.venv` is activated.
 2.  Navigate to the `backend/` directory.
 3.  Start the FastAPI server:
     ```bash
