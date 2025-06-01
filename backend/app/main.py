@@ -38,4 +38,4 @@ app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Inc
 
 @app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": "Welcome to Clinic Management API v0.1.0"}
+    return {"message": "Welcome to Clinic Management API v0.1.2"}
