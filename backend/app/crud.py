@@ -5,7 +5,7 @@ from .database import pwd_context, UserRole # Add this import
 
 # User CRUD operations
 def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    return db.query(models.User).filter(models.User.user_id == user_id).first()
 
 def get_user_by_email(db: Session, email: str): # Added for login and other purposes
     return db.query(models.User).filter(models.User.email == email).first()
@@ -51,7 +51,7 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
     return db_user
 
 def delete_user(db: Session, user_id: int):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not db_user:
         return None
 
@@ -60,8 +60,8 @@ def delete_user(db: Session, user_id: int):
     if str(db_user.role) == UserRole.DOCTOR.value:
         db.query(models.Patient).filter(models.Patient.assigned_doctor_id == user_id).update({models.Patient.assigned_doctor_id: None}, synchronize_session=False)
 
-    # Nullify creator_id in Patient records where this user is the creator
-    db.query(models.Patient).filter(models.Patient.creator_id == user_id).update({models.Patient.creator_id: None}, synchronize_session=False)
+    # # Nullify creator_id in Patient records where this user is the creator
+    # db.query(models.Patient).filter(models.Patient.creator_id == user_id).update({models.Patient.creator_id: None}, synchronize_session=False)
 
     db.delete(db_user)
     db.commit()
@@ -69,7 +69,7 @@ def delete_user(db: Session, user_id: int):
 
 # Patient CRUD operations
 def get_patient(db: Session, patient_id: int):
-    return db.query(models.Patient).filter(models.Patient.id == patient_id).first()
+    return db.query(models.Patient).filter(models.Patient.patient_id == patient_id).first()
 
 def get_patients(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Patient).offset(skip).limit(limit).all()
@@ -79,7 +79,7 @@ def get_patients_by_doctor(db: Session, doctor_id: int, skip: int = 0, limit: in
 
 def get_patient_by_user_id(db: Session, user_id: int) -> Optional[models.Patient]:
     """Retrieve a patient by their associated user_id."""
-    return db.query(models.Patient).filter(models.Patient.user_id == user_id).first()
+    return db.query(models.Patient).filter(models.Patient.patient_id == user_id).first()
 
 def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: int) -> models.Patient:
     # Selectively create the patient data for the model
@@ -92,9 +92,9 @@ def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: i
     patient_data_for_model = {
         "user_id": patient_in.user_id,
         "gender": patient_in.gender, # This comes from PatientBase
-        "emr_summary": patient_in.emr_summary, # This comes from PatientBase
+        # "emr_summary": patient_in.emr_summary, # This comes from PatientBase
         "assigned_doctor_id": patient_in.assigned_doctor_id, # This comes from PatientCreate
-        "creator_id": creator_id
+        # "creator_id": creator_id
     }
     
     # Optional fields: if not provided in patient_in, they might be None.
@@ -140,14 +140,14 @@ def delete_patient(db: Session, patient_id: int):
 def create_appointment(db: Session, appointment: schemas.AppointmentCreate, creator_id: int):
     # Assuming creator_id is the ID of the user creating the appointment (Patient or Clinic Staff)
     # The appointment schema itself contains patient_id and doctor_id
-    db_appointment = models.Appointment(**appointment.model_dump(), created_by_user_id=creator_id) # Assuming a created_by_user_id field in Appointment model
+    db_appointment = models.Appointment(**appointment.model_dump()) # Assuming a created_by_user_id field in Appointment model # , created_by_user_id=creator_id
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
     return db_appointment
 
 def get_appointment(db: Session, appointment_id: int):
-    return db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
+    return db.query(models.Appointment).filter(models.Appointment.appointment_id == appointment_id).first()
 
 def get_appointments_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
     return db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id).offset(skip).limit(limit).all()
@@ -185,12 +185,56 @@ def create_chat_message(db: Session, message: schemas.ChatMessageCreate, user_id
     return db_message
 
 def get_chat_message(db: Session, message_id: int):
-    return db.query(models.ChatMessage).filter(models.ChatMessage.id == message_id).first()
+    return db.query(models.ChatMessage).filter(models.ChatMessage.chat_id == message_id).first()
 
 def get_chat_messages_for_user(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     # This would fetch messages initiated by or involving the user.
     # The exact filter might depend on how conversations are structured.
-    return db.query(models.ChatMessage).filter(models.ChatMessage.user_id == user_id).order_by(models.ChatMessage.timestamp.desc()).offset(skip).limit(limit).all()
+    return db.query(models.ChatMessage).filter(models.ChatMessage.user_id == user_id).order_by(models.ChatMessage.time_stamp.desc()).offset(skip).limit(limit).all()
+
+# Medical report CRUD Operations (New - Basic)
+# Tạo mới medical report
+def create_medical_report(db: Session, report: schemas.MedicalReportCreate):
+    db_report = models.MedicalReport(**report.model_dump())
+    db.add(db_report)
+    db.commit()
+    db.refresh(db_report)
+    return db_report
+
+# Lấy medical report theo record_id
+def get_medical_report(db: Session, record_id: int):
+    return db.query(models.MedicalReport).filter(models.MedicalReport.record_id == record_id).first()
+
+# Lấy danh sách medical reports của một bệnh nhân, có phân trang
+def get_medical_reports_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.MedicalReport)
+        .filter(models.MedicalReport.patient_id == patient_id)
+        .order_by(models.MedicalReport.in_day.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+# Cập nhật medical report (giả sử có schema MedicalReportUpdate chứa các trường có thể update)
+def update_medical_report(db: Session, record_id: int, report_update: schemas.MedicalReportUpdate):
+    db_report = get_medical_report(db, record_id)
+    if not db_report:
+        return None
+    for field, value in report_update.model_dump(exclude_unset=True).items():
+        setattr(db_report, field, value)
+    db.commit()
+    db.refresh(db_report)
+    return db_report
+
+# Xóa medical report theo record_id
+def delete_medical_report(db: Session, record_id: int):
+    db_report = get_medical_report(db, record_id)
+    if not db_report:
+        return None
+    db.delete(db_report)
+    db.commit()
+    return db_report
 
 # Placeholder for a function to get all messages in a conversation (if applicable)
 # def get_conversation_messages(db: Session, conversation_id: int, skip: int = 0, limit: int = 100):

@@ -7,6 +7,8 @@ import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrap
 
 import { UserRole } from './types/UserType'; // Import UserRole type
 
+import { ToastContainer } from 'react-toastify';
+
 // A simple HOC for protected routes
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('accessToken');
@@ -26,6 +28,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <ToastContainer position="bottom-left" autoClose={3000} hideProgressBar={false} newestOnTop />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} /> 

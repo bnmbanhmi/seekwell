@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import styles from './RegisterPage.module.css'; // Assuming you have a CSS file for styles
 
@@ -51,7 +52,10 @@ const RegisterPage: React.FC = () => {
             });
 
             if (response.status === 201 || response.status === 200) {
-                navigate('/login');
+                toast.success(t('Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.'));
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
             }
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {

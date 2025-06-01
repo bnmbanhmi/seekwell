@@ -4,6 +4,8 @@ import Sidebar from './Sidebar';
 import { UserRole } from '../../types/UserType';
 import './BaseDashboard.css'; // Assuming you have a CSS file for styles
 
+import { toast } from 'react-toastify';
+
 type Props = {
   role: UserRole;
   children: React.ReactNode;
@@ -34,8 +36,11 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
   };
 
   const handleLogout = () => {
-    setMenuOpen(false);
-    navigate('/login');
+    toast.success('Ban đã đăng xuất thành công.');
+    setTimeout(() => {
+      setMenuOpen(false);
+      navigate('/login');
+    }, 1000);
   };
 
   return (

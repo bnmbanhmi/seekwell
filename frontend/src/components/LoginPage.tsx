@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
+import { toast } from 'react-toastify';
 
 // Placeholder translation function
 const t = (key: string, params?: object) => {
@@ -43,6 +44,7 @@ const LoginPage: React.FC = () => {
             if (response.data.access_token) {
                 localStorage.setItem('accessToken', response.data.access_token);
                 localStorage.setItem('role', response.data.role); // Store the role in localStorage
+                toast.success(t('Đăng nhập thành công!'));
                 navigate('/dashboard');
             }
             console.log("url:", BACKEND_URL + '/auth/token/');
@@ -51,6 +53,7 @@ const LoginPage: React.FC = () => {
                 const status = err.response.status;
                 if (status === 401 || status === 403) {
                     setError('Email hoặc mật khẩu không đúng, hoặc vai trò không được phép.');
+                    toast.error(t('Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập.'));
                 } else {
                     setError(`Đăng nhập thất bại: ${err.response.data.detail || 'Lỗi máy chủ'}`);
                 }
