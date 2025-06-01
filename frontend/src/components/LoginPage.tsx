@@ -14,7 +14,7 @@ const t = (key: string, params?: object) => {
     return key;
 };
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');

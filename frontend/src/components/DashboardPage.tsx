@@ -2,7 +2,7 @@ import React, { useState, useEffect, FormEvent, PropsWithChildren, HTMLAttribute
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'; // For rendering Markdown
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 // Patient data structure
 interface Patient {
