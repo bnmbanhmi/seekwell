@@ -1,6 +1,7 @@
 import React, { useState, useEffect, FormEvent, PropsWithChildren, HTMLAttributes, OlHTMLAttributes, LiHTMLAttributes } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'; // For rendering Markdown
+import { toast } from 'react-toastify';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
@@ -123,9 +124,11 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login'; // Redirect to login
-        alert('Logged out successfully!');
+        toast.success('Ban đã đăng xuất thành công.');
+        setTimeout(() => {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+        }, 1000);
     };
 
     // Handle selecting a patient
