@@ -42,6 +42,7 @@ const LoginPage: React.FC = () => {
 
             if (response.data.access_token) {
                 localStorage.setItem('accessToken', response.data.access_token);
+                localStorage.setItem('role', response.data.role); // Store the role in localStorage
                 navigate('/dashboard');
             }
         } catch (err: any) {
