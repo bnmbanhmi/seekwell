@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage'; 
-import DashboardPage from './components/DashboardPage'; // Import DashboardPage
+import RegisterPage from './components/RegisterPage';
+import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
+
+import { UserRole } from './types/UserType'; // Import UserRole type
 
 import { ToastContainer } from 'react-toastify';
 
@@ -30,12 +32,15 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} /> 
+          <Route path="/testdashboard" element={<DashboardWrapper />} />
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
+                <ProtectedRoute>
+                  <>
+                    <DashboardWrapper />
+                  </>
+                </ProtectedRoute>
             }
           />
           {/* Redirect root to login or dashboard based on auth state */}

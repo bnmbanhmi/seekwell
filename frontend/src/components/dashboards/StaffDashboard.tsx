@@ -1,0 +1,14 @@
+import React from 'react';
+
+
+const StaffDashboard = () => {
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Welcome, Staff</h2>
+      <p>Here are your appointments for today...</p>
+      {/* Render dynamic data */}
+    </div>
+  );
+};
+
+export default StaffDashboard;

@@ -53,10 +53,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.email, "role": user.role.value}, expires_delta=access_token_expires # Use .value for Enum
     )
     # Return role and user_id in the response body along with the token
+    print(f"Generated access token for user: {user.email}, role: {user.role.value}")
     return {
         "access_token": access_token, 
         "token_type": "bearer", 
-        # "role": user.role.value, # Role is in the token, not directly in Token schema
+        "role": user.role.value, # Role is in the token, not directly in Token schema
         # "user_id": user.id # User ID also not directly in Token schema
     }
 
