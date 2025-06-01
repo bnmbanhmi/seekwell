@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'; // Correct import
 
 import { UserRole } from '../../types/UserType'; // Adjust the import path as necessary
 
+import './Sidebar.css'; // Assuming you have a CSS file for styles
+
 type Props = {
   role: UserRole;
 };

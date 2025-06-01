@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { UserRole } from '../../types/UserType';
-import styles from '../../styles/styles'; 
+import './BaseDashboard.css'; // Assuming you have a CSS file for styles
 
 type Props = {
   role: UserRole;
