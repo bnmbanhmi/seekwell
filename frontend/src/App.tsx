@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
@@ -11,7 +11,16 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 function App() {
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/`)
+      .then(res => res.json())
+      .then(data => console.log('Backend says:', data.message, 'at', BACKEND_URL))
+      .catch(err => console.error('Backend connection failed:', err));
+  }, []);
+
   return (
     <Router>
       <div className="App">
