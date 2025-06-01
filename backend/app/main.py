@@ -22,7 +22,8 @@ app = FastAPI(
 
 # CORS Middleware configuration
 origins = [
-    "http://localhost:3000",  # Allow your React frontend
+    "http://localhost:3000",
+    "https://clinic-management-nine-lime.vercel.app"  # Allow your React frontend
     # You can add other origins here if needed, e.g., your deployed frontend URL
 ]
 
