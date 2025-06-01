@@ -21,9 +21,12 @@ function App() {
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute>
-                <Dashboard role={localStorage.getItem('role') as UserRole} />
-              </ProtectedRoute>
+                <ProtectedRoute>
+                  <>
+                    {console.log('User role:', localStorage.getItem('role'))}
+                    <Dashboard role={localStorage.getItem('role') as UserRole} />
+                  </>
+                </ProtectedRoute>
             }
           />
           {/* Redirect root to login or dashboard based on auth state */}

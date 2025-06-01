@@ -1,8 +1,9 @@
 // components/dashboardLayout/Sidebar.tsx
 import React from 'react';
-import Link from 'next/link';
+// import Link from 'next/link';
+import { Link } from 'react-router-dom'; // Correct import
 
-import {UserRole} from '../../types/UserType'; // Adjust the import path as necessary
+import { UserRole } from '../../types/UserType'; // Adjust the import path as necessary
 
 type Props = {
   role: UserRole;
@@ -15,19 +16,12 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'My Appointments', path: '/appointments' },
     { label: 'Prescriptions', path: '/prescriptions' },
     { label: 'Medical History', path: '/records' },
-    // { label: 'Billing', path: '/billing' },
-    // { label: 'Profile', path: '/profile' },
-    // { label: 'Logout', path: '/logout' },
   ],
   DOCTOR: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'My Schedule', path: '/schedule' },
     { label: 'Patient List', path: '/patients' },
-    // { label: 'Write Prescription', path: '/prescriptions/write' },
     { label: 'Medical Records', path: '/records' },
-    // { label: 'Messages', path: '/messages' },
-    // { label: 'Profile', path: '/profile' },
-    // { label: 'Logout', path: '/logout' },
   ],
   CLINIC_STAFF: [
     { label: 'Dashboard', path: '/dashboard' },
@@ -36,8 +30,6 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Billing & Invoices', path: '/billing' },
     { label: 'Patient Registry', path: '/patients' },
     { label: 'Messages', path: '/messages' },
-    // { label: 'Profile', path: '/profile' },
-    // { label: 'Logout', path: '/logout' },
   ],
   ADMIN: [
     { label: 'Dashboard', path: '/dashboard' },
@@ -46,8 +38,6 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Reports & Analytics', path: '/reports' },
     { label: 'System Logs', path: '/logs' },
     { label: 'Billing Overview', path: '/billing/overview' },
-    // { label: 'Profile', path: '/profile' },
-    // { label: 'Logout', path: '/logout' },
   ],
 };
 
@@ -60,7 +50,7 @@ const Sidebar: React.FC<Props> = ({ role }) => {
         <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.path}>
-              <Link href={item.path} className="block hover:text-blue-500">
+              <Link to={item.path} className="block hover:text-blue-500">
                 {item.label}
               </Link>
             </li>
