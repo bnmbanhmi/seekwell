@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import Dashboard from './pages/Dashboard'; // Import Dashboard
+import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
 
 import { UserRole } from './types/UserType'; // Import UserRole type
 
@@ -34,8 +34,7 @@ function App() {
             element={
                 <ProtectedRoute>
                   <>
-                    {console.log('User role:', localStorage.getItem('role'))}
-                    <Dashboard role={localStorage.getItem('role') as UserRole} />
+                    <DashboardWrapper />
                   </>
                 </ProtectedRoute>
             }
