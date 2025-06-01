@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 // TODO: Import a translation function (e.g., from i18next)
 // import { useTranslation } from 'react-i18next';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 const LoginPage: React.FC = () => {
     // const { t } = useTranslation(); // Initialize translation function
     const t = (key: string, params?: object) => { // Placeholder t function
@@ -34,7 +36,7 @@ const LoginPage: React.FC = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await axios.post('http://127.0.0.1:8000/auth/token', formData, {
+            const response = await axios.post(BACKEND_URL + '/auth/token/', formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
@@ -44,6 +46,7 @@ const LoginPage: React.FC = () => {
                 localStorage.setItem('accessToken', response.data.access_token);
                 navigate('/dashboard');
             }
+            console.log("url:", BACKEND_URL + '/auth/token/');
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
                 if (err.response.status === 401 || err.response.status === 403) {
