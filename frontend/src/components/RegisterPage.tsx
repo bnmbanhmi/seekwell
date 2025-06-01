@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 // Placeholder translation function
 const t = (key: string, params?: object) => {
     if (params) {
@@ -14,11 +16,11 @@ const t = (key: string, params?: object) => {
     return key;
 };
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
-
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
+    const [mail, setMail] = useState('');
     const [password, setPassword] = useState('');
+    const [fullname, setFullname] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -32,49 +34,53 @@ const LoginPage: React.FC = () => {
             const formData = new URLSearchParams();
             formData.append('username', username);
             formData.append('password', password);
+            formData.append('mail', mail);
+            formData.append('fullname', fullname);
 
-            const response = await axios.post(BACKEND_URL + '/auth/token/', formData, {
+            const response = await axios.post(BACKEND_URL + '/auth/register/', {
+                username,
+                email: mail,
+                password,
+                full_name: fullname,
+            }, {
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                    'Content-Type': 'application/json',
+                }
             });
 
-            if (response.data.access_token) {
-                localStorage.setItem('accessToken', response.data.access_token);
-                navigate('/dashboard');
+            if (response.status === 201 || response.status === 200) {
+                navigate('/login');
             }
-            console.log("url:", BACKEND_URL + '/auth/token/');
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
-                const status = err.response.status;
-                if (status === 401 || status === 403) {
-                    setError('Email hoặc mật khẩu không đúng, hoặc vai trò không được phép.');
+                const detail = err.response.data.detail;
+
+                if (Array.isArray(detail)) {
+                    // Join all error messages into a single string
+                    setError(detail.map((e: any) => e.msg).join(' | '));
                 } else {
-                    setError(`Đăng nhập thất bại: ${err.response.data.detail || 'Lỗi máy chủ'}`);
+                    setError(detail || 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
                 }
-            } else {
-                setError('Đăng nhập thất bại. Đã xảy ra lỗi không mong muốn.');
             }
-            console.error("Login error:", err);
+            console.error("Register error:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRegister = () => {
-        // Navigate to RegisterPage.tsx (usually mapped to '/register' route)
-        navigate('/register');
+    const handleLogin = () => {
+        navigate('/login');
     };
 
     return (
         <div style={styles.container}>
             <div style={styles.card}>
-                <h2 style={styles.heading}>Đăng nhập hệ thống</h2>
-                <p style={styles.subHeading}>Quản lý phòng khám chuyên nghiệp và hiệu quả</p>
+                <h2 style={styles.heading}>Đăng ký tài khoản</h2>
+                <p style={styles.subHeading}>Tạo tài khoản bệnh nhân</p>
 
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <div style={styles.formGroup}>
-                        <label htmlFor="username" style={styles.label}>Email</label>
+                        <label htmlFor="username" style={styles.label}>Tên đăng nhập</label>
                         <input
                             type="text"
                             id="username"
@@ -82,7 +88,33 @@ const LoginPage: React.FC = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             required
                             style={styles.input}
-                            placeholder="Nhập Email"
+                            placeholder="Nhập tên đăng nhập"
+                        />
+                    </div>
+
+                    <div style={styles.formGroup}>
+                        <label htmlFor="mail" style={styles.label}>Email</label>
+                        <input
+                            type="email"
+                            id="mail"
+                            value={mail}
+                            onChange={(e) => setMail(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Nhập email"
+                        />
+                    </div>
+
+                    <div style={styles.formGroup}>
+                        <label htmlFor="fullname" style={styles.label}>Họ và tên</label>
+                        <input
+                            type="text"
+                            id="fullname"
+                            value={fullname}
+                            onChange={(e) => setFullname(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Nhập họ và tên"
                         />
                     </div>
 
@@ -106,17 +138,17 @@ const LoginPage: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{ ...styles.button, backgroundColor: '#007bff' }}
+                        style={{ ...styles.button, backgroundColor: '#28a745' }}
                     >
-                        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                        {loading ? 'Đang đăng ký...' : 'Đăng ký'}
                     </button>
 
                     <button
                         type="button"
-                        onClick={handleRegister}
+                        onClick={handleLogin}
                         style={{ ...styles.button, backgroundColor: '#6c757d' }}
                     >
-                        Đăng ký tài khoản
+                        Đã có tài khoản? Đăng nhập
                     </button>
                 </form>
             </div>
@@ -194,4 +226,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-export default LoginPage;
+export default RegisterPage;

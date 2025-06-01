@@ -2,6 +2,8 @@ import React, { useState, useEffect, FormEvent, PropsWithChildren, HTMLAttribute
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'; // For rendering Markdown
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 // Patient data structure
 interface Patient {
     id: number;
@@ -96,7 +98,7 @@ const DashboardPage: React.FC = () => {
             }
             try {
                 setLoadingPatients(true);
-                const response = await axios.get('http://localhost:8000/patients/', {
+                const response = await axios.get(BACKEND_URL + '/patients/', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setPatients(response.data);
@@ -165,7 +167,7 @@ const DashboardPage: React.FC = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8000/chat/send',
+                BACKEND_URL + '/chat/send',
                 {
                     patient_id: selectedPatient.id,
                     message: userMessage.text,
