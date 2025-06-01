@@ -45,20 +45,22 @@ const Sidebar: React.FC<Props> = ({ role }) => {
   const items = sidebarItems[role];
 
   return (
-    <aside className="w-64 bg-white border-r p-4">
-      <nav>
-        <ul className="space-y-3">
+    <nav className="p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-blue-700 mb-4">Navigation</h2>
+      <ul className="space-y-2">
           {items.map((item) => (
-            <li key={item.path}>
-              <Link to={item.path} className="block hover:text-blue-500">
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+            <li key={item.label}>
+            <Link
+              to={item.path}
+              className="block px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition font-medium"
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
-};
+}
 
 export default Sidebar;
