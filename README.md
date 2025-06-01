@@ -38,7 +38,7 @@ The project is organized into two main directories:
 *   Python 3.11 or higher
 *   Node.js and npm (latest LTS version recommended)
 *   PostgreSQL server installed and running
-
+**.env** setup: DATABASE_URL = postgresql://postgres:password@34.67.156.97:5432/clinic-management-v2
 ### Backend Setup
 
 1.  **Clone the repository**:
