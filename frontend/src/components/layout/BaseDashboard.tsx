@@ -39,40 +39,38 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 text-gray-800">
+    <div className="layout">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r shadow-sm">
+      <aside className="sidebar">
         <Sidebar role={role} />
       </aside>
 
       {/* Main content */}
-      <div className="flex flex-col flex-1">
+      <div className="main-content">
         {/* Header */}
-        <header className="bg-white px-6 py-4 shadow-md flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <header className="header">
+          <div className="header-left">
             <img
               src="/logo192.png"
               alt="Clinic Logo"
-              className="h-10 w-10 rounded-full shadow"
+              className="logo"
             />
-            <h1 className="text-2xl font-bold text-blue-700 tracking-tight">
+            <h1 className="title">
               Clinic Management System
             </h1>
           </div>
 
           {/* Account dropdown */}
-          <div className="relative" ref={menuRef}>
+          <div className="account-menu" ref={menuRef}>
             <button
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow transition"
+              className="account-button"
               onClick={() => setMenuOpen((open) => !open)}
               aria-label="Account menu"
             >
-              <span className="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-                A
-              </span>
-              <span className="hidden sm:inline font-medium">Account</span>
+              <span className="account-avatar">A</span>
+              <span className="account-label">Account</span>
               <svg
-                className="w-4 h-4 ml-1"
+                className="chevron"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
@@ -83,15 +81,15 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+              <div className="dropdown">
                 <button
-                  className="block w-full text-left px-5 py-3 hover:bg-gray-100 text-gray-700"
+                  className="dropdown-item"
                   onClick={handleProfile}
                 >
                   Profile
                 </button>
                 <button
-                  className="block w-full text-left px-5 py-3 hover:bg-gray-100 text-gray-700"
+                  className="dropdown-item"
                   onClick={handleLogout}
                 >
                   Logout
@@ -102,7 +100,7 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
         </header>
 
         {/* Main content */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="content">
           {children}
         </main>
       </div>

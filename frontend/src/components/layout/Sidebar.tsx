@@ -45,15 +45,12 @@ const Sidebar: React.FC<Props> = ({ role }) => {
   const items = sidebarItems[role];
 
   return (
-    <nav className="p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-blue-700 mb-4">Navigation</h2>
-      <ul className="space-y-2">
-          {items.map((item) => (
-            <li key={item.label}>
-            <Link
-              to={item.path}
-              className="block px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition font-medium"
-            >
+    <nav className="nav-container">
+      <h2 className="nav-title">Navigation</h2>
+      <ul className="nav-list">
+        {items.map((item) => (
+          <li key={item.label}>
+            <Link to={item.path} className="nav-link">
               {item.label}
             </Link>
           </li>
