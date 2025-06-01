@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 // Placeholder translation function
 const t = (key: string, params?: object) => {
     if (params) {
@@ -35,7 +37,7 @@ const RegisterPage: React.FC = () => {
             formData.append('mail', mail);
             formData.append('fullname', fullname);
 
-            const response = await axios.post('http://127.0.0.1:8000/auth/register', {
+            const response = await axios.post(BACKEND_URL + '/auth/register/', {
                 username,
                 email: mail,
                 password,
