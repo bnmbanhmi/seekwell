@@ -21,15 +21,12 @@ app = FastAPI(
 )
 
 # CORS Middleware configuration
-origins = [
-    "http://localhost:3000",  # Allow your React frontend
-    # You can add other origins here if needed, e.g., your deployed frontend URL
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
@@ -41,4 +38,4 @@ app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Inc
 
 @app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": "Welcome to Clinic Management API"}
+    return {"message": "Welcome to Clinic Management API v0.1.0"}
