@@ -48,7 +48,15 @@ const Sidebar: React.FC<Props> = ({ role }) => {
 
   return (
     <nav className="nav-container">
+      <img
+        src="/logo.png"
+        alt="Clinic Logo"
+        className="nav-logo"
+      />
       <h2 className="nav-title">Navigation</h2>
+
+      <hr className="nav-divider" />
+
       <ul className="nav-list">
         {items.map((item) => (
           <li key={item.label}>
