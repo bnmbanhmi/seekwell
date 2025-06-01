@@ -56,7 +56,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {
         "access_token": access_token, 
         "token_type": "bearer", 
-        # "role": user.role.value, # Role is in the token, not directly in Token schema
+        "role": user.role.value, # Role is in the token, not directly in Token schema
         # "user_id": user.id # User ID also not directly in Token schema
     }
 

@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
-import DashboardPage from './components/DashboardPage'; // Import DashboardPage
+import Dashboard from './pages/Dashboard'; // Import Dashboard
+
+import { UserRole } from './types/UserType'; // Import UserRole type
 
 // A simple HOC for protected routes
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
@@ -20,7 +22,7 @@ function App() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <Dashboard role={localStorage.getItem('role') as UserRole} />
               </ProtectedRoute>
             }
           />
