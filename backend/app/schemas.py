@@ -7,6 +7,7 @@ from .database import UserRole # Ensure UserRole is available if needed for nest
 class Token(BaseModel):
     access_token: str
     token_type: str
+    role: Optional[str] = None # Role can be included in the token response
 
 # User Schemas
 class UserBase(BaseModel):
