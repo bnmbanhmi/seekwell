@@ -21,17 +21,12 @@ app = FastAPI(
 )
 
 # CORS Middleware configuration
-origins = [
-    # "http://localhost:3000",
-    # "https://clinic-management-nine-lime.vercel.app",  # Allow your React frontend
-    "*"
-    # You can add other origins here if needed, e.g., your deployed frontend URL
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
