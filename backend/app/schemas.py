@@ -116,3 +116,49 @@ class ChatMessageSchema(ChatMessageBase):
     user_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
+
+class MedicalReportBase(BaseModel):
+    patient_id: int
+    doctor_id: int
+    in_day: Optional[date] = None
+    out_day: Optional[date] = None
+    in_diagnosis: Optional[str] = None
+    out_diagnosis: Optional[str] = None
+    reason_in: Optional[str] = None
+    treatment_process: Optional[str] = None
+    pulse_rate: Optional[str] = None
+    temperature: Optional[str] = None
+    blood_pressure: Optional[str] = None
+    respiratory_rate: Optional[str] = None
+    weight: Optional[str] = None
+    pathological_process: Optional[str] = None
+    personal_history: Optional[str] = None
+    family_history: Optional[str] = None
+    diagnose_from_recommender: Optional[str] = None
+
+class MedicalReportCreate(MedicalReportBase):
+    # Với create, bắt buộc có patient_id và doctor_id nên không để Optional
+    pass
+
+class MedicalReportUpdate(BaseModel):
+    patient_id: Optional[int] = None
+    doctor_id: Optional[int] = None
+    in_day: Optional[date] = None
+    out_day: Optional[date] = None
+    in_diagnosis: Optional[str] = None
+    out_diagnosis: Optional[str] = None
+    reason_in: Optional[str] = None
+    treatment_process: Optional[str] = None
+    pulse_rate: Optional[str] = None
+    temperature: Optional[str] = None
+    blood_pressure: Optional[str] = None
+    respiratory_rate: Optional[str] = None
+    weight: Optional[str] = None
+    pathological_process: Optional[str] = None
+    personal_history: Optional[str] = None
+    family_history: Optional[str] = None
+    diagnose_from_recommender: Optional[str] = None
+
+    model_config = {
+        "from_attributes": True  # mới trên Pydantic v2
+    }

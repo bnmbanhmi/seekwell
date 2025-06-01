@@ -51,7 +51,7 @@ def read_user(
     # Explicitly get Python-native values for comparison
     current_user_role_value = current_user.role.value
     # current_user_id = current_user.id
-    current_user_id = cast(int, current_user.id) # Use cast
+    current_user_id = cast(int, current_user.user_id) # Use cast
 
     if current_user_role_value != UserRole.ADMIN.value and current_user_id != user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
