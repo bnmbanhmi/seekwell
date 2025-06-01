@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import styles from './LoginPage.module.css';
 
 // Placeholder translation function
 const t = (key: string, params?: object) => {
@@ -68,46 +69,47 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={styles.heading}>Đăng nhập hệ thống</h2>
-                <p style={styles.subHeading}>Quản lý phòng khám chuyên nghiệp và hiệu quả</p>
+        <div className={styles.container}>
+            <div className={styles.card}>
+                <h2 className={styles.heading}>Đăng nhập hệ thống</h2>
+                <p className={styles.subHeading}>Quản lý phòng khám chuyên nghiệp và hiệu quả</p>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.formGroup}>
-                        <label htmlFor="username" style={styles.label}>Email</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="username" className={styles.label}>Email</label>
                         <input
                             type="text"
                             id="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Nhập Email"
                         />
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label htmlFor="password" style={styles.label}>Mật khẩu</label>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="password" className={styles.label}>Mật khẩu</label>
                         <input
                             type="password"
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Nhập mật khẩu"
                         />
                     </div>
 
                     {error && (
-                        <p style={styles.errorText}>{error}</p>
+                        <p className={styles.errorText}>{error}</p>
                     )}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{ ...styles.button, backgroundColor: '#007bff' }}
+                        className={styles.button}
+                        style={{ backgroundColor: '#007bff'}}
                     >
                         {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                     </button>
@@ -115,7 +117,8 @@ const LoginPage: React.FC = () => {
                     <button
                         type="button"
                         onClick={handleRegister}
-                        style={{ ...styles.button, backgroundColor: '#6c757d' }}
+                        className={styles.button}
+                        style={{ backgroundColor: '#6c757d'}}
                     >
                         Đăng ký tài khoản
                     </button>
@@ -123,76 +126,6 @@ const LoginPage: React.FC = () => {
             </div>
         </div>
     );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        background: 'linear-gradient(to right, #eef2f3, #8e9eab)',
-        padding: '20px',
-    },
-    card: {
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-        padding: '32px',
-        maxWidth: '400px',
-        width: '100%',
-        boxSizing: 'border-box',
-    },
-    heading: {
-        textAlign: 'center',
-        marginBottom: '12px',
-        fontSize: '24px',
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    subHeading: {
-        textAlign: 'center',
-        marginBottom: '24px',
-        color: '#666',
-        fontSize: '14px',
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-    },
-    formGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    label: {
-        marginBottom: '6px',
-        fontWeight: 500,
-        color: '#333',
-    },
-    input: {
-        padding: '10px 12px',
-        border: '1px solid #ccc',
-        borderRadius: '6px',
-        fontSize: '14px',
-        outlineColor: '#007bff',
-    },
-    button: {
-        padding: '12px',
-        color: '#fff',
-        fontSize: '15px',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        transition: 'background-color 0.2s',
-    },
-    errorText: {
-        color: 'red',
-        fontSize: '14px',
-        textAlign: 'center',
-        marginTop: '-8px',
-        marginBottom: '8px',
-    },
 };
 
 export default LoginPage;
