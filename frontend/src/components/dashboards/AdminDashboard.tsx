@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-const DoctorDashboard = () => {
+const AdminDashboard = () => {
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">Welcome, Admin</h2>
@@ -11,4 +11,4 @@ const DoctorDashboard = () => {
   );
 };
 
-export default DoctorDashboard;
+export default AdminDashboard;
