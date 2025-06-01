@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage'; 
-import DashboardPage from './components/DashboardPage'; // Import DashboardPage
+import RegisterPage from './components/RegisterPage';
+import Dashboard from './pages/Dashboard'; // Import Dashboard
+
+import { UserRole } from './types/UserType'; // Import UserRole type
 
 // A simple HOC for protected routes
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
