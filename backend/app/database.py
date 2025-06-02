@@ -21,6 +21,17 @@ class UserRole(str, enum.Enum):
     CLINIC_STAFF = "CLINIC_STAFF"
     ADMIN = "ADMIN"
 
+class Gender(str, enum.Enum):
+    MALE = "Male"
+    FEMALE = "Female"
+
+class Class(str, enum.Enum):
+    # 'Assisted', 'Normal', 'Free', 'Other'
+    ASSISTED = "Assisted"
+    NORMAL = "Normal"
+    FREE = "Free"
+    OTHER = "Other"
+
 def get_db():
     db = SessionLocal()
     try:

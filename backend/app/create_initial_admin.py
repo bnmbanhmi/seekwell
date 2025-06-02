@@ -18,9 +18,6 @@ from app import crud, schemas, models
 # Ensure tables are created (especially if running this standalone for the first time)
 # In a real scenario with Alembic, you'd run migrations first.
 # For this script, we'll call the function you have in main.py
-async def init_db():
-    create_db_and_tables()
-
 async def create_first_admin():
     db: Session = SessionLocal()
     try:
@@ -55,7 +52,7 @@ async def create_first_admin():
         )
 
         admin_user = crud.create_user(db=db, user=user_in)
-        print(f"Admin user '{admin_user.username}' created successfully with ID: {admin_user.id} and Role: {admin_user.role.value}")
+        print(f"Admin user '{admin_user.username}' created successfully with ID: {admin_user.user_id} and Role: {admin_user.role.value}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -63,7 +60,7 @@ async def create_first_admin():
         db.close()
 
 async def main():
-    await init_db() # Ensure DB and tables are ready
+    create_db_and_tables()
     await create_first_admin()
 
 if __name__ == "__main__":

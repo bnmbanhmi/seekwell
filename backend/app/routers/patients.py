@@ -42,7 +42,7 @@ def list_all_patients(
     current_user: models.User = Depends(get_current_active_user)
 ):
     current_user_role = current_user.role.value
-    current_user_id = cast(int, current_user.id)
+    current_user_id = cast(int, current_user.user_id)
 
     if current_user_role == UserRole.ADMIN.value or current_user_role == UserRole.CLINIC_STAFF.value:
         patients = crud.get_patients(db, skip=skip, limit=limit)

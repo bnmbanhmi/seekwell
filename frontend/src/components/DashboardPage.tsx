@@ -1,6 +1,9 @@
 import React, { useState, useEffect, FormEvent, PropsWithChildren, HTMLAttributes, OlHTMLAttributes, LiHTMLAttributes } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'; // For rendering Markdown
+import { toast } from 'react-toastify';
+
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 // Patient data structure
 interface Patient {
@@ -96,7 +99,7 @@ const DashboardPage: React.FC = () => {
             }
             try {
                 setLoadingPatients(true);
-                const response = await axios.get('http://localhost:8000/patients/', {
+                const response = await axios.get(BACKEND_URL + '/patients/', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setPatients(response.data);
@@ -121,9 +124,11 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login'; // Redirect to login
-        alert('Logged out successfully!');
+        toast.success('Ban đã đăng xuất thành công.');
+        setTimeout(() => {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+        }, 1000);
     };
 
     // Handle selecting a patient
@@ -165,7 +170,7 @@ const DashboardPage: React.FC = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8000/chat/send',
+                BACKEND_URL + '/chat/send',
                 {
                     patient_id: selectedPatient.id,
                     message: userMessage.text,

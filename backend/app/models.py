@@ -1,111 +1,132 @@
-from sqlalchemy import Column, Integer, String, Enum as SQLAlchemyEnum, Date, Text, DateTime, ForeignKey # Add Date, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship # Add relationship
-from sqlalchemy.ext.hybrid import hybrid_property # Add hybrid_property
-from .database import Base, UserRole # Import Base and UserRole from database.py
-from datetime import datetime # Add datetime
-from typing import Optional # Added Optional for type hinting
+from sqlalchemy import (
+    Column, Integer, String, Date, DateTime, Time, Text, ForeignKey, Enum, TIMESTAMP
+)
+from sqlalchemy.orm import relationship, declarative_base
+from .database import Gender, Class, UserRole, Base
+from sqlalchemy import create_engine
+from .config import settings
 
+
+# Users table
 class User(Base):
     __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=True)
-    hashed_password = Column(String, nullable=False)
-    role = Column(SQLAlchemyEnum(UserRole), nullable=False, default=UserRole.PATIENT) 
-    full_name = Column(String, nullable=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(255), nullable=False)
+    email = Column(String(255))
+    hashed_password = Column(String(100), nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.PATIENT, nullable=False)
+    full_name = Column(String(255), nullable=False)
     reset_password_token = Column(String, nullable=True, index=True, unique=True) # Added for password reset
     reset_password_token_expires_at = Column(DateTime, nullable=True) # Added for password reset
     # Add other relevant fields for User
+    # Quan hệ
+    patient_profile = relationship("Patient", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    doctor_profile = relationship("Doctor", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    chat_messages = relationship("ChatMessage", back_populates="user", cascade="all, delete-orphan")
 
-    __table_args__ = {'extend_existing': True}
 
-    # Relationships
-    # If a user is a patient, this links to their patient record
-    patient_profile = relationship("Patient", uselist=False, foreign_keys="Patient.user_id", back_populates="user", cascade="all, delete-orphan") # Will be updated below
-    
-    created_patients = relationship("Patient", foreign_keys="Patient.creator_id", back_populates="creator") # Will be updated
-    # Renamed from assigned_patients_as_doctor for consistency
-    assigned_patients = relationship("Patient", foreign_keys="Patient.assigned_doctor_id", back_populates="assigned_doctor") # Will be updated
-
-    # Relationships for appointments
-    created_appointments = relationship("Appointment", foreign_keys="Appointment.created_by_user_id", back_populates="created_by_user") # Will be updated
-    doctor_appointments = relationship("Appointment", foreign_keys="Appointment.doctor_id", back_populates="doctor") # Will be updated
-    # Removed User.patient_appointments relationship
-
-    # Relationships for chat messages
-    chat_messages = relationship("ChatMessage", back_populates="user") # Will be updated
-
+# Patients table
 class Patient(Base):
     __tablename__ = "patients"
+    patient_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
+    full_name = Column(String(255), nullable=False)
+    date_of_birth = Column(Date, nullable=False)
+    gender = Column(Enum(Gender), nullable=False)
+    ethnic_group = Column(String(100))
+    address = Column(String(255))
+    phone_number = Column(String(20), unique=True)
+    health_insurance_card_no = Column(String(20), unique=True)
+    identification_id = Column(String(20), unique=True)
+    job = Column(String(100))
+    assigned_doctor_id = Column(Integer)
+    class_role = Column(Enum(Class), nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
-    age = Column(Integer)
-    gender = Column(String)
-    medical_history = Column(Text, nullable=True)
-    emr_summary = Column(Text, nullable=True)
-    creator_id = Column(Integer, ForeignKey("users.id"), nullable=True) 
-    assigned_doctor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    # Quan hệ
+    user = relationship("User", back_populates="patient_profile", foreign_keys=[patient_id])
 
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    appointments = relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")
+    medical_reports = relationship("MedicalReport", back_populates="patient", cascade="all, delete-orphan")
 
-    # Relationships will be updated below to use direct class references
-    user = relationship("User", foreign_keys=[user_id], back_populates="patient_profile")
-    creator = relationship("User", foreign_keys=[creator_id], back_populates="created_patients")
-    assigned_doctor = relationship("User", foreign_keys=[assigned_doctor_id], back_populates="assigned_patients")
-    appointments = relationship("Appointment", back_populates="patient") # Will be updated
 
-    @hybrid_property
-    def full_name(self):
-        if self.user:
-            return self.user.full_name
-        return None
+# Hospitals table
+class Hospital(Base):
+    __tablename__ = "hospitals"
+    hospital_id = Column(Integer, primary_key=True, autoincrement=True)
+    hospital_name = Column(String(100))
+    address = Column(String(255))
+    governed_by = Column(String(160))  # chỉnh tên đúng typo 'gorverned_by' -> 'governed_by'
 
-    __table_args__ = {'extend_existing': True}
+    doctors = relationship("Doctor", back_populates="hospital", cascade="all, delete-orphan")
 
+
+# Doctors table
+class Doctor(Base):
+    __tablename__ = "doctors"
+    doctor_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
+    doctor_name = Column(String(100))
+    major = Column(String(160))
+    hospital_id = Column(Integer, ForeignKey("hospitals.hospital_id", ondelete="CASCADE"), nullable=False)
+
+    # Quan hệ
+    user = relationship("User", back_populates="doctor_profile", foreign_keys=[doctor_id])
+    hospital = relationship("Hospital", back_populates="doctors")
+
+    appointments = relationship("Appointment", back_populates="doctor", cascade="all, delete-orphan")
+    medical_reports = relationship("MedicalReport", back_populates="doctor", cascade="all, delete-orphan")
+
+
+# Appointments table
 class Appointment(Base):
     __tablename__ = "appointments"
+    appointment_id = Column(Integer, primary_key=True, autoincrement=True)
+    patient_id = Column(Integer, ForeignKey("patients.patient_id", ondelete="CASCADE"), nullable=False)
+    appointment_day = Column(Date, nullable=False)
+    appointment_time = Column(Time, nullable=False)
+    reason = Column(Text)
+    doctor_id = Column(Integer, ForeignKey("doctors.doctor_id", ondelete="CASCADE"), nullable=False)
+    re_examination_date = Column(Date)
+    re_examination_time = Column(Time)
+    issue = Column(Text)
 
-    id = Column(Integer, primary_key=True, index=True)
-    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
-    doctor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    appointment_time = Column(DateTime, nullable=False)
-    reason = Column(Text, nullable=True)
-    status = Column(String, default="Scheduled")
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # Quan hệ
+    patient = relationship("Patient", back_populates="appointments")
+    doctor = relationship("Doctor", back_populates="appointments")
 
-    # Relationships will be updated below
-    patient = relationship(Patient, foreign_keys=[patient_id], back_populates="appointments")
-    doctor = relationship(User, foreign_keys=[doctor_id], back_populates="doctor_appointments")
-    created_by_user = relationship(User, foreign_keys=[created_by_user_id], back_populates="created_appointments")
 
-    __table_args__ = {'extend_existing': True}
+# MedicalReports table
+class MedicalReport(Base):
+    __tablename__ = "medical_reports"
+    record_id = Column(Integer, primary_key=True, autoincrement=True)
+    patient_id = Column(Integer, ForeignKey("patients.patient_id", ondelete="CASCADE"))
+    doctor_id = Column(Integer, ForeignKey("doctors.doctor_id", ondelete="CASCADE"))
+    in_day = Column(Date)
+    out_day = Column(Date)
+    in_diagnosis = Column(Text)
+    out_diagnosis = Column(Text)
+    reason_in = Column(Text)
+    treatment_process = Column(Text)
+    pulse_rate = Column(String(255))
+    temperature = Column(String(255))
+    blood_pressure = Column(String(255))
+    respiratory_rate = Column(String(255))
+    weight = Column(String(255))
+    pathological_process = Column(Text)
+    personal_history = Column(Text)
+    family_history = Column(Text)
+    diagnose_from_recommender = Column(Text)
 
+    # Quan hệ
+    patient = relationship("Patient", back_populates="medical_reports")
+    doctor = relationship("Doctor", back_populates="medical_reports")
+
+
+# Chat_Messages table
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
+    chat_id = Column(Integer, primary_key=True, autoincrement=True)
+    chat_message = Column(Text)
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    time_stamp = Column(TIMESTAMP(timezone=True), server_default="now()", nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    message = Column(Text, nullable=False)
-    response = Column(Text, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
-
-    # Relationship will be updated below
-    user = relationship(User, foreign_keys=[user_id], back_populates="chat_messages")
-
-    __table_args__ = {'extend_existing': True}
-
-# Update relationships in User to use direct class references and correct foreign_keys
-User.patient_profile = relationship(Patient, uselist=False, foreign_keys=[Patient.user_id], back_populates="user", cascade="all, delete-orphan")
-User.created_patients = relationship(Patient, foreign_keys=[Patient.creator_id], back_populates="creator")
-User.assigned_patients = relationship(Patient, foreign_keys=[Patient.assigned_doctor_id], back_populates="assigned_doctor")
-User.created_appointments = relationship(Appointment, foreign_keys=[Appointment.created_by_user_id], back_populates="created_by_user")
-User.doctor_appointments = relationship(Appointment, foreign_keys=[Appointment.doctor_id], back_populates="doctor")
-User.chat_messages = relationship(ChatMessage, foreign_keys=[ChatMessage.user_id], back_populates="user")
-
-# Update relationships in Patient
-Patient.appointments = relationship(Appointment, foreign_keys=[Appointment.patient_id], back_populates="patient")
+    # Quan hệ
+    user = relationship("User", back_populates="chat_messages")
