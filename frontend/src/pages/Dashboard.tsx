@@ -1,6 +1,9 @@
+// pages/Dashboard.tsx
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { UserRole } from '../types/UserType';
+
+import { Routes, Route } from 'react-router-dom';
+
+import {UserRole} from '../types/UserType'; // Adjust the import path as necessary
 
 import BaseDashboard from '../components/layout/BaseDashboard';
 import DoctorDashboard from '../components/dashboards/DoctorDashboard';
@@ -13,8 +16,13 @@ type Props = {
   role: UserRole;
 };
 
+/**
+ * Dashboard component renders the appropriate dashboard layout
+ * based on the user's role. It supports roles such as 'doctor', 'patient',
+ * 'staff', and 'admin'.
+ */
 const Dashboard: React.FC<Props> = ({ role }) => {
-  const renderInitialDashboard = () => {
+  const renderDashboard = () => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,
       PATIENT: <PatientDashboard />,
@@ -31,23 +39,15 @@ const Dashboard: React.FC<Props> = ({ role }) => {
   };
 
   return (
-    <Routes>
-      {/* Wrap all routes inside BaseDashboard */}
-      <Route
-        path="/"
-        element={<BaseDashboard role={role}>{renderInitialDashboard()}</BaseDashboard>}
-      >
-        {/* Nested routes */}
-        <Route 
-          path="/appointments/book" 
-          element={<BaseDashboard role={role}><BookAppointment /></BaseDashboard>} 
-      />
-        {/* Add more nested routes as needed */}
-      </Route>
-
-      {/* Redirect unknown routes */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <BaseDashboard role={role}>
+      <Routes>
+        <Route path="/" element={renderDashboard()} />
+        <Route path="appointments/book" element={<BookAppointment />} />
+        {/* <Route path="appointments" element={<Appointments />} />
+        <Route path="prescriptions" element={<Prescriptions />} />
+        <Route path="records" element={<MedicalHistory />} /> */}
+      </Routes>
+    </BaseDashboard>
   );
 };
 

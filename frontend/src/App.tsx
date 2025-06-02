@@ -34,7 +34,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} /> 
           {/* <Route path="/testdashboard" element={<DashboardWrapper />} /> */}
           <Route 
-            path="/dashboard" 
+            path="/dashboard/*" 
             element={
                 <ProtectedRoute>
                   <>
