@@ -39,6 +39,8 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
     toast.success('Ban đã đăng xuất thành công.');
     setTimeout(() => {
       setMenuOpen(false);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('role');
       navigate('/login');
     }, 1000);
   };
