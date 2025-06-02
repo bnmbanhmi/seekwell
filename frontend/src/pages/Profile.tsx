@@ -18,7 +18,6 @@ const Profile: React.FC = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const user_id = localStorage.getItem('userId');
                 const token = localStorage.getItem('accessToken');
                 const response = await axios.get(`${BACKEND_URL}/users/users/me`, {
                     headers: {

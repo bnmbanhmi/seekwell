@@ -6,20 +6,16 @@ import { access } from 'fs';
 const DashboardWrapper = () => {
   const [role, setRole] = React.useState<string | null>(null);
   const [accessToken, setAccessToken] = React.useState<string | null>(null);
-  const [userId, setUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const storedRole = localStorage.getItem('role');
     setRole(storedRole);
     const storedAccessToken = localStorage.getItem('accessToken');
     setAccessToken(storedAccessToken);
-    const storedUserId = localStorage.getItem('userId');
-    setUserId(storedUserId);
   }, []); // Runs on mount
 
   if (!role) return <div>Loading role...</div>; // Prevent rendering with null role
   if (accessToken === null) {console.error('Access token is missing. Please log in again.');}
-  if (userId === null) {console.error('User ID is missing. Please log in again.');}
 
   return <Dashboard role={role as UserRole} />;
 };

@@ -31,7 +31,7 @@ def create_user_by_admin(user: schemas.UserCreate, db: Session = Depends(get_db)
         raise HTTPException(status_code=400, detail="Username already registered")
     return crud.create_user(db=db, user=user)
 
-@router.get("/me/", response_model=schemas.UserSchema)
+@router.get("/me", response_model=schemas.UserSchema)
 async def read_users_me(current_user: models.User = Depends(get_current_active_user)):
     # Get current user's details
     return current_user
