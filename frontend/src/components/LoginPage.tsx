@@ -125,6 +125,9 @@ const LoginPage: React.FC = () => {
                     >
                         Đăng ký tài khoản
                     </button>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                        <Link to="/forgot-password">Quên mật khẩu?</Link>
+                    </div>
                 </form>
             </div>
         </div>
