@@ -4,20 +4,21 @@ from typing import List
 from app import crud, schemas, models
 from app.database import get_db
 from app.dependencies import get_current_active_user, get_current_active_admin
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 router = APIRouter(
     tags=["Appointments"],
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/book", response_model=schemas.AppointmentSchema)
-def create_appointment(
+@router.post("/book", response_model=schemas.AppointmentSchema, status_code=status.HTTP_201_CREATED)
+async def create_appointment(
     appointment: schemas.AppointmentCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
 ):
-    return crud.create_appointment(db=db, appointment=appointment, creator_id=current_user.id)
+    print("Received appointment payload:", appointment)
+    return crud.create_appointment(db=db, appointment=appointment, creator_id=current_user.user_id)
 
 @router.get("/", response_model=List[schemas.AppointmentSchema])
 def get_all_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -25,13 +26,36 @@ def get_all_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(
 
 @router.get("/available", response_model=List[datetime])
 def get_available_slots_in_a_given_day(
-    day: datetime = Query(..., description="Date to check for available slots (YYYY-MM-DD)"),
+    day: date = Query(..., description="Date to check for available slots (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
     """
     Get available 1-hour appointment slots for a given day (between 08:30 and 17:30 excluding lunch break).
     """
-    return crud.get_available_slots(db, day=day)
+    return crud.get_available_slots_in_a_day(db, day=day)
+
+@router.get("/available-range", response_model=List[datetime])
+def get_available_slots_in_date_range(
+    start_date: date = Query(..., description="Start date (YYYY-MM-DD)"),
+    end_date: date = Query(..., description="End date (YYYY-MM-DD)"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get available 1-hour appointment slots between start_date and end_date (inclusive).
+    Returns a flat list of datetime slots.
+    """
+    if start_date > end_date:
+        raise HTTPException(status_code=400, detail="start_date must be before or equal to end_date")
+
+    available_slots = []
+    current_date = start_date
+    while current_date <= end_date:
+        slots = crud.get_available_slots_in_a_day(db, day=current_date)
+        available_slots.extend(slots)
+        current_date += timedelta(days=1)
+
+    return available_slots
+
 
 @router.get("/me", response_model=List[schemas.AppointmentSchema], 
             dependencies=[Depends(get_current_active_user)])
