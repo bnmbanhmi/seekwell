@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app import crud, schemas, models
 from app.database import get_db
 from app.dependencies import get_current_active_user, get_current_active_admin
+from datetime import datetime
 
 router = APIRouter(
     tags=["Appointments"],
@@ -18,13 +19,23 @@ def create_appointment(
 ):
     return crud.create_appointment(db=db, appointment=appointment, creator_id=current_user.id)
 
-@router.get("/available", response_model=List[schemas.AppointmentSchema])
-def read_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+@router.get("/", response_model=List[schemas.AppointmentSchema])
+def get_all_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_all_appointments(db, skip=skip, limit=limit)
+
+@router.get("/available", response_model=List[datetime])
+def get_available_slots_in_a_given_day(
+    day: datetime = Query(..., description="Date to check for available slots (YYYY-MM-DD)"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get available 1-hour appointment slots for a given day (between 08:30 and 17:30 excluding lunch break).
+    """
+    return crud.get_available_slots(db, day=day)
 
 @router.get("/me", response_model=List[schemas.AppointmentSchema], 
             dependencies=[Depends(get_current_active_user)])
-def read_my_appointments(
+def get_appointments_for_patient(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
 ):
@@ -34,7 +45,7 @@ def read_my_appointments(
     return crud.get_appointments_for_patient(db, patient_id=current_user.id)
 
 @router.get("/{appointment_id}", response_model=schemas.AppointmentSchema)
-def read_appointment(
+def get_appointment(
     appointment_id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
