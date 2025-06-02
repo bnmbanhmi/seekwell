@@ -6,9 +6,9 @@ const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, ''
 
 const Profile: React.FC = () => {
     const [userData, setUserData] = useState({
-        fullname: '',
+        full_name: '',
         username: '',
-        mail: '',
+        email: '',
         phone: '',
         address: '',
     });
@@ -58,9 +58,9 @@ const Profile: React.FC = () => {
         <div className="profile-container">
             <h1 className="profile-title">User Profile</h1>
             <div className="profile-details">
-                <p><strong>Name:</strong> {displayValue(userData.fullname)}</p>
+                <p><strong>Name:</strong> {displayValue(userData.full_name)}</p>
                 <p><strong>Username:</strong> {displayValue(userData.username)}</p>
-                <p><strong>Email:</strong> {displayValue(userData.mail)}</p>
+                <p><strong>Email:</strong> {displayValue(userData.email)}</p>
                 <p><strong>Phone:</strong> {displayValue(userData.phone)}</p>
                 <p><strong>Address:</strong> {displayValue(userData.address)}</p>
             </div>
