@@ -149,6 +149,9 @@ def create_appointment(db: Session, appointment: schemas.AppointmentCreate, crea
 def get_appointment(db: Session, appointment_id: int):
     return db.query(models.Appointment).filter(models.Appointment.appointment_id == appointment_id).first()
 
+def get_all_appointments(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Appointment).offset(skip).limit(limit).all()
+
 def get_appointments_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
     return db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id).offset(skip).limit(limit).all()
 
