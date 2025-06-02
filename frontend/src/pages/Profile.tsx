@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401) {
-                        setError('Authentication failed. Please log in again.');
+                        setError('Authentication failed.');
                     } else {
                         setError(`Failed to fetch user data: ${err.response.data.detail || err.message}`);
                     }
