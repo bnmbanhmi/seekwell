@@ -48,9 +48,12 @@ const BookAppointment: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`${BACKEND_URL}/available`, {
+      const dateFromString = new Date(filters.dateFrom).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+      const dateToString = new Date(filters.dateTo).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+      const response = await axios.get(`${BACKEND_URL}/appointments/available-range`, {
         params: {
-          day: filters.dateFrom, // Use filters.dateFrom as the date parameter
+          start_date: dateFromString, // Use filters.dateFrom as the date parameter
+          end_date: dateToString, // Use filters.dateTo as the date parameter         
         },
       });
 
@@ -88,7 +91,15 @@ const BookAppointment: React.FC = () => {
     setSuccess('');
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.post(`${BACKEND_URL}/appointments/book`, formData, {
+      const payload = {
+        patient_id: 96,
+        appointment_day: selectedSlot?.date || formData.date,
+        appointment_time: selectedSlot?.time || formData.time,
+        doctor_id: parseInt(selectedSlot?.doctorId || formData.doctorId || '69'),
+        reason: formData.reason,
+      };
+      console.log('Booking payload:', payload);
+      const response = await axios.post(`${BACKEND_URL}/appointments/book`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
