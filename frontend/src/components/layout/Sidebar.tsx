@@ -13,20 +13,20 @@ type Props = {
 
 const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
   PATIENT: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Book Appointment', path: '/appointments/book' },
+    { label: 'Dashboard', path: '/' },
+    { label: 'Book Appointment', path: '/appointments/book' }, 
     { label: 'My Appointments', path: '/appointments' },
     { label: 'Prescriptions', path: '/prescriptions' },
     { label: 'Medical History', path: '/records' },
   ],
   DOCTOR: [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Dashboard', path: '/' },
     { label: 'My Schedule', path: '/schedule' },
     { label: 'Patient List', path: '/patients' },
     { label: 'Medical Records', path: '/records' },
   ],
   CLINIC_STAFF: [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Dashboard', path: '/' },
     { label: 'Schedule Appointment', path: '/appointments/schedule' },
     { label: 'Check-in / Check-out', path: '/checkin' },
     { label: 'Billing & Invoices', path: '/billing' },
@@ -34,7 +34,7 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Messages', path: '/messages' },
   ],
   ADMIN: [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Dashboard', path: '/' },
     { label: 'User Management', path: '/users' },
     { label: 'Schedule Settings', path: '/schedule/settings' },
     { label: 'Reports & Analytics', path: '/reports' },

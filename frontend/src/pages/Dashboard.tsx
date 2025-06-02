@@ -1,25 +1,20 @@
-// pages/Dashboard.tsx
 import React from 'react';
-
-import {UserRole} from '../types/UserType'; // Adjust the import path as necessary
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { UserRole } from '../types/UserType';
 
 import BaseDashboard from '../components/layout/BaseDashboard';
 import DoctorDashboard from '../components/dashboards/DoctorDashboard';
 import PatientDashboard from '../components/dashboards/PatientDashboard';
 import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
+import BookAppointment from '../components/appointment/BookAppointment';
 
 type Props = {
   role: UserRole;
 };
 
-/**
- * Dashboard component renders the appropriate dashboard layout
- * based on the user's role. It supports roles such as 'doctor', 'patient',
- * 'staff', and 'admin'.
- */
 const Dashboard: React.FC<Props> = ({ role }) => {
-  const renderDashboard = () => {
+  const renderInitialDashboard = () => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,
       PATIENT: <PatientDashboard />,
@@ -36,9 +31,23 @@ const Dashboard: React.FC<Props> = ({ role }) => {
   };
 
   return (
-    <BaseDashboard role={role}>
-      {renderDashboard()}
-    </BaseDashboard>
+    <Routes>
+      {/* Wrap all routes inside BaseDashboard */}
+      <Route
+        path="/"
+        element={<BaseDashboard role={role}>{renderInitialDashboard()}</BaseDashboard>}
+      >
+        {/* Nested routes */}
+        <Route 
+          path="/appointments/book" 
+          element={<BaseDashboard role={role}><BookAppointment /></BaseDashboard>} 
+      />
+        {/* Add more nested routes as needed */}
+      </Route>
+
+      {/* Redirect unknown routes */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
