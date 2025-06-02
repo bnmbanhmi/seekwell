@@ -48,13 +48,27 @@ const BookAppointment: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`${BACKEND_URL}/appointments/available`, {
-        params: filters,
+      const response = await axios.get(`${BACKEND_URL}/available`, {
+        params: {
+          day: filters.dateFrom, // Use filters.dateFrom as the date parameter
+        },
       });
-      setSlots(response.data);
+
+      // The response data is expected to be an array of ISO strings (available datetime slots)
+      const slots = response.data.map((slot: string) => {
+        const [date, time] = slot.split('T'); // Split ISO string into date and time
+        return {
+          id: slot, // Use the ISO string as a unique ID
+          date,
+          time: time.slice(0, 5), // Extract HH:mm from the time part
+          doctorName: 'Available Doctor', // Placeholder for doctor name
+        };
+      });
+
+      setSlots(slots);
       setStep(2);
-    } catch (err) {
-      console.error('Failed to fetch slots:', err);
+    } catch (error) {
+      console.error('Error fetching available slots:', error);
       setError('Could not fetch available slots.');
     } finally {
       setLoading(false);
