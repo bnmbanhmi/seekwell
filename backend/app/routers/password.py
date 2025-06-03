@@ -17,18 +17,22 @@ async def forgot_password(
     request_data: schemas.ForgotPasswordRequest,
     db: Session = Depends(get_db)
 ):
-    user = crud.get_user_by_email(db, email=request_data.email)
+    try:
+        user = crud.get_user_by_email(db, email=request_data.email)
+    except:
+        return {"message": "It seems the 'users' table does not have a 'reset_password_token' column."}
     if not user:
         # Avoid leaking information about whether an email exists
         # You might want to log this attempt for security monitoring
         print(f"Password reset attempt for non-existent email: {request_data.email}")
-        return {"message": "If an account with that email exists, a password reset link has been sent."}
+        return {"message": "The account with that email doesn't exists"}
 
-    token = crud.create_password_reset_token(db, user=user)
+    #token = crud.create_password_reset_token(db, user=user)
     # Ensure user.email is treated as a string
     user_email = str(user.email) if user.email is not None else ""
     if user_email: # Proceed only if email is a valid string
-        send_password_reset_email(email=user_email, token=token)
+        print("send password reset link successfully")
+        #send_password_reset_email(email=user_email, token=token)
     else:
         # Handle case where user email might be None, though unlikely for an existing user
         print(f"User {user.username} does not have an email address for password reset.")

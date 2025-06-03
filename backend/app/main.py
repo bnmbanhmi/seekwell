@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
-from .routers import auth, users, chat, patients, appointments, doctors, hospitals
+from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,12 +38,12 @@ app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Inc
 app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"]) # Include the appointments router
 app.include_router(doctors.router, prefix="/doctors", tags=["Doctors"])
 app.include_router(hospitals.router, prefix="/hospitals", tags=["Hospitals"])
-app.include_router(hospitals.router, prefix="/password", tags=["Password"])
+app.include_router(password.router, prefix="/password", tags=["Password"])
 
 
 @app.get("/", tags=["Root"])
 async def read_root():
     return {
         "message": "Welcome to Clinic Management API",
-        "version": "v0.1.4"
+        "version": "v0.5.0"
     }

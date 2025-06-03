@@ -19,7 +19,7 @@ const ForgotPasswordPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post(BACKEND_URL + '/auth/forgot-password/', { email });
+            const response = await axios.post(BACKEND_URL + '/password/forgot-password/', { email });
             setMessage(response.data.message);
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
