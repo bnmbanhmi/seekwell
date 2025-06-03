@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from typing import Optional # Added Optional
 from . import models, schemas # Updated to schemas
 from .database import pwd_context, UserRole # Add this import
+from datetime import datetime, timedelta, time, date
+from typing import List
 
 # User CRUD operations
 def get_user(db: Session, user_id: int):
@@ -139,15 +141,60 @@ def delete_patient(db: Session, patient_id: int):
 # Appointment CRUD Operations (New)
 def create_appointment(db: Session, appointment: schemas.AppointmentCreate, creator_id: int):
     # Assuming creator_id is the ID of the user creating the appointment (Patient or Clinic Staff)
-    # The appointment schema itself contains patient_id and doctor_id
-    db_appointment = models.Appointment(**appointment.model_dump()) # Assuming a created_by_user_id field in Appointment model # , created_by_user_id=creator_id
+    appointment_data = appointment.model_dump()
+    appointment_data["patient_id"] = creator_id
+    print("creater_id:", creator_id)
+    print("loi1")
+    db_appointment = models.Appointment(**appointment_data)
+    print("loi2")
     db.add(db_appointment)
+    print("loi3")
     db.commit()
+    print("loi4")
     db.refresh(db_appointment)
+    print("loi5")
     return db_appointment
 
 def get_appointment(db: Session, appointment_id: int):
     return db.query(models.Appointment).filter(models.Appointment.appointment_id == appointment_id).first()
+
+def get_all_appointments(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Appointment).offset(skip).limit(limit).all()
+
+def get_available_slots_in_a_day(db: Session, day: date) -> List[datetime]:
+    # Define working hours: 08:30 to 17:30 and lunch break: 11:30 to 13:30
+    start_of_day = datetime.combine(day, time(8, 30))
+    end_of_day = datetime.combine(day, time(17, 30))
+    lunch_start = time(11, 30)
+    lunch_end = time(13, 30)
+    slot_duration = timedelta(hours=1)
+
+    # Get all appointment times for the day
+    appointments = db.query(models.Appointment)\
+        .filter(models.Appointment.appointment_time >= start_of_day.time())\
+        .filter(models.Appointment.appointment_time < end_of_day.time())\
+        .all()
+
+    # Build a set of taken times
+    taken_times = set(appt.appointment_time for appt in appointments)
+
+    # Generate available 1-hour slots excluding lunch time
+    available_slots: List[datetime] = []
+    current_time = start_of_day
+
+    while current_time + slot_duration <= end_of_day:
+        # Skip lunch hour
+        if lunch_start <= current_time.time() < lunch_end:
+            current_time += slot_duration
+            continue
+
+        # Check if slot is not taken
+        if current_time not in taken_times:
+            available_slots.append(current_time)
+
+        current_time += slot_duration
+
+    return available_slots
 
 def get_appointments_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
     return db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id).offset(skip).limit(limit).all()
