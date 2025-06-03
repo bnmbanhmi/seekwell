@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware # Add this import
 from contextlib import asynccontextmanager
 
 from .database import engine, create_db_and_tables # Import create_db_and_tables
-from .routers import auth, users, chat, patients # Import the new patients router
+from .routers import auth, users, chat, patients, appointments
 from . import models # Import models to ensure tables are known to Base
 
 @asynccontextmanager
@@ -35,6 +35,7 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/users", tags=["Users"]) # Assuming a users router exists
 app.include_router(chat.router, prefix="/chat", tags=["Chat"]) # Assuming a chat router exists
 app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Include the patients router
+app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"]) # Include the appointments router
 
 @app.get("/", tags=["Root"])
 async def read_root():
