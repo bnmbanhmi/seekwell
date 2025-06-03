@@ -166,3 +166,10 @@ class MedicalReportUpdate(BaseModel):
     model_config = {
         "from_attributes": True  # mới trên Pydantic v2
     }
+
+class MedicalReportSchema(MedicalReportBase):
+    record_id: int
+
+    model_config = {
+        "from_attributes": True
+    }
