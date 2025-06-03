@@ -134,5 +134,7 @@ API Versions:
 - v0.1.2: Introduced new API for `database-v2`.
 - v0.1.3: Added appointments API.
 - v0.1.4: Added doctorAPI, hospitalsAPI and updated `crud.create_user` to insert records not only into the `users` table but also into the `patients` or `doctors` tables, as appropriate.
+- v0.5.0: Add API for reset password
+- v0.5.1: Fixing API point for reset password (not finish yet)
 
 To check the current API version, send a `GET` request to the root endpoint (`/`).

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import { toast } from 'react-toastify';
 
@@ -125,6 +125,9 @@ const LoginPage: React.FC = () => {
                     >
                         Đăng ký tài khoản
                     </button>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                        <Link to="/forgot-password">Quên mật khẩu?</Link>
+                    </div>
                 </form>
             </div>
         </div>

@@ -2,6 +2,9 @@ import React, {useEffect, useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
+import DashboardPage from './components/DashboardPage'; // Import DashboardPage
+import ForgotPasswordPage from './components/ForgotPasswordPage'; // Import ForgotPasswordPage
+import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
 import RegisterPage from './components/RegisterPage';
 import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
 import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
@@ -63,6 +66,8 @@ function App() {
         <ToastContainer position="bottom-left" autoClose={3000} hideProgressBar={false} newestOnTop />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<RegisterPage />} /> 
           {/* <Route path="/testdashboard" element={<DashboardWrapper />} /> */}
           <Route 
