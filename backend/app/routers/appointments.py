@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Dict, Any
 from app import crud, schemas, models
 from app.database import get_db
 from app.dependencies import get_current_active_user, get_current_active_admin
@@ -24,7 +24,7 @@ async def create_appointment(
 def get_all_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_all_appointments(db, skip=skip, limit=limit)
 
-@router.get("/available", response_model=List[datetime])
+@router.get("/available", response_model=List[Dict[datetime, Any]])
 def get_available_slots_in_a_given_day(
     day: date = Query(..., description="Date to check for available slots (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
@@ -34,7 +34,7 @@ def get_available_slots_in_a_given_day(
     """
     return crud.get_available_slots_in_a_day(db, day=day)
 
-@router.get("/available-range", response_model=List[datetime])
+@router.get("/available-range", response_model=List[schemas.AvailableSlot])
 def get_available_slots_in_date_range(
     start_date: date = Query(..., description="Start date (YYYY-MM-DD)"),
     end_date: date = Query(..., description="End date (YYYY-MM-DD)"),

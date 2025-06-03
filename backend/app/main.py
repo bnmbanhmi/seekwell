@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware # Add this import
 from contextlib import asynccontextmanager
 
 from .database import engine, create_db_and_tables # Import create_db_and_tables
-from .routers import auth, users, chat, patients, appointments
+from .routers import auth, users, chat, patients, appointments, doctors, hospitals
 from . import models # Import models to ensure tables are known to Base
 
 @asynccontextmanager
@@ -36,7 +36,13 @@ app.include_router(users.router, prefix="/users", tags=["Users"]) # Assuming a u
 app.include_router(chat.router, prefix="/chat", tags=["Chat"]) # Assuming a chat router exists
 app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Include the patients router
 app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"]) # Include the appointments router
+app.include_router(doctors.router, prefix="/doctors", tags=["Doctors"])
+app.include_router(hospitals.router, prefix="/hospitals", tags=["Hospitals"])
+
 
 @app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": "Welcome to Clinic Management API v0.1.2"}
+    return {
+        "message": "Welcome to Clinic Management API",
+        "version": "v0.1.4"
+    }

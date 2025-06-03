@@ -129,3 +129,10 @@ The backend provides several API endpoints for managing users, patients, and aut
 *   `GET /chat/`: (If fully implemented) Endpoints for chat functionality.
 
 For a complete and interactive list of API endpoints, refer to the auto-generated documentation at `http://localhost:8000/docs` when the backend server is running.
+
+API Versions:
+- v0.1.2: Introduced new API for `database-v2`.
+- v0.1.3: Added appointments API.
+- v0.1.4: Added doctorAPI, hospitalsAPI and updated `crud.create_user` to insert records not only into the `users` table but also into the `patients` or `doctors` tables, as appropriate.
+
+To check the current API version, send a `GET` request to the root endpoint (`/`).

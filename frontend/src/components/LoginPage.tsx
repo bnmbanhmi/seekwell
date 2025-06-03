@@ -44,6 +44,7 @@ const LoginPage: React.FC = () => {
             if (response.data.access_token) {
                 localStorage.setItem('accessToken', response.data.access_token);
                 localStorage.setItem('role', response.data.role); // Store the role in localStorage
+                localStorage.setItem('user_id', response.data.user_id)
                 toast.success(t('Đăng nhập thành công!'));
                 navigate('/dashboard');
             }
