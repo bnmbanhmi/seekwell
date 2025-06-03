@@ -11,6 +11,7 @@ import PatientDashboard from '../components/dashboards/PatientDashboard';
 import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
 import BookAppointment from '../components/appointment/BookAppointment';
+import CreateEMR from '../components/EMR/CreateEMR';
 
 type Props = {
   role: UserRole;
@@ -46,6 +47,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         {/* <Route path="appointments" element={<Appointments />} />
         <Route path="prescriptions" element={<Prescriptions />} />
         <Route path="records" element={<MedicalHistory />} /> */}
+        <Route path="create_records" element={<CreateEMR />} />
       </Routes>
     </BaseDashboard>
   );

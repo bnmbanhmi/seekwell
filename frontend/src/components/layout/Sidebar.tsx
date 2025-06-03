@@ -24,6 +24,7 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'My Schedule', path: '/dashboard/schedule' },
     { label: 'Patient List', path: '/dashboard/patients' },
     { label: 'Medical Records', path: '/dashboard/records' },
+    { label: 'Create Records', path: '/dashboard/create_records' },
   ],
   CLINIC_STAFF: [
     { label: 'Dashboard', path: '/dashboard' },
