@@ -1,6 +1,8 @@
 // pages/Dashboard.tsx
 import React from 'react';
 
+import { Routes, Route } from 'react-router-dom';
+
 import {UserRole} from '../types/UserType'; // Adjust the import path as necessary
 
 import BaseDashboard from '../components/layout/BaseDashboard';
@@ -8,6 +10,7 @@ import DoctorDashboard from '../components/dashboards/DoctorDashboard';
 import PatientDashboard from '../components/dashboards/PatientDashboard';
 import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
+import BookAppointment from '../components/appointment/BookAppointment';
 
 type Props = {
   role: UserRole;
@@ -37,7 +40,13 @@ const Dashboard: React.FC<Props> = ({ role }) => {
 
   return (
     <BaseDashboard role={role}>
-      {renderDashboard()}
+      <Routes>
+        <Route path="/" element={renderDashboard()} />
+        <Route path="appointments/book" element={<BookAppointment />} />
+        {/* <Route path="appointments" element={<Appointments />} />
+        <Route path="prescriptions" element={<Prescriptions />} />
+        <Route path="records" element={<MedicalHistory />} /> */}
+      </Routes>
     </BaseDashboard>
   );
 };

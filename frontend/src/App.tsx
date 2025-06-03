@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import LoginPage from './components/LoginPage';
 import DashboardPage from './components/DashboardPage'; // Import DashboardPage
@@ -7,6 +7,7 @@ import ForgotPasswordPage from './components/ForgotPasswordPage'; // Import Forg
 import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
 import RegisterPage from './components/RegisterPage';
 import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
+import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
 
 import { UserRole } from './types/UserType'; // Import UserRole type
 
@@ -19,6 +20,37 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }
 };
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
+
+// Component to handle chatbot display logic
+const ChatbotContainer: React.FC = () => {
+  const location = useLocation();
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check authentication status and user role
+    const token = localStorage.getItem('accessToken');
+    const role = localStorage.getItem('role') as UserRole;
+    
+    setIsAuthenticated(!!token);
+    setUserRole(role || null);
+  }, [location]);
+
+  // Don't show chatbot on dashboard pages (they have their own chat functionality)
+  const isDashboardPage = location.pathname.startsWith('/dashboard');
+  
+  if (isDashboardPage) {
+    return null;
+  }
+
+  return (
+    <ChatbotWidget
+      userRole={userRole}
+      isAuthenticated={isAuthenticated}
+      position="fixed"
+    />
+  );
+};
 
 function App() {
   useEffect(() => {
@@ -37,9 +69,9 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<RegisterPage />} /> 
-          <Route path="/testdashboard" element={<DashboardWrapper />} />
+          {/* <Route path="/testdashboard" element={<DashboardWrapper />} /> */}
           <Route 
-            path="/dashboard" 
+            path="/dashboard/*" 
             element={
                 <ProtectedRoute>
                   <>
@@ -56,6 +88,9 @@ function App() {
           {/* You can add a 404 page here if needed */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        
+        {/* Add Chatbot Widget */}
+        <ChatbotContainer />
       </div>
     </Router>
   );

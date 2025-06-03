@@ -35,7 +35,7 @@ const LoginPage: React.FC = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await axios.post(BACKEND_URL + '/auth/token/', formData, {
+            const response = await axios.post(BACKEND_URL + '/auth/token', formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
@@ -44,10 +44,10 @@ const LoginPage: React.FC = () => {
             if (response.data.access_token) {
                 localStorage.setItem('accessToken', response.data.access_token);
                 localStorage.setItem('role', response.data.role); // Store the role in localStorage
+                localStorage.setItem('user_id', response.data.user_id)
                 toast.success(t('Đăng nhập thành công!'));
                 navigate('/dashboard');
             }
-            console.log("url:", BACKEND_URL + '/auth/token/');
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
                 const status = err.response.status;

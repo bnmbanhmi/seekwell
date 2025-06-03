@@ -8,6 +8,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     role: Optional[str] = None # Role can be included in the token response
+    user_id: int
 
 # User Schemas
 class UserBase(BaseModel):
@@ -83,6 +84,45 @@ class PatientSchema(PatientBase):
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
+# Doctor Schemas
+class DoctorBase(BaseModel):
+    doctor_name: str
+    major: Optional[str] = None
+    hospital_id: int  # required as per the model (nullable=False)
+
+class DoctorCreate(DoctorBase):
+    doctor_id: int  # Link to User.user_id
+
+class DoctorUpdate(BaseModel):
+    doctor_name: Optional[str] = None
+    major: Optional[str] = None
+    hospital_id: Optional[int] = None
+
+class DoctorSchema(DoctorBase):
+    doctor_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+# Hospital Schemas
+class HospitalBase(BaseModel):
+    hospital_name: str
+    address: Optional[str] = None
+    governed_by: Optional[str] = None
+
+class HospitalCreate(HospitalBase):
+    pass
+
+class HospitalUpdate(BaseModel):
+    hospital_name: Optional[str] = None
+    address: Optional[str] = None
+    governed_by: Optional[str] = None
+
+class HospitalSchema(HospitalBase):
+    hospital_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # Appointment Schemas (New)
 class AppointmentBase(BaseModel):
     patient_id: int
@@ -109,6 +149,14 @@ class AppointmentSchema(AppointmentBase):
     # patient: PatientSchema # Potentially include patient details
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
+
+class AvailableDoctor(BaseModel):
+    doctor_id: int
+    doctor_name: str
+
+class AvailableSlot(BaseModel):
+    datetime: datetime
+    available_doctors: List[AvailableDoctor]
 
 # New schema for EMR updates
 class PatientEMRUpdate(BaseModel):
