@@ -17,10 +17,8 @@ async def forgot_password(
     request_data: schemas.ForgotPasswordRequest,
     db: Session = Depends(get_db)
 ):
-    try:
-        user = crud.get_user_by_email(db, email=request_data.email)
-    except:
-        return {"message": "It seems the 'users' table does not have a 'reset_password_token' column."}
+    return {"message": "It seems the 'users' table does not have a 'reset_password_token' column."}
+    user = crud.get_user_by_email(db, email=request_data.email)
     if not user:
         # Avoid leaking information about whether an email exists
         # You might want to log this attempt for security monitoring

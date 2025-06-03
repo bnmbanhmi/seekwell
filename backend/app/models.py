@@ -16,9 +16,10 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.PATIENT, nullable=False)
     full_name = Column(String(255), nullable=False)
-    reset_password_token = Column(String, nullable=True, index=True, unique=True) # Added for password reset
-    reset_password_token_expires_at = Column(DateTime, nullable=True) # Added for password reset
-    # Add other relevant fields for User
+    ### In the database, these havent exist yet.
+    # reset_password_token = Column(String, nullable=True, index=True, unique=True) # Added for password reset
+    # reset_password_token_expires_at = Column(DateTime, nullable=True) # Added for password reset
+    # # Add other relevant fields for User
     # Quan hệ
     patient_profile = relationship("Patient", back_populates="user", uselist=False, cascade="all, delete-orphan")
     doctor_profile = relationship("Doctor", back_populates="user", uselist=False, cascade="all, delete-orphan")

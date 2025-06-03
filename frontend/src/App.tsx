@@ -9,6 +9,8 @@ import RegisterPage from './components/RegisterPage';
 import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
 import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
 
+import Profile from './pages/Profile'; 
+
 import { UserRole } from './types/UserType'; // Import UserRole type
 
 import { ToastContainer } from 'react-toastify';
@@ -87,6 +89,14 @@ function App() {
           />
           {/* You can add a 404 page here if needed */}
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
         </Routes>
         
         {/* Add Chatbot Widget */}
