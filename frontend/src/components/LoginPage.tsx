@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import { toast } from 'react-toastify';
 
@@ -35,7 +35,7 @@ const LoginPage: React.FC = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await axios.post(BACKEND_URL + '/auth/token/', formData, {
+            const response = await axios.post(BACKEND_URL + '/auth/token', formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
@@ -44,11 +44,10 @@ const LoginPage: React.FC = () => {
             if (response.data.access_token) {
                 localStorage.setItem('accessToken', response.data.access_token);
                 localStorage.setItem('role', response.data.role); // Store the role in localStorage
-                // localStorage.setItem('user_id', response.data.user_id); 
+                localStorage.setItem('user_id', response.data.user_id)
                 toast.success(t('Đăng nhập thành công!'));
                 navigate('/dashboard');
             }
-            console.log("url:", BACKEND_URL + '/auth/token/');
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
                 const status = err.response.status;
@@ -126,6 +125,9 @@ const LoginPage: React.FC = () => {
                     >
                         Đăng ký tài khoản
                     </button>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                        <Link to="/forgot-password">Quên mật khẩu?</Link>
+                    </div>
                 </form>
             </div>
         </div>

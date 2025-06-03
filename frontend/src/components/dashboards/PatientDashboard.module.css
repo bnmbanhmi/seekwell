@@ -1,0 +1,78 @@
+/* PatientDashboard.module.css */
+
+.dashboardContainer {
+  padding: 20px;
+}
+
+.header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.gridLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.card p {
+  color: #666;
+}
+
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button {
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bookButton {
+  background: #667eea;
+}
+
+.historyButton {
+  background: #48bb78;
+}
+
+.prescriptionButton {
+  background: #ed8936;
+}
+
+.chatCard {
+  composes: card;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatDescription {
+  color: #666;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.flexGrow {
+  flex: 1;
+}

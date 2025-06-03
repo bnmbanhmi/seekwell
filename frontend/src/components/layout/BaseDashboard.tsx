@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import { UserRole } from '../../types/UserType';
 import './BaseDashboard.css'; // Assuming you have a CSS file for styles
 
+import { Outlet } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 type Props = {
@@ -109,6 +110,7 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
         {/* Main content */}
         <main className="content">
           {children}
+          <Outlet />
         </main>
       </div>
     </div>

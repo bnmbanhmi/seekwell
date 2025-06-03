@@ -53,12 +53,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.email, "role": user.role.value}, expires_delta=access_token_expires # Use .value for Enum
     )
     # Return role and user_id in the response body along with the token
-    print(f"Generated access token for user: {user.email}, role: {user.role.value}")
+    print(f"Generated access token for user: {user.email}, role: {user.role.value}, id: {user.user_id}")
     return {
         "access_token": access_token, 
         "token_type": "bearer", 
         "role": user.role.value, # Role is in the token, not directly in Token schema
-        # "user_id": user.id # User ID also not directly in Token schema
+        "user_id": user.user_id # User ID also not directly in Token schema
     }
 
 @router.post("/register/", response_model=schemas.UserSchema, tags=["authentication"])
@@ -70,11 +70,13 @@ async def register_user(request: Request, db: Session = Depends(get_db)):
         print("No user data received")
         raise HTTPException(status_code=400, detail="Do not receive user data")
     
+    role = body.get("role") or models.UserRole.PATIENT
+    
     user = schemas.UserCreate(username=body['username'],
                               email=body['email'],  # Using email as username for registration
                               full_name=body['full_name'],
                               password=body['password'],
-                              role=models.UserRole.PATIENT)
+                              role=role)
     try:
         email = user.email.lower()
         username = user.username.lower()
