@@ -5,28 +5,46 @@ import './bookAppointment.css'; // Assuming you have a CSS file for styling
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 const BookAppointment: React.FC = () => {
-  const [formData, setFormData] = useState({
+  type FormData = {
+    date: string;
+    time: string;
+    doctorId: number | null;
+    reason: string
+  };
+  const [formData, setFormData] = useState<FormData>({
     date: '',
     time: '',
-    doctorId: '',
+    doctorId: null,
     reason: '',
   });
-  const [doctors, setDoctors] = useState([]);
+  type Doctor = {
+  doctor_id: number;
+  doctor_name: string;
+  major: string;
+  hospital_id: number;
+};
+const [doctors, setDoctors] = useState<Doctor[]>([]);
   type Slot = {
     id: string;
     date: string;
     time: string;
     doctorName: string;
-    doctorId?: string;
+    doctorId: number;
   };
-  
+  type Filters = {
+  service: string;
+  dateFrom: string;
+  dateTo: string;
+  doctorId: number | null;
+};
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
-  const [filters, setFilters] = useState({ service: '', dateFrom: '', dateTo: '', doctorId: '' });
+  const [filters, setFilters] = useState<Filters>({ service: '', dateFrom: '', dateTo: '', doctorId: null });
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [filterByDoctor, setFilterByDoctor] = useState(false);
 
   // Fetch available doctors
   useEffect(() => {
@@ -34,6 +52,8 @@ const BookAppointment: React.FC = () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/doctors`);
         setDoctors(response.data);
+        console.log("Fetch doctors ok")
+        console.log(response.data)
       } catch (err) {
         console.error('Failed to fetch doctors:', err);
         setError('Could not fetch doctors.');
@@ -47,25 +67,29 @@ const BookAppointment: React.FC = () => {
   const fetchAvailableSlots = async () => {
     setLoading(true);
     setError('');
+
     try {
       const dateFromString = new Date(filters.dateFrom).toISOString().split('T')[0]; // 'YYYY-MM-DD'
       const dateToString = new Date(filters.dateTo).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
       const response = await axios.get(`${BACKEND_URL}/appointments/available-range`, {
         params: {
-          start_date: dateFromString, // Use filters.dateFrom as the date parameter
-          end_date: dateToString, // Use filters.dateTo as the date parameter         
+          start_date: dateFromString,
+          end_date: dateToString,
         },
       });
 
-      // The response data is expected to be an array of ISO strings (available datetime slots)
-      const slots = response.data.map((slot: string) => {
-        const [date, time] = slot.split('T'); // Split ISO string into date and time
-        return {
-          id: slot, // Use the ISO string as a unique ID
+      console.log(response.data); // Inspect the response
+
+      const slots: Slot[] = response.data.flatMap((slot: any) => {
+        const [date, time] = slot.datetime.split('T');
+        return slot.available_doctors.map((doctor: any) => ({
+          id: `${slot.datetime}_${doctor.doctor_id}`, // Unique ID per doctor per slot
           date,
-          time: time.slice(0, 5), // Extract HH:mm from the time part
-          doctorName: 'Available Doctor', // Placeholder for doctor name
-        };
+          time: time.slice(0, 5), // 'HH:mm'
+          doctorName: doctor.doctor_name,
+          doctorId: doctor.doctor_id,
+        }));
       });
 
       setSlots(slots);
@@ -90,12 +114,14 @@ const BookAppointment: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem("accessToken")
+      const userIdStr = localStorage.getItem('user_id')
+      const user_id = userIdStr ? Number(userIdStr) : null;  // convert string to number or null if not found
       const payload = {
-        patient_id: 96,
-        appointment_day: selectedSlot?.date || formData.date,
-        appointment_time: selectedSlot?.time || formData.time,
-        doctor_id: parseInt(selectedSlot?.doctorId || formData.doctorId || '69'),
+        patient_id: user_id,
+        appointment_day: formData.date,
+        appointment_time: formData.time,
+        doctor_id: formData.doctorId,
         reason: formData.reason,
       };
       console.log('Booking payload:', payload);
@@ -105,7 +131,7 @@ const BookAppointment: React.FC = () => {
         },
       });
       setSuccess('Appointment booked successfully!');
-      setFormData({ date: '', time: '', doctorId: '', reason: '' });
+      setFormData({ date: '', time: '', doctorId: null, reason: '' }); //reset
       setStep(4);
     } catch (err) {
       console.error('Failed to book appointment:', err);
@@ -114,6 +140,17 @@ const BookAppointment: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedSlot) {
+      setFormData({
+        date: selectedSlot.date,
+        time: selectedSlot.time,
+        doctorId: selectedSlot.doctorId, // or doctorId from selectedSlot if available
+        reason: formData.reason, // keep existing reason
+      });
+    }
+  }, [selectedSlot]);
 
   return (
     <div className="appointment-page">
@@ -156,16 +193,22 @@ const BookAppointment: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label>Doctor (Optional)</label>
+            <label>Doctor that you prefer (Optional)</label>
             <select
               name="doctorId"
-              value={filters.doctorId}
-              onChange={(e) => setFilters({ ...filters, doctorId: e.target.value })}
+              value={filters.doctorId ?? ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                setFilters({
+                  ...filters,
+                  doctorId: value === '' ? null : parseInt(value, 10),
+                });
+              }}
             >
-              <option value="">Any</option>
-              {doctors.map((doc: any) => (
-                <option key={doc.id} value={doc.id}>
-                  {doc.name}
+              <option key="any" value="">Any</option>
+              {doctors.map((doc) => (
+                <option key={doc.doctor_id} value={doc.doctor_id}>
+                  {doc.doctor_name}
                 </option>
               ))}
             </select>
@@ -181,24 +224,45 @@ const BookAppointment: React.FC = () => {
       {step === 2 && (
         <div className="slots-section">
           <h2>Available Time Slots</h2>
+
+          {/* Checkbox to toggle filter by doctor */}
+          <div className="form-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={filterByDoctor}
+                onChange={(e) => setFilterByDoctor(e.target.checked)}
+                disabled={!filters.doctorId} // disable if no doctor selected
+              />
+              Show only slots that have your prefered doctor
+            </label>
+          </div>
+
           {slots.length === 0 ? (
             <p>No slots available for the selected filters.</p>
           ) : (
-            slots.map((slot: any) => (
-              <div
-                key={slot.id}
-                className="slot-card"
-                onClick={() => {
-                  setSelectedSlot(slot);
-                  setStep(3);
-                }}
-              >
-                <p>
-                  <strong>{slot.time}</strong> on {slot.date}
-                </p>
-                <p>Doctor: {slot.doctorName}</p>
-              </div>
-            ))
+            // Filter slots based on filterByDoctor toggle
+            slots
+              .filter((slot) =>
+                filterByDoctor && filters.doctorId
+                  ? slot.doctorId === filters.doctorId
+                  : true
+              )
+              .map((slot) => (
+                <div
+                  key={slot.id}
+                  className="slot-card"
+                  onClick={() => {
+                    setSelectedSlot(slot);
+                    setStep(3);
+                  }}
+                >
+                  <p>
+                    <strong>{slot.time}</strong> on {slot.date}
+                  </p>
+                  <p>Doctor: {slot.doctorName}</p>
+                </div>
+              ))
           )}
           <button onClick={() => setStep(1)}>← Back to Filters</button>
         </div>
@@ -242,7 +306,7 @@ const BookAppointment: React.FC = () => {
             onClick={() => {
               setStep(1);
               setSelectedSlot(null);
-              setFormData({ date: '', time: '', doctorId: '', reason: '' });
+              setFormData({ date: '', time: '', doctorId: null, reason: '' });
               setSuccess('');
             }}
           >
