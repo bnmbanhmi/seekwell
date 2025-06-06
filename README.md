@@ -78,9 +78,14 @@ This project follows a structured Git branching strategy to ensure clean develop
 *   **Merged into**: Both `main` and `develop`
 *   **Lifetime**: Deleted after merge
 
+### Current Branch Status
+*   **`main`**: Production-ready stable code
+*   **`develop`**: ✅ **Now available** - Integration branch for all new development
+*   **Existing feature branches**: Currently based on `main` (transition guidance below)
+
 ### Workflow Guidelines
 
-#### For New Features
+#### For New Features (Going Forward)
 1. Create feature branch from `develop`:
    ```bash
    git checkout develop
@@ -101,6 +106,18 @@ This project follows a structured Git branching strategy to ensure clean develop
 
 4. After code review and approval, merge into `develop`
 5. Delete feature branch after merge
+
+#### For Existing Feature Branches (Transition Period)
+Since your current feature branches (`feature/IChatbotService`, `feature/forgot_reset_password`, `feature/uc3_chatbot`) are based on `main`:
+
+1. **Continue development normally** on these branches
+2. **When ready to merge**, merge them into `develop` instead of `main`:
+   ```bash
+   git checkout develop
+   git merge feature/your-existing-branch
+   git push origin develop
+   ```
+3. **Delete the feature branch** after successful merge
 
 #### For Bug Fixes
 1. Create bugfix branch from `develop`:
