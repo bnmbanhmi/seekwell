@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './CreateEMR.css'; // Assuming you have a CSS file for styling
+import styles from './CreateEMR.module.css'; // Updated for CSS Modules
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
@@ -166,24 +166,24 @@ const CreateEMR: React.FC = () => {
   };
 
   return (
-    <div className="create-emr-container">
-      <h1 className="title">Create EMR</h1>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
+    <div className={styles.createEmrContainer}>
+      <h1 className={styles.title}>Create EMR</h1>
+      {error && <p className={styles.errorMessage}>{error}</p>}
+      {success && <p className={styles.successMessage}>{success}</p>}
 
       {/* Step 1: Patient Selection */}
       {step === 1 && (
-        <div className="patient-selection">
-          <h2 className="subtitle">Select a Patient</h2>
+        <div className={styles.patientSelection}>
+          <h2 className={styles.subtitle}>Select a Patient</h2>
 
           {patients.length === 0 && !error ? (
-            <p className="loading">Loading...</p>
+            <p className={styles.loading}>Loading...</p>
             ) : patients.length > 0 ? (
-            <ul className="patient-list">
+            <ul className={styles.patientList}>
               {patients.map((patient) => (
                 <li key={patient.id}>
                   <button
-                    className="patient-button"
+                    className={styles.patientButton}
                     onClick={() => handlePatientSelect(patient.id)}
                   >
                     {patient.name}
@@ -192,36 +192,38 @@ const CreateEMR: React.FC = () => {
               ))}
             </ul>
           ) : (
-            <p className="no-patients">No patients available.</p>
+            <p className={styles.noPatients}>No patients available.</p>
           )}
         </div>
       )}
 
       {/* Step 2: EMR Creation Form */}
       {step === 2 && (
-        <div className="emr-form">
-          <div className="form-group">
-            <label htmlFor="reason_in">Reason for Admission:</label>
+        <div className={styles.emrForm}>
+          <div className={styles.formGroup}>
+            <label htmlFor="reason_in" className={styles.label}>Reason for Admission:</label>
             <textarea
               id="reason_in"
               name="reason_in"
               value={formData.reason_in}
               onChange={handleChange}
               required
+              className={styles.textarea}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="doctor_notes">Consultation Notes:</label>
+          <div className={styles.formGroup}>
+            <label htmlFor="doctor_notes" className={styles.label}>Consultation Notes:</label>
             <textarea
               id="doctor_notes"
               name="doctor_notes"
               value={formData.doctor_notes}
               onChange={handleChange}
               required
+              className={styles.textarea}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="in_diagnosis">Diagnosis:</label>
+          <div className={styles.formGroup}>
+            <label htmlFor="in_diagnosis" className={styles.label}>Diagnosis:</label>
             <input
               type="text"
               id="in_diagnosis"
@@ -229,42 +231,45 @@ const CreateEMR: React.FC = () => {
               value={formData.in_diagnosis}
               onChange={handleChange}
               required
+              className={styles.input}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="treatment_process">Treatment Process:</label>
+          <div className={styles.formGroup}>
+            <label htmlFor="treatment_process" className={styles.label}>Treatment Process:</label>
             <textarea
               id="treatment_process"
               name="treatment_process"
               value={formData.treatment_process}
               onChange={handleChange}
               required
+              className={styles.textarea}
             />
           </div>
-          <button onClick={() => setStep(3)}>Add Prescription</button>
+          <button className={styles.button} onClick={() => setStep(3)}>Add Prescription</button>
         </div>
       )}
 
       {/* Step 3: Prescription Entry */}
       {step === 3 && (
-        <div className="prescription-form">
+        <div className={styles.prescriptionForm}>
           <h2>Prescription</h2>
-          <div className="form-group">
-            <label htmlFor="newMedication">Medication:</label>
+          <div className={styles.formGroup}>
+            <label htmlFor="newMedication" className={styles.label}>Medication:</label>
             <input
               type="text"
               id="newMedication"
               value={newMedication}
               onChange={(e) => setNewMedication(e.target.value)}
+              className={styles.input}
             />
-            <button onClick={handleAddMedication}>Add Medication</button>
+            <button className={styles.button} onClick={handleAddMedication}>Add Medication</button>
           </div>
-          <ul className="medication-list">
+          <ul className={styles.medicationList}>
             {formData.prescription.map((med, index) => (
-              <li key={index}>
+              <li key={index} className={styles.medicationListItem}>
                 <strong>{med.name}</strong>
                 <div>
-                  <label>Dosage:</label>
+                  <label className={styles.label}>Dosage:</label>
                   <input
                     type="text"
                     value={med.dosage}
@@ -275,10 +280,11 @@ const CreateEMR: React.FC = () => {
                         return { ...prev, prescription: updatedPrescription };
                       })
                     }
+                    className={styles.input}
                   />
                 </div>
                 <div>
-                  <label>Quantity:</label>
+                  <label className={styles.label}>Quantity:</label>
                   <input
                     type="number"
                     value={med.quantity}
@@ -289,10 +295,11 @@ const CreateEMR: React.FC = () => {
                         return { ...prev, prescription: updatedPrescription };
                       })
                     }
+                    className={styles.input}
                   />
                 </div>
                 <div>
-                  <label>Instructions:</label>
+                  <label className={styles.label}>Instructions:</label>
                   <textarea
                     value={med.instructions}
                     onChange={(e) =>
@@ -302,18 +309,19 @@ const CreateEMR: React.FC = () => {
                         return { ...prev, prescription: updatedPrescription };
                       })
                     }
+                    className={styles.textarea}
                   />
                 </div>
               </li>
             ))}
           </ul>
-          <button onClick={() => setStep(4)}>Review EMR</button>
+          <button className={styles.button} onClick={() => setStep(4)}>Review EMR</button>
         </div>
       )}
 
       {/* Step 4: Review EMR */}
       {step === 4 && (
-        <div className="review-emr">
+        <div className={styles.reviewEmr}>
           <h2>Review EMR</h2>
           <p>
             <strong>Consultation Notes:</strong> {formData.doctor_notes}
@@ -332,8 +340,8 @@ const CreateEMR: React.FC = () => {
               </li>
             ))}
           </ul>
-          <button onClick={handleSaveEMR}>Save EMR</button>
-          <button onClick={handleCancel}>Cancel</button>
+          <button className={styles.button} onClick={handleSaveEMR}>Save EMR</button>
+          <button className={styles.button} onClick={handleCancel}>Cancel</button>
         </div>
       )}
     </div>

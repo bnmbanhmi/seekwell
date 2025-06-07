@@ -1,68 +1,10 @@
-.create-emr-container {
+.createEmrContainer {
   max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  text-align: center;
-  color: #2f3542;
-}
-
-
-.emr-form,
-.prescription-form,
-.review-emr {
-  margin-top: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  display: block;
-}
-
-input,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  background-color: #70a1ff;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-button:hover {
-  background-color: #1e90ff;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.medication-list {
-  list-style: none;
-  padding: 0;
-}
-
-.medication-list li {
-  margin-bottom: 10px;
 }
 
 .title {
@@ -73,22 +15,6 @@ button:disabled {
   color: #2d3748;
 }
 
-.error-message {
-  color: #e53e3e;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.success-message {
-  color: #38a169;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.patient-selection {
-  margin-top: 1rem;
-}
-
 .subtitle {
   font-size: 1.25rem;
   font-weight: 600;
@@ -96,13 +22,81 @@ button:disabled {
   color: #4a5568;
 }
 
-.patient-list {
+.emrForm,
+.prescriptionForm,
+.reviewEmr {
+  margin-top: 20px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  background-color: #70a1ff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.button:hover {
+  background-color: #1e90ff;
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.medicationList {
+  list-style: none;
+  padding: 0;
+}
+
+.medicationListItem {
+  margin-bottom: 10px;
+}
+
+.errorMessage {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.successMessage {
+  color: #38a169;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.patientSelection {
+  margin-top: 1rem;
+}
+
+.patientList {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.patient-button {
+.patientButton {
   display: block;
   width: 100%;
   text-align: left;
@@ -117,10 +111,10 @@ button:disabled {
   transition: background-color 0.3s;
 }
 
-.patient-button:hover {
+.patientButton:hover {
   background-color: #bee3f8;
 }
 
-.no-patients {
+.noPatients {
   color: #718096;
 }
