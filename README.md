@@ -25,6 +25,202 @@ A comprehensive clinic management system designed to streamline operations for m
     *   TypeScript
     *   Node.js / npm
 
+## Git Branching Strategy
+
+This project follows a structured Git branching strategy to ensure clean development workflows and code stability.
+
+### Branch Types
+
+#### Main Branches
+*   **`main`**: Production-ready code. All code in this branch should be stable and deployable.
+*   **`develop`**: Integration branch for features. This is where feature branches are merged and tested together.
+
+#### Supporting Branches
+
+#### Feature Branches
+*   **Naming**: `feature/[feature-name]` or `feature/[use-case]-[brief-description]`
+*   **Examples**: 
+    *   `feature/patient-dashboard`
+    *   `feature/uc3-chatbot`
+    *   `feature/user-authentication`
+*   **Purpose**: Develop new features
+*   **Branched from**: `develop`
+*   **Merged into**: `develop`
+*   **Lifetime**: Deleted after merge
+
+#### Bugfix Branches
+*   **Naming**: `bugfix/[bug-description]` or `bugfix/[use-case]-[brief-description]`
+*   **Examples**: 
+    *   `bugfix/login-validation-error`
+    *   `bugfix/uc2-patient-data-display`
+*   **Purpose**: Fix bugs found in `develop` branch
+*   **Branched from**: `develop`
+*   **Merged into**: `develop`
+*   **Lifetime**: Deleted after merge
+
+#### Hotfix Branches
+*   **Naming**: `hotfix/[version]` or `hotfix/[critical-issue-description]`
+*   **Examples**: 
+    *   `hotfix/v1.2.1`
+    *   `hotfix/security-vulnerability`
+*   **Purpose**: Fix critical issues in production
+*   **Branched from**: `main`
+*   **Merged into**: Both `main` and `develop`
+*   **Lifetime**: Deleted after merge
+
+#### Release Branches
+*   **Naming**: `release/[version]`
+*   **Examples**: 
+    *   `release/v1.0.0`
+    *   `release/v2.1.0`
+*   **Purpose**: Prepare new production releases
+*   **Branched from**: `develop`
+*   **Merged into**: Both `main` and `develop`
+*   **Lifetime**: Deleted after merge
+
+### Current Branch Status
+*   **`main`**: Production-ready stable code
+*   **`develop`**: ✅ **Now available** - Integration branch for all new development
+*   **Existing feature branches**: Currently based on `main` (transition guidance below)
+
+### Workflow Guidelines
+
+#### For New Features (Going Forward)
+1. Create feature branch from `develop`:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/your-feature-name
+   ```
+
+2. Develop and commit your changes:
+   ```bash
+   git add .
+   git commit -m "feat: add patient dashboard functionality"
+   ```
+
+3. Push feature branch and create Pull Request:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+4. After code review and approval, merge into `develop`
+5. Delete feature branch after merge
+
+#### For Existing Feature Branches (Transition Period)
+Since your current feature branches (`feature/IChatbotService`, `feature/forgot_reset_password`, `feature/uc3_chatbot`) are based on `main`:
+
+1. **Continue development normally** on these branches
+2. **When ready to merge**, merge them into `develop` instead of `main`:
+   ```bash
+   git checkout develop
+   git merge feature/your-existing-branch
+   git push origin develop
+   ```
+3. **Delete the feature branch** after successful merge
+
+#### For Bug Fixes
+1. Create bugfix branch from `develop`:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b bugfix/fix-description
+   ```
+
+2. Fix the bug and commit:
+   ```bash
+   git add .
+   git commit -m "fix: resolve patient data validation issue"
+   ```
+
+3. Follow same PR process as features
+
+#### For Critical Hotfixes
+1. Create hotfix branch from `main`:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/v1.0.1
+   ```
+
+2. Fix the issue and update version:
+   ```bash
+   git add .
+   git commit -m "hotfix: fix critical security vulnerability"
+   ```
+
+3. Merge into both `main` and `develop`:
+   ```bash
+   # Merge into main
+   git checkout main
+   git merge hotfix/v1.0.1
+   git tag v1.0.1
+   
+   # Merge into develop
+   git checkout develop
+   git merge hotfix/v1.0.1
+   ```
+
+### Commit Message Conventions
+
+Follow conventional commit format:
+*   **feat**: New features (`feat: add chatbot widget component`)
+*   **fix**: Bug fixes (`fix: resolve login authentication error`)
+*   **docs**: Documentation changes (`docs: update API endpoint documentation`)
+*   **style**: Code style changes (`style: format patient dashboard components`)
+*   **refactor**: Code refactoring (`refactor: optimize database queries`)
+*   **test**: Adding tests (`test: add unit tests for user service`)
+*   **chore**: Maintenance tasks (`chore: update dependencies`)
+
+### Pull Request Guidelines
+
+#### Before Creating a PR
+*   Ensure your branch is up to date with the target branch
+*   Run tests locally: `npm test` (frontend) and `pytest` (backend)
+*   Check code formatting and linting
+*   Write meaningful commit messages
+
+#### PR Description Template
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+
+## Screenshots (if applicable)
+Add screenshots for UI changes
+
+## Checklist
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Documentation updated
+- [ ] No merge conflicts
+```
+
+### Branch Protection Rules
+
+For production environments, consider implementing:
+*   **`main` branch**: Require PR reviews, status checks, and up-to-date branches
+*   **`develop` branch**: Require PR reviews and status checks
+*   No direct pushes to `main` or `develop` branches
+*   Require signed commits for security
+
+### Integration with CI/CD
+
+*   **Feature branches**: Run tests and linting
+*   **`develop` branch**: Run full test suite and deploy to staging
+*   **`main` branch**: Run tests, security scans, and deploy to production
+*   **Release branches**: Generate release notes and artifacts
+
 ## Project Structure
 
 The project is organized into two main directories:
@@ -129,3 +325,12 @@ The backend provides several API endpoints for managing users, patients, and aut
 *   `GET /chat/`: (If fully implemented) Endpoints for chat functionality.
 
 For a complete and interactive list of API endpoints, refer to the auto-generated documentation at `http://localhost:8000/docs` when the backend server is running.
+
+API Versions:
+- v0.1.2: Introduced new API for `database-v2`.
+- v0.1.3: Added appointments API.
+- v0.1.4: Added doctorAPI, hospitalsAPI and updated `crud.create_user` to insert records not only into the `users` table but also into the `patients` or `doctors` tables, as appropriate.
+- v0.5.0: Add API for reset password
+- v0.5.1: Fixing API point for reset password (not finish yet)
+
+To check the current API version, send a `GET` request to the root endpoint (`/`).

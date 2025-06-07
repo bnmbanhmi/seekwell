@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import datetime # Added datetime
-from typing import cast # Added cast
+from typing import cast, Optional # Added cast and Optional
 
 from app import crud, models, schemas # Added schemas
 from app.database import get_db
@@ -45,8 +45,137 @@ class ChatMessageCreate(BaseModel):
     patient_id: int
     message: str
 
+class GeneralChatMessageCreate(BaseModel):
+    message: str
+    context: Optional[str] = None  # Optional context for different chat scenarios
+
 class ChatResponse(BaseModel):
     reply: str
+
+# Public chatbot endpoint for general inquiries (patients and visitors)
+@router.post("/public", response_model=ChatResponse)
+async def public_chat_message(
+    chat_message: GeneralChatMessageCreate
+):
+    try:
+        # Configure AI service
+        if not settings.GOOGLE_API_KEY:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service is not available at the moment."
+            )
+        
+        try:
+            genai.configure(api_key=settings.GOOGLE_API_KEY)
+        except Exception as e:
+            print(f"Failed to configure AI service: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service configuration failed."
+            )
+
+        # Construct prompt for general inquiries
+        prompt = f"""
+        Bạn là một trợ lý AI thông minh cho phòng khám. Bạn giúp bệnh nhân và khách hàng với:
+        
+        1. Thông tin về phòng khám (giờ làm việc, dịch vụ, địa chỉ)
+        2. Hướng dẫn đặt lịch khám
+        3. Tư vấn triệu chứng cơ bản (nhưng luôn khuyên gặp bác sĩ)
+        4. Câu hỏi thường gặp về sức khỏe
+        
+        Thông tin phòng khám:
+        - Tên: Clinic
+        - Giờ làm việc: 8:00 - 17:00 (Thứ 2 - Thứ 6), 8:00 - 12:00 (Thứ 7)
+        - Địa chỉ: 123 Đường Sức Khỏe, Quận 1, TP.HCM
+        - Điện thoại: (028) 1234-5678
+        - Dịch vụ: Khám tổng quát, Khám chuyên khoa, Xét nghiệm, Chẩn đoán hình ảnh
+        
+        Quy tắc:
+        - Trả lời bằng tiếng Việt
+        - Thân thiện và chuyên nghiệp
+        - Luôn khuyên gặp bác sĩ cho vấn đề sức khỏe nghiêm trọng
+        - Cung cấp hướng dẫn rõ ràng về đặt lịch khám
+        - Sử dụng định dạng Markdown khi cần thiết
+        
+        Câu hỏi: "{chat_message.message}"
+        
+        Hãy trả lời một cách hữu ích và chuyên nghiệp.
+        """
+
+        model = genai.GenerativeModel(model_name='gemma-3-27b-it')
+        response = await model.generate_content_async(prompt)
+        ai_reply = response.text
+        
+        return ChatResponse(reply=ai_reply)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in public chat: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Xin lỗi, hiện tại hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ trực tiếp qua số điện thoại (028) 1234-5678."
+        )
+
+# Patient-specific chatbot endpoint
+@router.post("/patient", response_model=ChatResponse)
+async def patient_chat_message(
+    chat_message: GeneralChatMessageCreate,
+    current_user: models.User = Depends(get_current_active_user)
+):
+    # Ensure user is a patient
+    if current_user.role != models.UserRole.PATIENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This endpoint is only available for patients."
+        )
+    
+    try:
+        # Configure AI service
+        if not settings.GOOGLE_API_KEY:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service is not available at the moment."
+            )
+        
+        genai.configure(api_key=settings.GOOGLE_API_KEY)
+
+        # Construct prompt for authenticated patients
+        prompt = f"""
+        Bạn là trợ lý AI cá nhân cho bệnh nhân {current_user.full_name} tại phòng khám.
+        
+        Bạn có thể giúp:
+        1. Tư vấn về triệu chứng và sức khỏe cơ bản
+        2. Hướng dẫn chuẩn bị khám bệnh
+        3. Giải thích về quy trình khám
+        4. Cung cấp thông tin sau khám
+        5. Nhắc nhở về lịch tái khám
+        
+        Lưu ý quan trọng:
+        - Bạn KHÔNG thay thế bác sĩ chuyên nghiệp
+        - Luôn khuyên bệnh nhân gặp bác sĩ nếu có triệu chứng nghiêm trọng
+        - Cung cấp thông tin giáo dục y tế chính xác
+        - Trả lời bằng tiếng Việt, thân thiện và dễ hiểu
+        
+        Câu hỏi của bệnh nhân: "{chat_message.message}"
+        
+        Hãy trả lời một cách hữu ích, an toàn và chuyên nghiệp.
+        """
+
+        model = genai.GenerativeModel(model_name='gemma-3-27b-it')
+        response = await model.generate_content_async(prompt)
+        ai_reply = response.text
+        
+        return ChatResponse(reply=ai_reply)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in patient chat: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Xin lỗi, hiện tại hệ thống đang gặp sự cố. Vui lòng thử lại sau."
+        )
 
 @router.post("/send", response_model=ChatResponse)
 async def send_chat_message(
@@ -141,7 +270,7 @@ async def send_chat_message(
                 detail=f"AI SDK configuration error: {e_config}"
             )
 
-        model = genai.GenerativeModel(model_name='gemini-pro')
+        model = genai.GenerativeModel(model_name='gemma-3-27b-it')
         response = await model.generate_content_async(prompt)
         ai_reply = response.text
     except AttributeError as ae:
