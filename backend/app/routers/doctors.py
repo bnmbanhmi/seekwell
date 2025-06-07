@@ -31,9 +31,9 @@ def get_doctor(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    current_user_id = current_user.user_id
-    if current_user.role != models.UserRole.ADMIN and current_user_id != doctor_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    # current_user_id = current_user.user_id
+    # if current_user.role != models.UserRole.ADMIN and current_user_id != doctor_id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     doctor = crud.get_doctor(db, doctor_id=doctor_id)
     if doctor is None:

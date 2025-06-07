@@ -5,8 +5,18 @@ import axios from 'axios';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
+type Appointment = {
+  patient_id: number;
+  doctor_id: number;
+  appointment_time: string;
+  appointment_day: string
+  reason: string;
+  appointment_id: number;
+  doctorName?: string;
+};
+
 const PatientDashboard = () => {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -22,10 +32,33 @@ const PatientDashboard = () => {
 
         const today = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
         const todayAppointments = response.data.filter(
-          (appointment: any) => appointment.date === today
+          (appointment: any) => appointment.appointment_day === today
         );
 
-        setAppointments(todayAppointments);
+        // Fetch doctor names for each appointment
+        const appointmentsWithDoctorNames = await Promise.all(
+          todayAppointments.map(async (appointment: any) => {
+            try {
+              const doctorResponse = await axios.get(`${BACKEND_URL}/doctors/${appointment.doctor_id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              return {
+                ...appointment,
+                doctorName: doctorResponse.data.doctor_name, // Add doctorName to the appointment
+              };
+            } catch (err) {
+              console.error(`Failed to fetch doctor name for doctor_id ${appointment.doctor_id}:`, err);
+              return {
+                ...appointment,
+                doctorName: 'Unknown Doctor', // Fallback if doctor name cannot be fetched
+              };
+            }
+          })
+        );
+
+        setAppointments(appointmentsWithDoctorNames);
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
         setError('Failed to load appointments.');
@@ -51,15 +84,26 @@ const PatientDashboard = () => {
             ) : error ? (
               <p className={styles.error}>{error}</p>
             ) : appointments.length > 0 ? (
-              <ul>
-                {appointments.map((appointment: any) => (
-                  <li key={appointment.id}>
-                    <strong>Time:</strong> {appointment.time} <br />
-                    <strong>Doctor:</strong> {appointment.doctorName} <br />
-                    <strong>Reason:</strong> {appointment.reason}
-                  </li>
-                ))}
-              </ul>
+            <div className={styles.tableContainer}>
+              <table className={styles.appointmentTable}>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Reason</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.map((appointment: any) => (
+                    <tr key={appointment.appointment_id} className={styles.appointmentRow}>
+                      <td>{appointment.appointment_time}</td>
+                      <td>{appointment.doctorName}</td>
+                      <td>{appointment.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             ) : (
               <p>You have no appointments scheduled for today.</p>
             )}
