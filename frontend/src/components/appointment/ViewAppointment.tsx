@@ -299,7 +299,7 @@ const ViewAppointment = () => {
                     className="confirm-button"
                     onClick={async () => {
                       try {
-                        await handleCancelAppointment();
+                        await handleRescheduleAppointment();
                         toast.success('Appointment reschedule successfully!');
                       } catch (err) {
                         console.error('Failed to reschedule appointment:', err);
