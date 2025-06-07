@@ -5,6 +5,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Badge, CircularProgress, Modal, Box, Button, TextField, MenuItem, Select } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
+import { toast } from 'react-toastify';
 import 'dayjs/locale/vi'; // Import Vietnamese locale
 import axios from 'axios';
 import './viewAppointment.css'; // Import the CSS file for styling
@@ -111,6 +112,7 @@ const ViewAppointment = () => {
     } catch (err) {
       console.error('Failed to cancel appointment:', err);
       setError('Failed to cancel appointment.');
+      throw new Error('Failed to cancel appointment.');
     }
   };
 
@@ -142,6 +144,7 @@ const ViewAppointment = () => {
     } catch (err) {
       console.error('Failed to reschedule appointment:', err);
       setError('Failed to reschedule appointment.');
+      throw new Error('Failed to reschedule appointment.');
     }
   };
 
@@ -223,16 +226,29 @@ const ViewAppointment = () => {
           <Box className="appointment-modal">
             <h2>Appointment Actions</h2>
             {selectedAppointment && (
-              <>
-                <p><strong>Doctor:</strong> {selectedAppointment.doctorName}</p>
-                <p><strong>Date:</strong> {selectedAppointment.appointment_day}</p>
-                <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
+                <>
+                  <p><strong>Doctor:</strong> {selectedAppointment.doctorName}</p>
+                  <p><strong>Date:</strong> {selectedAppointment.appointment_day}</p>
+                  <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
 
-                <Box display="flex" alignItems="center" gap={2} mt={2}>
+                  {error && (
+                  <Box mt={2} color="error.main">
+                    <p style={{ color: 'red', margin: 0 }}>{error}</p>
+                  </Box>
+                  )}
+
+                  <Box display="flex" alignItems="center" gap={2} mt={2}>
                   <Button
                     variant="contained"
                     color="error"
-                    onClick={handleCancelAppointment}
+                    onClick={async () => {
+                      try {
+                        await handleCancelAppointment();
+                        toast.success('Appointment cancelled successfully!');
+                      } catch (err) {
+                        console.error('Failed to cancel appointment:', err);
+                      }
+                    }}
                     sx={{ height: 40 }}
                   >
                     Cancel Appointment
@@ -246,46 +262,55 @@ const ViewAppointment = () => {
                   >
                     {showRescheduleFields ? "Hide Reschedule" : "Reschedule"}
                   </Button>
-                </Box>
-                {showRescheduleFields && (
+                  </Box>
+                  {showRescheduleFields && (
                   <div className="reschedule-section">
                     <h2 className="reschedule-title">Reschedule Appointment</h2>
 
                     <div className="form-group">
-                      <label htmlFor="reschedule-date">New Date</label>
-                      <input
-                        id="reschedule-date"
-                        type="date"
-                        value={rescheduleDate}
-                        onChange={(e) => setRescheduleDate(e.target.value)}
-                      />
+                    <label htmlFor="reschedule-date">New Date</label>
+                    <input
+                      id="reschedule-date"
+                      type="date"
+                      value={rescheduleDate}
+                      onChange={(e) => setRescheduleDate(e.target.value)}
+                    />
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="reschedule-time">New Time</label>
-                      <select
-                        id="reschedule-time"
-                        value={rescheduleTime}
-                        onChange={(e) => setRescheduleTime(e.target.value)}
-                      >
-                        <option value="" disabled>
-                          Select Time
-                        </option>
-                        {availableTimes.map((time) => (
-                          <option key={time} value={time}>
-                            {time}
-                          </option>
-                        ))}
-                      </select>
+                    <label htmlFor="reschedule-time">New Time</label>
+                    <select
+                      id="reschedule-time"
+                      value={rescheduleTime}
+                      onChange={(e) => setRescheduleTime(e.target.value)}
+                    >
+                      <option value="" disabled>
+                      Select Time
+                      </option>
+                      {availableTimes.map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                      ))}
+                    </select>
                     </div>
 
-                    <button className="confirm-button" onClick={handleRescheduleAppointment}>
-                      Confirm Reschedule
+                    <button
+                    className="confirm-button"
+                    onClick={async () => {
+                      try {
+                        await handleCancelAppointment();
+                        toast.success('Appointment reschedule successfully!');
+                      } catch (err) {
+                        console.error('Failed to reschedule appointment:', err);
+                      }
+                    }}
+                    >
+                    Confirm Reschedule
                     </button>
                   </div>
-                )}
-
-              </>
+                  )}
+                </>
             )}
           </Box>
         </Modal>

@@ -98,8 +98,8 @@ def update_appointment(
         raise HTTPException(status_code=404, detail="Appointment not found")
     
     if (current_user.role != models.UserRole.ADMIN and 
-        current_user.id != db_appointment.patient_id and 
-        current_user.id != db_appointment.doctor_id):
+        current_user.user_id != db_appointment.patient_id and 
+        current_user.user_id != db_appointment.doctor_id):
         raise HTTPException(status_code=403, detail="Not enough permissions to update this appointment")
     
     return crud.update_appointment(db, appointment_id, appointment_update)
@@ -115,8 +115,8 @@ def delete_appointment(
         raise HTTPException(status_code=404, detail="Appointment not found")
     
     if (current_user.role != models.UserRole.ADMIN and 
-        current_user.id != db_appointment.patient_id and 
-        current_user.id != db_appointment.doctor_id):
+        current_user.user_id != db_appointment.patient_id and 
+        current_user.user_id != db_appointment.doctor_id):
         raise HTTPException(status_code=403, detail="Not enough permissions to delete this appointment")
     
     return crud.delete_appointment(db, appointment_id)
