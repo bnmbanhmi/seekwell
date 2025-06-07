@@ -44,38 +44,44 @@ const CreateEMR: React.FC = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const appointmentsResponse = await axios.get(`${BACKEND_URL}/appointments/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const token = localStorage.getItem('accessToken');
+      const appointmentsResponse = await axios.get(`${BACKEND_URL}/appointments/me`, {
+        headers: {
+        Authorization: `Bearer ${token}`,
+        },
+      });
 
-        const appointments = appointmentsResponse.data;
-        const patientPromises = appointments.map(async (appointment: any) => {
-          const patientResponse = await axios.get(`${BACKEND_URL}/patients/${appointment.patient_id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          return {
-            id: appointment.patient_id,
-            name: patientResponse.data.name,
-          };
-        });
+      const appointments = appointmentsResponse.data;
 
-        const patientsList = await Promise.all(patientPromises);
-        setPatients(patientsList);
+      // Remove duplicate patient_ids from appointments
+      const uniquePatientIds = Array.from(
+        new Set<string>(appointments.map((appointment: any) => appointment.patient_id))
+      ) as string[];
+
+      const patientPromises = uniquePatientIds.map(async (patientId: string) => {
+        const patientResponse = await axios.get(`${BACKEND_URL}/patients/${patientId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        });
+        return {
+        id: patientId,
+        name: patientResponse.data.full_name,
+        };
+      });
+
+      const patientsList = await Promise.all(patientPromises);
+      setPatients(patientsList);
       } catch (err) {
-        console.error('Failed to fetch patients:', err);
-        setError('Failed to load patients.');
+      console.error('Failed to fetch patients:', err);
+      setError('Failed to load patients.');
       }
     };
 
     const fetchDoctorDetails = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`${BACKEND_URL}/users/me`, {
+        const response = await axios.get(`${BACKEND_URL}/users/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,6 +96,8 @@ const CreateEMR: React.FC = () => {
     fetchDoctorDetails();
   }, []);
 
+  console.log()
+
   const handlePatientSelect = (patientId: string) => {
     setSelectedPatientId(patientId);
     setStep(2); // Move to the EMR form step
@@ -98,6 +106,19 @@ const CreateEMR: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      in_diagnosis: '',
+      doctor_notes: '',
+      prescription: [],
+      reason_in: '',
+      treatment_process: '',
+    });
+    setError('');
+    setSuccess('');
+    setStep(1);
   };
 
   const handleAddMedication = () => {
@@ -146,24 +167,30 @@ const CreateEMR: React.FC = () => {
 
   return (
     <div className="create-emr-container">
-      <h1>Create EMR</h1>
+      <h1 className="title">Create EMR</h1>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
 
       {/* Step 1: Patient Selection */}
       {step === 1 && (
         <div className="patient-selection">
-          <h2>Select a Patient</h2>
+          <h2 className="subtitle">Select a Patient</h2>
+
           {patients.length > 0 ? (
-            <ul>
+            <ul className="patient-list">
               {patients.map((patient) => (
                 <li key={patient.id}>
-                  <button onClick={() => handlePatientSelect(patient.id)}>{patient.name}</button>
+                  <button
+                    className="patient-button"
+                    onClick={() => handlePatientSelect(patient.id)}
+                  >
+                    {patient.name}
+                  </button>
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No patients available.</p>
+            <p className="no-patients">No patients available.</p>
           )}
         </div>
       )}
@@ -278,7 +305,33 @@ const CreateEMR: React.FC = () => {
               </li>
             ))}
           </ul>
+          <button onClick={() => setStep(4)}>Review EMR</button>
+        </div>
+      )}
+
+      {/* Step 4: Review EMR */}
+      {step === 4 && (
+        <div className="review-emr">
+          <h2>Review EMR</h2>
+          <p>
+            <strong>Consultation Notes:</strong> {formData.doctor_notes}
+          </p>
+          <p>
+            <strong>Diagnosis:</strong> {formData.in_diagnosis}
+          </p>
+          <p>
+            <strong>Treatment Process:</strong> {formData.treatment_process}
+          </p>
+          <h3>Prescription:</h3>
+          <ul>
+            {formData.prescription.map((med, index) => (
+              <li key={index}>
+                <strong>{med.name}</strong> - Dosage: {med.dosage}, Quantity: {med.quantity}, Instructions: {med.instructions}
+              </li>
+            ))}
+          </ul>
           <button onClick={handleSaveEMR}>Save EMR</button>
+          <button onClick={handleCancel}>Cancel</button>
         </div>
       )}
     </div>
