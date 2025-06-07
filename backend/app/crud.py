@@ -1,27 +1,58 @@
-from sqlalchemy.orm import Session
-from typing import Optional # Added Optional
-from . import models, schemas # Updated to schemas
-import secrets
-from .database import pwd_context, UserRole, Class, Gender
-from datetime import datetime, timedelta, time, date
-from typing import List, Dict, Any
+"""
+CRUD Operations for Clinic Management System
 
-# User CRUD operations
-def get_user(db: Session, user_id: int):
+This module contains all database CRUD operations for:
+- Users (authentication and user management)
+- Patients (patient records and management)
+- Doctors (doctor profiles and assignments)
+- Appointments (scheduling and management)
+- Hospitals (hospital information)
+- Chat Messages (chatbot interactions)
+- Medical Reports (patient medical records)
+"""
+
+import secrets
+from datetime import datetime, timedelta, time, date
+from typing import List, Dict, Any, Optional
+
+from sqlalchemy.orm import Session
+
+from . import models, schemas
+from .database import pwd_context, UserRole, Class, Gender
+
+# ============================================================================
+# USER CRUD OPERATIONS
+# ============================================================================
+
+def get_user(db: Session, user_id: int) -> Optional[models.User]:
+    """Retrieve a user by user ID."""
     return db.query(models.User).filter(models.User.user_id == user_id).first()
 
-def get_user_by_email(db: Session, email: str): # Added for login and other purposes
+
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
+    """Retrieve a user by email address. Used for login and authentication."""
     return db.query(models.User).filter(models.User.email == email).first()
 
-def get_user_by_username(db: Session, username: str):
+
+def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
+    """Retrieve a user by username."""
     return db.query(models.User).filter(models.User.username == username).first()
 
-def get_users(db: Session, skip: int = 0, limit: int = 100): # Added
+
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[models.User]:
+    """Retrieve all users with pagination."""
     return db.query(models.User).offset(skip).limit(limit).all()
 
-def create_user(db: Session, user: schemas.UserCreate):
+
+def create_user(db: Session, user: schemas.UserCreate) -> models.User:
+    """
+    Create a new user and associated role-specific record.
+    
+    This function handles the creation of both the user account and the
+    corresponding role-specific record (Patient, Doctor, or Clinic Staff).
+    """
     try:
-        # Start transaction
+        # Hash the password and create user record
         hashed_password = pwd_context.hash(user.password)
         db_user = models.User(
             username=user.username,
@@ -33,12 +64,12 @@ def create_user(db: Session, user: schemas.UserCreate):
         db.add(db_user)
         db.flush()  # Get db_user.user_id without committing yet
 
-        # Create associated role-specific record
+        # Create role-specific records based on user role
         if user.role == "PATIENT":
             patient_in = schemas.PatientCreate(
                 patient_id=db_user.user_id,
                 full_name=db_user.full_name,
-                assigned_doctor_id=10 # Hardcoded for now, doctors table MUST have doctors_id=10
+                assigned_doctor_id=10  # TODO: Make this configurable instead of hardcoded
             )
             create_patient(db=db, patient_in=patient_in, creator_id=db_user.user_id)
 
@@ -46,18 +77,18 @@ def create_user(db: Session, user: schemas.UserCreate):
             doctor_in = schemas.DoctorCreate(
                 doctor_id=db_user.user_id,
                 doctor_name=db_user.full_name,
-                hospital_id=1  # Hardcoded for now, hospitals table MUST have hospitals_id=1
+                hospital_id=1  # TODO: Make this configurable instead of hardcoded
             )
             create_doctor(db=db, doctor_in=doctor_in, creator_id=db_user.user_id)
 
         elif user.role == "CLINIC_STAFF":
-            # No additional records needed for now
+            # No additional records needed for clinic staff currently
             pass
 
         db.commit()
         db.refresh(db_user)
 
-        print(f"User and role-specific record created successfully for user_id: {db_user.user_id} - {db_user.full_name} - {db_user.role}")
+        print(f"User created successfully: ID={db_user.user_id}, Name={db_user.full_name}, Role={db_user.role}")
         return db_user
 
     except Exception as e:
@@ -65,86 +96,122 @@ def create_user(db: Session, user: schemas.UserCreate):
         print(f"Failed to create user and associated record: {str(e)}")
         raise
 
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
+
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
+    """Update an existing user's information."""
     db_user = get_user(db, user_id)
     if not db_user:
         return None
+    
     update_data = user_update.model_dump(exclude_unset=True)
+    
+    # Handle password update with proper hashing
     if "password" in update_data and update_data["password"]:
         hashed_password = pwd_context.hash(update_data["password"])
         update_data["hashed_password"] = hashed_password
-        del update_data["password"] # Ensure plain password is not stored
-    else: # remove password from update_data if it is None or empty
+        del update_data["password"]  # Remove plain password from update data
+    else:
+        # Remove empty password field from update data
         if "password" in update_data:
             del update_data["password"]
 
-
+    # Apply updates to user object
     for key, value in update_data.items():
         setattr(db_user, key, value)
+    
     db.commit()
     db.refresh(db_user)
     return db_user
 
-def create_password_reset_token(db: Session, user: models.User) -> str:
-    token = secrets.token_urlsafe(32)
-    expires_delta = timedelta(hours=1) # Token valid for 1 hour
-    expires_at = datetime.utcnow() + expires_delta
-    setattr(user, 'reset_password_token', token)
-    setattr(user, 'reset_password_token_expires_at', expires_at)
-    db.commit()
-    db.refresh(user)
-    return token
 
-def get_user_by_reset_token(db: Session, token: str) -> Optional[models.User]:
-    return db.query(models.User).filter(models.User.reset_password_token == token).first()
-
-def reset_password(db: Session, user: models.User, new_password: str) -> bool:
-    setattr(user, 'hashed_password', pwd_context.hash(new_password))
-    setattr(user, 'reset_password_token', None) # Invalidate the token
-    setattr(user, 'reset_password_token_expires_at', None)
-    db.commit()
-    return True
-
-def delete_user(db: Session, user_id: int):
+def delete_user(db: Session, user_id: int) -> Optional[models.User]:
+    """
+    Delete a user and handle cascade relationships.
+    
+    When deleting a doctor, their assignment in patient records is nullified.
+    """
     db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not db_user:
         return None
 
-    # If the user is a doctor, nullify their assignment in Patient records
-    # Compare the string value of the role stored in the DB
+    # Handle doctor deletion - nullify their assignment in patient records
     if str(db_user.role) == UserRole.DOCTOR.value:
-        db.query(models.Patient).filter(models.Patient.assigned_doctor_id == user_id).update({models.Patient.assigned_doctor_id: None}, synchronize_session=False)
-
-    # # Nullify creator_id in Patient records where this user is the creator
-    # db.query(models.Patient).filter(models.Patient.creator_id == user_id).update({models.Patient.creator_id: None}, synchronize_session=False)
+        db.query(models.Patient).filter(
+            models.Patient.assigned_doctor_id == user_id
+        ).update(
+            {models.Patient.assigned_doctor_id: None}, 
+            synchronize_session=False
+        )
 
     db.delete(db_user)
     db.commit()
     return db_user
 
-# Patient CRUD operations
-def get_patient(db: Session, patient_id: int):
+
+# Password Reset Operations
+def create_password_reset_token(db: Session, user: models.User) -> str:
+    """Generate and store a password reset token for a user."""
+    token = secrets.token_urlsafe(32)
+    expires_delta = timedelta(hours=1)  # Token valid for 1 hour
+    expires_at = datetime.utcnow() + expires_delta
+    
+    setattr(user, 'reset_password_token', token)
+    setattr(user, 'reset_password_token_expires_at', expires_at)
+    
+    db.commit()
+    db.refresh(user)
+    return token
+
+
+def get_user_by_reset_token(db: Session, token: str) -> Optional[models.User]:
+    """Retrieve a user by their password reset token."""
+    return db.query(models.User).filter(models.User.reset_password_token == token).first()
+
+
+def reset_password(db: Session, user: models.User, new_password: str) -> bool:
+    """Reset a user's password and invalidate the reset token."""
+    setattr(user, 'hashed_password', pwd_context.hash(new_password))
+    setattr(user, 'reset_password_token', None)  # Invalidate the token
+    setattr(user, 'reset_password_token_expires_at', None)
+    
+    db.commit()
+    return True
+
+
+# ============================================================================
+# PATIENT CRUD OPERATIONS
+# ============================================================================
+
+def get_patient(db: Session, patient_id: int) -> Optional[models.Patient]:
+    """Retrieve a patient by patient ID."""
     return db.query(models.Patient).filter(models.Patient.patient_id == patient_id).first()
 
-def get_patients(db: Session, skip: int = 0, limit: int = 100):
+
+def get_patients(db: Session, skip: int = 0, limit: int = 100) -> List[models.Patient]:
+    """Retrieve all patients with pagination."""
     return db.query(models.Patient).offset(skip).limit(limit).all()
 
-def get_patients_by_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100): # Renamed and updated
-    return db.query(models.Patient).filter(models.Patient.assigned_doctor_id == doctor_id).offset(skip).limit(limit).all()
+
+def get_patients_by_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100) -> List[models.Patient]:
+    """Retrieve all patients assigned to a specific doctor."""
+    return db.query(models.Patient).filter(
+        models.Patient.assigned_doctor_id == doctor_id
+    ).offset(skip).limit(limit).all()
+
 
 def get_patient_by_user_id(db: Session, user_id: int) -> Optional[models.Patient]:
-    """Retrieve a patient by their associated user_id."""
+    """Retrieve a patient by their associated user ID."""
     return db.query(models.Patient).filter(models.Patient.patient_id == user_id).first()
 
-def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: int) -> models.Patient:
-    # Selectively create the patient data for the model
-    # Fields from PatientCreate that are in Patient model: user_id, gender, emr_summary, assigned_doctor_id
-    # Fields like full_name, date_of_birth, address, phone_number are in PatientBase but not Patient model.
-    # These details are expected to be on the linked User model.
-    # Patient model also has 'age' and 'medical_history' which are not in PatientCreate.
-    # These would need to be added to PatientCreate or updated separately if they are to be set at creation.
 
-    patient_data_for_model = {
+def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: int) -> models.Patient:
+    """
+    Create a new patient record.
+    
+    Note: Some fields like full_name, date_of_birth, etc. are expected to be
+    in the linked User model, while patient-specific fields are stored here.
+    """
+    patient_data = {
         "patient_id": patient_in.patient_id,
         "full_name": patient_in.full_name,
         "date_of_birth": patient_in.date_of_birth or date(2000, 1, 1),
@@ -153,97 +220,141 @@ def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: i
         "assigned_doctor_id": patient_in.assigned_doctor_id
     }
     
-    # Optional fields: if not provided in patient_in, they might be None.
-    # SQLAlchemy handles None for nullable fields. If a field is not nullable and has no default,
-    # it must be provided.
-
-    db_patient = models.Patient(**patient_data_for_model)
+    db_patient = models.Patient(**patient_data)
     db.add(db_patient)
     db.commit()
     db.refresh(db_patient)
     return db_patient
 
+
 def update_patient(db: Session, patient_id: int, patient_update: schemas.PatientUpdate) -> Optional[models.Patient]:
+    """Update an existing patient's information."""
     db_patient = get_patient(db, patient_id=patient_id)
-    if db_patient:
-        update_data = patient_update.model_dump(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(db_patient, key, value)
-        db.commit()
-        db.refresh(db_patient)
+    if not db_patient:
+        return None
+    
+    update_data = patient_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_patient, key, value)
+    
+    db.commit()
+    db.refresh(db_patient)
     return db_patient
 
-# Simplified to only update EMR summary
+
 def update_patient_emr(db: Session, patient_id: int, emr_summary: str) -> Optional[models.Patient]:
-    """Updates only the EMR summary for a given patient."""
+    """Update only the EMR summary for a patient."""
     db_patient = get_patient(db, patient_id=patient_id)
-    if db_patient:
-        # Use setattr to avoid direct type issues if emr_summary is a Column object to the type checker
-        setattr(db_patient, 'emr_summary', emr_summary)
-        db.commit()
-        db.refresh(db_patient)
+    if not db_patient:
+        return None
+    
+    setattr(db_patient, 'emr_summary', emr_summary)
+    db.commit()
+    db.refresh(db_patient)
     return db_patient
 
-def delete_patient(db: Session, patient_id: int):
+
+def delete_patient(db: Session, patient_id: int) -> Optional[models.Patient]:
+    """Delete a patient record."""
     db_patient = get_patient(db, patient_id)
     if not db_patient:
         return None
+    
     db.delete(db_patient)
     db.commit()
     return db_patient
 
-# Appointment CRUD Operations (New)
-def create_appointment(db: Session, appointment: schemas.AppointmentCreate, creator_id: int):
-    # Assuming creator_id is the ID of the user creating the appointment (Patient or Clinic Staff)
+# ============================================================================
+# APPOINTMENT CRUD OPERATIONS
+# ============================================================================
+
+def create_appointment(db: Session, appointment: schemas.AppointmentCreate, creator_id: int) -> models.Appointment:
+    """Create a new appointment."""
     appointment_data = appointment.model_dump()
     appointment_data["patient_id"] = creator_id
+    
     db_appointment = models.Appointment(**appointment_data)
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
+    
     print(f"Appointment created: {db_appointment}")
     return db_appointment
 
-def get_appointment(db: Session, appointment_id: int):
-    return db.query(models.Appointment).filter(models.Appointment.appointment_id == appointment_id).first()
 
-def get_all_appointments(db: Session, skip: int = 0, limit: int = 100):
+def get_appointment(db: Session, appointment_id: int) -> Optional[models.Appointment]:
+    """Retrieve an appointment by ID."""
+    return db.query(models.Appointment).filter(
+        models.Appointment.appointment_id == appointment_id
+    ).first()
+
+
+def get_all_appointments(db: Session, skip: int = 0, limit: int = 100) -> List[models.Appointment]:
+    """Retrieve all appointments with pagination."""
     return db.query(models.Appointment).offset(skip).limit(limit).all()
 
 
+def get_appointments_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100) -> List[models.Appointment]:
+    """Retrieve all appointments for a specific patient."""
+    return db.query(models.Appointment).filter(
+        models.Appointment.patient_id == patient_id
+    ).offset(skip).limit(limit).all()
+
+
+def get_appointments_for_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100) -> List[models.Appointment]:
+    """Retrieve all appointments for a specific doctor."""
+    return db.query(models.Appointment).filter(
+        models.Appointment.doctor_id == doctor_id
+    ).offset(skip).limit(limit).all()
+
+
 def get_available_slots_in_a_day(db: Session, day: date) -> List[schemas.AvailableSlot]:
+    """
+    Get all available appointment slots for a given day.
+    
+    This function considers:
+    - Working hours: 8:30 AM to 5:30 PM
+    - Lunch break: 11:30 AM to 1:30 PM
+    - Existing appointments
+    - Available doctors
+    """
+    # Define working hours and lunch break
     start_of_day = datetime.combine(day, time(8, 30))
     end_of_day = datetime.combine(day, time(17, 30))
     lunch_start = time(11, 30)
     lunch_end = time(13, 30)
     slot_duration = timedelta(hours=1)
 
-    # Fetch all doctors
+    # Get all doctors and existing appointments for the day
     doctors = db.query(models.Doctor).all()
+    appointments = db.query(models.Appointment).filter(
+        models.Appointment.appointment_day == day
+    ).all()
+    
+    # Create set of taken appointment slots
+    taken_slots = set((appt.doctor_id, appt.appointment_time) for appt in appointments)
 
-    # Build appointment map: {(doctor_id, appointment_time): True}
-    appointments = db.query(models.Appointment).filter(models.Appointment.appointment_day == day).all()
-    taken = set((appt.doctor_id, appt.appointment_time) for appt in appointments)
-
-    # Prepare result
+    # Generate available slots
     available_slots: List[schemas.AvailableSlot] = []
     current_time = start_of_day
 
     while current_time + slot_duration <= end_of_day:
+        # Skip lunch break
         if lunch_start <= current_time.time() < lunch_end:
             current_time += slot_duration
             continue
 
-        # Find doctors who are free at this time
+        # Find doctors available at this time
         free_doctors = [
             schemas.AvailableDoctor(
                 doctor_id=doctor.doctor_id,
                 doctor_name=doctor.doctor_name
             )
             for doctor in doctors
-            if (doctor.doctor_id, current_time.time()) not in taken
+            if (doctor.doctor_id, current_time.time()) not in taken_slots
         ]
 
+        # Add slot if there are available doctors
         if free_doctors:
             available_slots.append(
                 schemas.AvailableSlot(
@@ -257,40 +368,47 @@ def get_available_slots_in_a_day(db: Session, day: date) -> List[schemas.Availab
     return available_slots
 
 
-def get_appointments_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id).offset(skip).limit(limit).all()
-
-def get_appointments_for_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Appointment).filter(models.Appointment.doctor_id == doctor_id).offset(skip).limit(limit).all()
-
-def update_appointment(db: Session, appointment_id: int, appointment_update: schemas.AppointmentUpdate):
+def update_appointment(db: Session, appointment_id: int, appointment_update: schemas.AppointmentUpdate) -> Optional[models.Appointment]:
+    """Update an existing appointment."""
     db_appointment = get_appointment(db, appointment_id)
     if not db_appointment:
         return None
+    
     update_data = appointment_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_appointment, key, value)
+    
     db.commit()
     db.refresh(db_appointment)
     return db_appointment
 
-def delete_appointment(db: Session, appointment_id: int):
+
+def delete_appointment(db: Session, appointment_id: int) -> Optional[models.Appointment]:
+    """Delete an appointment."""
     db_appointment = get_appointment(db, appointment_id)
     if not db_appointment:
         return None
+    
     db.delete(db_appointment)
     db.commit()
     return db_appointment
 
-# Doctor CRUD Operations
+# ============================================================================
+# DOCTOR CRUD OPERATIONS
+# ============================================================================
 
 def get_doctor(db: Session, doctor_id: int) -> Optional[models.Doctor]:
+    """Retrieve a doctor by doctor ID."""
     return db.query(models.Doctor).filter(models.Doctor.doctor_id == doctor_id).first()
 
+
 def get_doctors(db: Session, skip: int = 0, limit: int = 100) -> List[models.Doctor]:
+    """Retrieve all doctors with pagination."""
     return db.query(models.Doctor).offset(skip).limit(limit).all()
 
+
 def create_doctor(db: Session, doctor_in: schemas.DoctorCreate, creator_id: int) -> models.Doctor:
+    """Create a new doctor record."""
     db_doctor = models.Doctor(
         doctor_id=doctor_in.doctor_id,
         doctor_name=doctor_in.doctor_name,
@@ -302,7 +420,9 @@ def create_doctor(db: Session, doctor_in: schemas.DoctorCreate, creator_id: int)
     db.refresh(db_doctor)
     return db_doctor
 
+
 def update_doctor(db: Session, doctor_id: int, doctor_update: schemas.DoctorUpdate) -> Optional[models.Doctor]:
+    """Update an existing doctor's information."""
     db_doctor = get_doctor(db, doctor_id=doctor_id)
     if not db_doctor:
         return None
@@ -315,31 +435,43 @@ def update_doctor(db: Session, doctor_id: int, doctor_update: schemas.DoctorUpda
     db.refresh(db_doctor)
     return db_doctor
 
+
 def delete_doctor(db: Session, doctor_id: int) -> Optional[models.Doctor]:
+    """Delete a doctor record."""
     db_doctor = get_doctor(db, doctor_id=doctor_id)
     if not db_doctor:
         return None
+    
     db.delete(db_doctor)
     db.commit()
     return db_doctor
 
 
-# Hospital CRUD Operations
+# ============================================================================
+# HOSPITAL CRUD OPERATIONS
+# ============================================================================
 
 def get_hospital(db: Session, hospital_id: int) -> Optional[models.Hospital]:
+    """Retrieve a hospital by hospital ID."""
     return db.query(models.Hospital).filter(models.Hospital.hospital_id == hospital_id).first()
 
+
 def get_hospitals(db: Session, skip: int = 0, limit: int = 100) -> List[models.Hospital]:
+    """Retrieve all hospitals with pagination."""
     return db.query(models.Hospital).offset(skip).limit(limit).all()
 
+
 def create_hospital(db: Session, hospital_in: schemas.HospitalCreate) -> models.Hospital:
+    """Create a new hospital record."""
     db_hospital = models.Hospital(**hospital_in.model_dump())
     db.add(db_hospital)
     db.commit()
     db.refresh(db_hospital)
     return db_hospital
 
+
 def update_hospital(db: Session, hospital_id: int, hospital_update: schemas.HospitalUpdate) -> Optional[models.Hospital]:
+    """Update an existing hospital's information."""
     db_hospital = get_hospital(db, hospital_id=hospital_id)
     if not db_hospital:
         return None
@@ -352,48 +484,74 @@ def update_hospital(db: Session, hospital_id: int, hospital_update: schemas.Hosp
     db.refresh(db_hospital)
     return db_hospital
 
+
 def delete_hospital(db: Session, hospital_id: int) -> Optional[models.Hospital]:
+    """Delete a hospital record."""
     db_hospital = get_hospital(db, hospital_id=hospital_id)
     if not db_hospital:
         return None
+    
     db.delete(db_hospital)
     db.commit()
     return db_hospital
 
 
-# Chat Message CRUD Operations (New - Basic)
-def create_chat_message(db: Session, message: schemas.ChatMessageCreate, user_id: Optional[int] = None): # user_id from current_user
-    db_message = models.ChatMessage(**message.model_dump(), user_id=user_id) # Assuming ChatMessage model has user_id
-    # Add logic for chatbot response if synchronous, or handle asynchronously
-    # For now, just saving the user's message
+# ============================================================================
+# CHAT MESSAGE CRUD OPERATIONS
+# ============================================================================
+
+def create_chat_message(db: Session, message: schemas.ChatMessageCreate, user_id: Optional[int] = None) -> models.ChatMessage:
+    """
+    Create a new chat message.
+    
+    This function saves user messages to the database. Chatbot responses
+    can be handled synchronously or asynchronously depending on implementation.
+    """
+    db_message = models.ChatMessage(**message.model_dump(), user_id=user_id)
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
     return db_message
 
-def get_chat_message(db: Session, message_id: int):
+
+def get_chat_message(db: Session, message_id: int) -> Optional[models.ChatMessage]:
+    """Retrieve a chat message by message ID."""
     return db.query(models.ChatMessage).filter(models.ChatMessage.chat_id == message_id).first()
 
-def get_chat_messages_for_user(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    # This would fetch messages initiated by or involving the user.
-    # The exact filter might depend on how conversations are structured.
-    return db.query(models.ChatMessage).filter(models.ChatMessage.user_id == user_id).order_by(models.ChatMessage.time_stamp.desc()).offset(skip).limit(limit).all()
 
-# Medical report CRUD Operations (New - Basic)
-# Tạo mới medical report
-def create_medical_report(db: Session, report: schemas.MedicalReportCreate):
+def get_chat_messages_for_user(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[models.ChatMessage]:
+    """
+    Retrieve chat messages for a specific user.
+    
+    This fetches messages initiated by or involving the user, ordered by
+    most recent first. The exact filter depends on conversation structure.
+    """
+    return db.query(models.ChatMessage).filter(
+        models.ChatMessage.user_id == user_id
+    ).order_by(
+        models.ChatMessage.time_stamp.desc()
+    ).offset(skip).limit(limit).all()
+
+# ============================================================================
+# MEDICAL REPORT CRUD OPERATIONS
+# ============================================================================
+
+def create_medical_report(db: Session, report: schemas.MedicalReportCreate) -> models.MedicalReport:
+    """Create a new medical report."""
     db_report = models.MedicalReport(**report.model_dump())
     db.add(db_report)
     db.commit()
     db.refresh(db_report)
     return db_report
 
-# Lấy medical report theo record_id
-def get_medical_report(db: Session, record_id: int):
+
+def get_medical_report(db: Session, record_id: int) -> Optional[models.MedicalReport]:
+    """Retrieve a medical report by record ID."""
     return db.query(models.MedicalReport).filter(models.MedicalReport.record_id == record_id).first()
 
-# Lấy danh sách medical reports của một bệnh nhân, có phân trang
-def get_medical_reports_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100):
+
+def get_medical_reports_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100) -> List[models.MedicalReport]:
+    """Retrieve all medical reports for a specific patient, ordered by date."""
     return (
         db.query(models.MedicalReport)
         .filter(models.MedicalReport.patient_id == patient_id)
@@ -403,32 +561,45 @@ def get_medical_reports_for_patient(db: Session, patient_id: int, skip: int = 0,
         .all()
     )
 
-# Cập nhật medical report (giả sử có schema MedicalReportUpdate chứa các trường có thể update)
-def update_medical_report(db: Session, record_id: int, report_update: schemas.MedicalReportUpdate):
+
+def update_medical_report(db: Session, record_id: int, report_update: schemas.MedicalReportUpdate) -> Optional[models.MedicalReport]:
+    """Update an existing medical report."""
     db_report = get_medical_report(db, record_id)
     if not db_report:
         return None
-    for field, value in report_update.model_dump(exclude_unset=True).items():
+    
+    update_data = report_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
         setattr(db_report, field, value)
+    
     db.commit()
     db.refresh(db_report)
     return db_report
 
-# Xóa medical report theo record_id
-def delete_medical_report(db: Session, record_id: int):
+
+def delete_medical_report(db: Session, record_id: int) -> Optional[models.MedicalReport]:
+    """Delete a medical report."""
     db_report = get_medical_report(db, record_id)
     if not db_report:
         return None
+    
     db.delete(db_report)
     db.commit()
     return db_report
 
-# Placeholder for a function to get all messages in a conversation (if applicable)
+
+# ============================================================================
+# FUTURE ENHANCEMENTS (Placeholder Functions)
+# ============================================================================
+
+# TODO: Implement conversation management for chat messages
 # def get_conversation_messages(db: Session, conversation_id: int, skip: int = 0, limit: int = 100):
+#     """Retrieve all messages in a conversation."""
 #     pass
 
-# Placeholder for a function to add chatbot's response to a message
+# TODO: Implement chatbot response handling
 # def add_chatbot_response_to_message(db: Session, message_id: int, response_text: str):
+#     """Add a chatbot response to an existing message."""
 #     db_message = get_chat_message(db, message_id)
 #     if db_message:
 #         db_message.response = response_text
