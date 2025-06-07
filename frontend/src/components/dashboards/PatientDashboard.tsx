@@ -1,8 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatbotWidget from '../Chatbot/ChatbotWidget';
 import styles from './PatientDashboard.module.css';
+import axios from 'axios';
+
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 const PatientDashboard = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.get(`${BACKEND_URL}/appointments/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+        const todayAppointments = response.data.filter(
+          (appointment: any) => appointment.date === today
+        );
+
+        setAppointments(todayAppointments);
+      } catch (err) {
+        console.error('Failed to fetch appointments:', err);
+        setError('Failed to load appointments.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <div className={styles.dashboardContainer}>
       <h2 className={styles.header}>Welcome, Patient</h2>
@@ -12,7 +46,23 @@ const PatientDashboard = () => {
         <div>
           <div className={styles.card}>
             <h3>Today's Appointments</h3>
-            <p>You have no appointments scheduled for today.</p>
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p className={styles.error}>{error}</p>
+            ) : appointments.length > 0 ? (
+              <ul>
+                {appointments.map((appointment: any) => (
+                  <li key={appointment.id}>
+                    <strong>Time:</strong> {appointment.time} <br />
+                    <strong>Doctor:</strong> {appointment.doctorName} <br />
+                    <strong>Reason:</strong> {appointment.reason}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>You have no appointments scheduled for today.</p>
+            )}
           </div>
 
           <div className={styles.card}>
