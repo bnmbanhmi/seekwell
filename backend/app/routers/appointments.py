@@ -63,10 +63,11 @@ def get_appointments_for_patient(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
 ):
-    if current_user.role != models.UserRole.PATIENT:
-        raise HTTPException(status_code=403, detail="You must be a patient to view your appointments")
+    if current_user.role == models.UserRole.PATIENT:
+        return crud.get_appointments_for_patient(db, patient_id=current_user.user_id)
+    elif current_user.role == models.UserRole.DOCTOR:
+        return crud.get_appointments_for_doctor(db, doctor_id=current_user.user_id)
     
-    return crud.get_appointments_for_patient(db, patient_id=current_user.user_id)
 
 @router.get("/{appointment_id}", response_model=schemas.AppointmentSchema)
 def get_appointment(
