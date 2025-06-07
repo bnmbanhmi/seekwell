@@ -139,6 +139,8 @@ class MedicalReportBase(BaseModel):
     personal_history: Optional[str] = None
     family_history: Optional[str] = None
     diagnose_from_recommender: Optional[str] = None
+    prescription: Optional[str] = None  # Thêm trường prescription
+    docter_notes: Optional[str] = None  # Thêm trường doctor_notes
 
 class MedicalReportCreate(MedicalReportBase):
     # Với create, bắt buộc có patient_id và doctor_id nên không để Optional
@@ -162,8 +164,6 @@ class MedicalReportUpdate(BaseModel):
     personal_history: Optional[str] = None
     family_history: Optional[str] = None
     diagnose_from_recommender: Optional[str] = None
-    prescription: Optional[str] = None  # Thêm trường prescription
-    docter_notes: Optional[str] = None  # Thêm trường doctor_notes
 
     model_config = {
         "from_attributes": True  # mới trên Pydantic v2
