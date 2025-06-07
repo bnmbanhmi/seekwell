@@ -7,7 +7,6 @@ from app.database import get_db
 from app.dependencies import get_current_active_user
 
 router = APIRouter(
-    prefix="/medical_reports",
     tags=["Medical Reports"],
     responses={404: {"description": "Not found"}},
 )

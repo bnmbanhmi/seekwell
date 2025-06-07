@@ -116,7 +116,7 @@ class MedicalReport(Base):
     family_history = Column(Text)
     diagnose_from_recommender = Column(Text)
     prescription = Column(Text)  # Thêm trường prescription
-    docter_notes = Column(Text)  # Thêm trường doctor_notes
+    doctor_notes = Column(Text)  # Thêm trường doctor_notes
 
     # Quan hệ
     patient = relationship("Patient", back_populates="medical_reports")
