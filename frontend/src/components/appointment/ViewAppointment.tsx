@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import dayjs from 'dayjs';
+import { Badge, CircularProgress } from '@mui/material';
+import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
+import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/vi'; // Import Vietnamese locale
 import axios from 'axios';
 import './viewAppointment.css'; // Import the CSS file for styling
@@ -83,42 +85,69 @@ const ViewAppointment = () => {
   const filteredAppointments = appointments.filter((appointment) =>
     dayjs(appointment.appointment_day).isSame(selectedDate, 'day')
   );
+    const appointmentDates = appointments.map((appointment) => appointment.appointment_day);
 
-    return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div className="appointments-container">
-            <h1 className="appointments-header">Upcoming Appointments</h1>
-            <DateCalendar
-            value={selectedDate}
-            onChange={(newValue) => {
-              if (newValue) setSelectedDate(newValue);
-            }}
-            views={['year', 'month', 'day']}
-            />
-            {filteredAppointments.length > 0 ? (
-            <table className="appointments-table">
-                <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Doctor</th>
-                    <th>Reason</th>
-                </tr>
-                </thead>
-                <tbody>
-                {filteredAppointments.map((appointment) => (
-                    <tr key={appointment.appointment_id}>
-                    <td>{appointment.appointment_time}</td>
-                    <td>{appointment.doctorName}</td>
-                    <td>{appointment.reason}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-            ) : (
-            <p>No appointments on this day.</p>
-            )}
+    const CustomDay = (props: PickersDayProps) => {
+        const { day, outsideCurrentMonth, ...other } = props;
+        const dateString = day.format('YYYY-MM-DD');
+        const hasAppointment = appointmentDates.includes(dateString);
+
+        return (
+        <Badge
+            key={dateString}
+            overlap="circular"
+            badgeContent={hasAppointment ? <span className="appointment-dot" /> : undefined}
+        >
+            <PickersDay day={day} outsideCurrentMonth={outsideCurrentMonth} {...other} />
+        </Badge>
+        );
+    };
+  
+return (
+  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
+    <div className="appointments-container">
+      <h1 className="appointments-header">Upcoming Appointments</h1>
+
+      {loading ? (
+        <div className="loading-spinner">
+          <CircularProgress />
+          <p>Loading...</p> {/* Add this line to show "Loading" text */}
         </div>
-        </LocalizationProvider>
-  );
+      ) : (
+        <DateCalendar
+          value={selectedDate}
+          onChange={(newValue) => {
+            if (newValue) setSelectedDate(newValue);
+          }}
+          views={['year', 'month', 'day']}
+          slots={{ day: CustomDay }}
+        />
+      )}
+
+      {!loading && filteredAppointments.length > 0 ? (
+        <table className="appointments-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Doctor</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredAppointments.map((appointment) => (
+              <tr key={appointment.appointment_id}>
+                <td>{appointment.appointment_time}</td>
+                <td>{appointment.doctorName}</td>
+                <td>{appointment.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        !loading && <p>No appointments on this day.</p> // This only renders if not loading
+      )}
+    </div>
+  </LocalizationProvider>
+);
 };
 export default ViewAppointment;
