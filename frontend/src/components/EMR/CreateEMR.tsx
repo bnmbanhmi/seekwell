@@ -176,7 +176,9 @@ const CreateEMR: React.FC = () => {
         <div className="patient-selection">
           <h2 className="subtitle">Select a Patient</h2>
 
-          {patients.length > 0 ? (
+          {patients.length === 0 && !error ? (
+            <p className="loading">Loading...</p>
+            ) : patients.length > 0 ? (
             <ul className="patient-list">
               {patients.map((patient) => (
                 <li key={patient.id}>
