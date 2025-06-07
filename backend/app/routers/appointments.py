@@ -66,7 +66,7 @@ def get_appointments_for_patient(
     if current_user.role != models.UserRole.PATIENT:
         raise HTTPException(status_code=403, detail="You must be a patient to view your appointments")
     
-    return crud.get_appointments_for_patient(db, patient_id=current_user.id)
+    return crud.get_appointments_for_patient(db, patient_id=current_user.user_id)
 
 @router.get("/{appointment_id}", response_model=schemas.AppointmentSchema)
 def get_appointment(
