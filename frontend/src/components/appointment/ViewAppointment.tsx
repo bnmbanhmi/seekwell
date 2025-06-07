@@ -229,7 +229,12 @@ const ViewAppointment = () => {
                 <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
 
                 <Box display="flex" alignItems="center" gap={2} mt={2}>
-                  <Button variant="contained" color="error" onClick={handleCancelAppointment}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleCancelAppointment}
+                    sx={{ height: 40 }}
+                  >
                     Cancel Appointment
                   </Button>
 
@@ -237,12 +242,11 @@ const ViewAppointment = () => {
                     variant="outlined"
                     color="primary"
                     onClick={handleToggleReschedule}
-                    sx={{ mt: 2 }}
+                    sx={{ height: 40 }}
                   >
                     {showRescheduleFields ? "Hide Reschedule" : "Reschedule"}
                   </Button>
                 </Box>
-                
                 {showRescheduleFields && (
                   <div className="reschedule-section">
                     <TextField
