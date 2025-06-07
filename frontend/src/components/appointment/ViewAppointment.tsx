@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { Badge, CircularProgress, Modal, Box, Button, TextField } from '@mui/material';
+import { Badge, CircularProgress, Modal, Box, Button, TextField, MenuItem, Select } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/vi'; // Import Vietnamese locale
 import axios from 'axios';
 import './viewAppointment.css'; // Import the CSS file for styling
+
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 type Appointment = {
   patient_id: number;
@@ -18,8 +20,6 @@ type Appointment = {
   appointment_id: number;
   doctorName?: string;
 };
-
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 const ViewAppointment = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -32,6 +32,7 @@ const ViewAppointment = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [showRescheduleFields, setShowRescheduleFields] = useState(false);
 
+  const availableTimes = ['08:30', '09:30', '10:30', '13:30', '14:30', '15:30', '16:30']; // Predefined times
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -148,7 +149,6 @@ const ViewAppointment = () => {
     setShowRescheduleFields((prev) => !prev);
   };
 
-
   const filteredAppointments = appointments.filter((appointment) =>
     dayjs(appointment.appointment_day).isSame(selectedDate, 'day')
   );
@@ -249,34 +249,46 @@ const ViewAppointment = () => {
                 </Box>
                 {showRescheduleFields && (
                   <div className="reschedule-section">
-                    <TextField
-                      label="New Date"
-                      type="date"
-                      value={rescheduleDate}
-                      onChange={(e) => setRescheduleDate(e.target.value)}
-                      slotProps={{ inputLabel: { shrink: true } }}
-                    />
-                    <TextField
-                      label="New Time"
-                      type="time"
-                      value={rescheduleTime}
-                      onChange={(e) => setRescheduleTime(e.target.value)}
-                      slotProps={{ inputLabel: { shrink: true } }}
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleRescheduleAppointment}
-                    >
+                    <h2 className="reschedule-title">Reschedule Appointment</h2>
+
+                    <div className="form-group">
+                      <label htmlFor="reschedule-date">New Date</label>
+                      <input
+                        id="reschedule-date"
+                        type="date"
+                        value={rescheduleDate}
+                        onChange={(e) => setRescheduleDate(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="reschedule-time">New Time</label>
+                      <select
+                        id="reschedule-time"
+                        value={rescheduleTime}
+                        onChange={(e) => setRescheduleTime(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          Select Time
+                        </option>
+                        {availableTimes.map((time) => (
+                          <option key={time} value={time}>
+                            {time}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <button className="confirm-button" onClick={handleRescheduleAppointment}>
                       Confirm Reschedule
-                    </Button>
+                    </button>
                   </div>
                 )}
+
               </>
             )}
           </Box>
         </Modal>
-
       </div>
     </LocalizationProvider>
   );
