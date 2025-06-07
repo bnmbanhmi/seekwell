@@ -64,15 +64,15 @@ def get_patient_details(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
     current_user_role_val = current_user.role.value
-    current_user_id_val = cast(int, current_user.id)
+    current_user_id_val = cast(int, current_user.user_id)
     
-    patient_user_id_val = cast(int, db_patient.user_id)
+    patient_user_id_val = cast(int, db_patient.patient_id)
     assigned_doctor_id_val = cast(int, db_patient.assigned_doctor_id) if db_patient.assigned_doctor_id is not None else None
 
     if (current_user_role_val == UserRole.ADMIN.value or
             current_user_role_val == UserRole.CLINIC_STAFF.value):
         return db_patient
-    if current_user_role_val == UserRole.DOCTOR.value and assigned_doctor_id_val == current_user_id_val:
+    if current_user_role_val == UserRole.DOCTOR.value:
         return db_patient
     if current_user_role_val == UserRole.PATIENT.value and patient_user_id_val == current_user_id_val:
         return db_patient
@@ -92,7 +92,7 @@ def update_patient_details(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
     current_user_role_val = current_user.role.value
-    current_user_id_val = cast(int, current_user.id)
+    current_user_id_val = cast(int, current_user.user_id)
     
     # Get current values from db_patient safely for comparison
     assigned_doctor_id_val = cast(int, db_patient.assigned_doctor_id) if db_patient.assigned_doctor_id is not None else None
