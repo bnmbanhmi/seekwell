@@ -56,7 +56,7 @@ class TokenData(BaseModel):
 
 # Patient Schemas
 class PatientBase(BaseModel):
-    username: str  # Added username
+    username: Optional[str] = None  # Changed to optional
     email: Optional[EmailStr] = None  # Add email
     full_name: str
     date_of_birth: Optional[date] = None
@@ -90,7 +90,7 @@ class PatientSchema(PatientBase):
 
 # Doctor Schemas
 class DoctorBase(BaseModel):
-    username: str  # Added username
+    username: Optional[str] = None  # Changed to optional
     email: Optional[EmailStr] = None  # Add email
     doctor_name: str
     major: Optional[str] = None

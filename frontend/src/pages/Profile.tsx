@@ -23,6 +23,10 @@ interface UserProfileForm {
     identification_id?: string;
     job?: string;
     class_role?: string;
+    // Doctor fields
+    doctor_name?: string;
+    major?: string;
+    hospital_id?: number | string;
 }
 
 const Profile: React.FC = () => {
@@ -171,20 +175,44 @@ const Profile: React.FC = () => {
         }
     };
 
-    if (loading) {
-        return <div className={styles['profile-container']}>Loading...</div>;
-    }
-
-    if (error) {
-        return <div className={styles['profile-container']}>{error}</div>;
-    }
-
-    return (
-        <div className={styles['profile-container']}>
-            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Go to Dashboard</button>
-            <h1 className={styles['profile-title']}>User Profile</h1>
-            {error && <div className={styles['profile-error']}>{error}</div>}
-            {editMode ? (
+    const renderEditForm = () => {
+        if ('doctor_id' in userData) {
+            // Doctor edit form
+            return (
+                <form className={styles['profile-form']} onSubmit={handleSubmit}>
+                    <label className={styles['profile-label']}>
+                        Name:
+                        <input name="doctor_name" value={formData.doctor_name || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Username:
+                        <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Email:
+                        <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Major:
+                        <input name="major" value={formData.major || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Hospital ID:
+                        <input name="hospital_id" value={formData.hospital_id || ''} onChange={handleChange} className={styles['profile-input']} type="number" disabled />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        New Password:
+                        <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
+                    </label>
+                    <div className={styles['profile-form-actions']}>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                    </div>
+                </form>
+            );
+        } else if ('patient_id' in userData) {
+            // Patient edit form (as before)
+            return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
                         Name:
@@ -192,21 +220,20 @@ const Profile: React.FC = () => {
                     </label>
                     <label className={styles['profile-label']}>
                         Username:
-                        <input name="username" value={formData.username} onChange={handleChange} className={styles['profile-input']} />
+                        <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
                         Email:
-                        <input name="email" value={formData.email} onChange={handleChange} className={styles['profile-input']} />
+                        <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
                         Phone:
-                        <input name="phone" value={formData.phone} onChange={handleChange} className={styles['profile-input']} />
+                        <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
                         Address:
-                        <input name="address" value={formData.address} onChange={handleChange} className={styles['profile-input']} />
+                        <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
-                    {/* Patient-specific fields (optional, shown for completeness) */}
                     <label className={styles['profile-label']}>
                         Date of Birth:
                         <input name="date_of_birth" value={formData.date_of_birth || ''} onChange={handleChange} type="date" className={styles['profile-input']} />
@@ -246,7 +273,6 @@ const Profile: React.FC = () => {
                             <option value="Other">Other</option>
                         </select>
                     </label>
-                    {/* Password update (optional) */}
                     <label className={styles['profile-label']}>
                         New Password:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
@@ -256,6 +282,59 @@ const Profile: React.FC = () => {
                         <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
                     </div>
                 </form>
+            );
+        } else {
+            // Generic user edit form
+            return (
+                <form className={styles['profile-form']} onSubmit={handleSubmit}>
+                    <label className={styles['profile-label']}>
+                        Name:
+                        <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Username:
+                        <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Email:
+                        <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Phone:
+                        <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Address:
+                        <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        New Password:
+                        <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
+                    </label>
+                    <div className={styles['profile-form-actions']}>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                    </div>
+                </form>
+            );
+        }
+    };
+
+    if (loading) {
+        return <div className={styles['profile-container']}>Loading...</div>;
+    }
+
+    if (error) {
+        return <div className={styles['profile-container']}>{error}</div>;
+    }
+
+    return (
+        <div className={styles['profile-container']}>
+            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Go to Dashboard</button>
+            <h1 className={styles['profile-title']}>User Profile</h1>
+            {error && <div className={styles['profile-error']}>{error}</div>}
+            {editMode ? (
+                renderEditForm()
             ) : (
                 <div className={styles['profile-details']}>
                     {renderProfileDetails()}
