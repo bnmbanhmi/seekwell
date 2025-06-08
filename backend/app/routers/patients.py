@@ -62,7 +62,7 @@ def get_patient_details(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
     current_user_role_val = current_user.role.value
-    current_user_id_val = cast(int, current_user.id)
+    current_user_id_val = cast(int, current_user.user_id)
     
     patient_user_id_val = cast(int, db_patient.user_id)
 
@@ -88,7 +88,7 @@ def update_patient_details(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
     current_user_role_val = current_user.role.value
-    current_user_id_val = cast(int, current_user.id)
+    current_user_id_val = cast(int, current_user.user_id)
     
     # Ensure emr_summary from db is treated as a string for comparison, handling None
     db_patient_emr_str_val = str(db_patient.emr_summary) if db_patient.emr_summary is not None else None

@@ -191,6 +191,8 @@ class MedicalReportBase(BaseModel):
     personal_history: Optional[str] = None
     family_history: Optional[str] = None
     diagnose_from_recommender: Optional[str] = None
+    prescription: Optional[str] = None  # Thêm trường prescription
+    doctor_notes: Optional[str] = None  # Thêm trường doctor_notes
 
 class MedicalReportCreate(MedicalReportBase):
     # Với create, bắt buộc có patient_id và doctor_id nên không để Optional
@@ -258,3 +260,9 @@ class PatientSearchResponse(BaseModel):
     page: int
     per_page: int
     total_pages: int
+class MedicalReportSchema(MedicalReportBase):
+    record_id: int
+
+    model_config = {
+        "from_attributes": True
+    }
