@@ -13,7 +13,6 @@ interface PatientSearchQuery {
   email?: string;
   identification_id?: string;
   health_insurance_card_no?: string;
-  assigned_doctor_id?: number;
   gender?: string;
   age_min?: number;
   age_max?: number;
@@ -32,8 +31,6 @@ interface PatientSearchResult {
   gender?: string;
   identification_id?: string;
   health_insurance_card_no?: string;
-  assigned_doctor_id?: number;
-  assigned_doctor_name?: string;
   age?: number;
 }
 
@@ -175,7 +172,6 @@ const PatientSearch: React.FC = () => {
         <h2>Patient Search</h2>
         <p className="role-info">
           Searching as: <strong>{userRole}</strong>
-          {userRole === 'DOCTOR' && ' (You can only see your assigned patients)'}
           {userRole === 'PATIENT' && ' (You can only see your own record)'}
         </p>
       </div>
@@ -341,17 +337,6 @@ const PatientSearch: React.FC = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="assigned_doctor_id">Assigned Doctor ID</label>
-                <input
-                  type="number"
-                  id="assigned_doctor_id"
-                  name="assigned_doctor_id"
-                  value={searchParams.assigned_doctor_id || ''}
-                  onChange={handleInputChange}
-                  placeholder="Doctor ID"
-                />
-              </div>
-              <div className="form-group">
                 <label htmlFor="sort_by">Sort By</label>
                 <select
                   id="sort_by"
@@ -435,7 +420,6 @@ const PatientSearch: React.FC = () => {
                       <th>Phone</th>
                       <th>Age</th>
                       <th>Gender</th>
-                      <th>Doctor</th>
                       <th>Date of Birth</th>
                       <th>Actions</th>
                     </tr>
@@ -449,7 +433,6 @@ const PatientSearch: React.FC = () => {
                         <td>{patient.phone_number || 'N/A'}</td>
                         <td>{patient.age || 'N/A'}</td>
                         <td>{patient.gender || 'N/A'}</td>
-                        <td>{patient.assigned_doctor_name || 'Unassigned'}</td>
                         <td>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString() : 'N/A'}</td>
                         <td>
                           <button
@@ -530,12 +513,6 @@ const PatientSearch: React.FC = () => {
                 </div>
                 <div className="detail-row">
                   <strong>Health Insurance Card:</strong> {selectedPatient.health_insurance_card_no || 'N/A'}
-                </div>
-                <div className="detail-row">
-                  <strong>Assigned Doctor:</strong> {selectedPatient.assigned_doctor_name || 'Unassigned'}
-                </div>
-                <div className="detail-row">
-                  <strong>Assigned Doctor ID:</strong> {selectedPatient.assigned_doctor_id || 'N/A'}
                 </div>
               </div>
             </div>

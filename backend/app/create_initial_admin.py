@@ -46,8 +46,24 @@ async def create_initial_users():
         else:
             print(f"⚠️  Admin user already exists: {admin_email}")
 
-        # --- 2. CREATE DOCTOR USERS ---
-        print("\n2. Creating Doctor Users...")
+        # --- 2. CREATE DEFAULT HOSPITAL ---
+        print("\n2. Creating Default Hospital...")
+        
+        # Check if default hospital already exists
+        existing_hospital = crud.get_hospital(db, hospital_id=1)
+        if not existing_hospital:
+            hospital_in = schemas.HospitalCreate(
+                hospital_name="Default Medical Center",
+                address="123 Main Street, City, State",
+                governed_by="Department of Health"
+            )
+            hospital = crud.create_hospital(db=db, hospital_in=hospital_in)
+            print(f"✅ Default hospital created: {hospital.hospital_name} (ID: {hospital.hospital_id})")
+        else:
+            print(f"⚠️  Default hospital already exists: {existing_hospital.hospital_name}")
+
+        # --- 3. CREATE DOCTOR USERS ---
+        print("\n3. Creating Doctor Users...")
         doctors_data = [
             {
                 "username": "dr_smith",
@@ -83,8 +99,8 @@ async def create_initial_users():
                 doctor_users.append(existing_doctor)
                 print(f"⚠️  Doctor already exists: {doctor_data['email']}")
 
-        # --- 3. CREATE CLINIC STAFF USERS ---
-        print("\n3. Creating Clinic Staff Users...")
+        # --- 4. CREATE CLINIC STAFF USERS ---
+        print("\n4. Creating Clinic Staff Users...")
         staff_data = [
             {
                 "username": "staff_mary",
@@ -115,8 +131,8 @@ async def create_initial_users():
             else:
                 print(f"⚠️  Staff already exists: {staff_info['email']}")
 
-        # --- 4. CREATE PATIENT USERS ---
-        print("\n4. Creating Patient Users...")
+        # --- 5. CREATE PATIENT USERS ---
+        print("\n5. Creating Patient Users...")
         patients_data = [
             {"username": "patient_alice", "email": "alice.wilson@email.com", "full_name": "Alice Wilson", "gender": "Female", "age": 28},
             {"username": "patient_bob", "email": "bob.martinez@email.com", "full_name": "Bob Martinez", "gender": "Male", "age": 35},
@@ -144,22 +160,8 @@ async def create_initial_users():
                 patient_user = crud.create_user(db=db, user=patient_user_in)
                 patient_users.append(patient_user)
                 
-                # Assign some patients to doctors for testing role-based access
-                if doctor_users and i % 3 == 0:  # Assign every 3rd patient to a doctor
-                    doctor_id = getattr(doctor_users[i % len(doctor_users)], 'user_id')
-                    patient_user_id = getattr(patient_user, 'user_id')
-                    # Update patient to assign doctor
-                    patient_record = crud.get_patient_by_user_id(db, patient_user_id)
-                    if patient_record:
-                        patient_record_id = getattr(patient_record, 'patient_id')
-                        crud.update_patient(db, patient_record_id, 
-                                          schemas.PatientUpdate(assigned_doctor_id=doctor_id))
-                        print(f"✅ Patient created: {patient_user.full_name} (ID: {patient_user_id}) - Assigned to Dr. ID {doctor_id}")
-                    else:
-                        print(f"✅ Patient created: {patient_user.full_name} (ID: {patient_user_id})")
-                else:
-                    patient_user_id = getattr(patient_user, 'user_id')
-                    print(f"✅ Patient created: {patient_user.full_name} (ID: {patient_user_id})")
+                patient_user_id = getattr(patient_user, 'user_id')
+                print(f"✅ Patient created: {patient_user.full_name} (ID: {patient_user_id})")
             else:
                 patient_users.append(existing_patient)
                 print(f"⚠️  Patient already exists: {patient_data['email']}")
@@ -167,6 +169,7 @@ async def create_initial_users():
         print(f"\n🎉 Initial user creation completed!")
         print(f"📊 Summary:")
         print(f"   - 1 Admin user")
+        print(f"   - 1 Default hospital")
         print(f"   - {len(doctors_data)} Doctor users")
         print(f"   - {len(staff_data)} Clinic staff users") 
         print(f"   - {len(patients_data)} Patient users")

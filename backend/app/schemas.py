@@ -61,28 +61,24 @@ class PatientBase(BaseModel):
     gender: Optional[str] = None
     address: Optional[str] = None
     phone_number: Optional[str] = None
-    # emr_summary: Optional[str] = None # Electronic Health Record summary
+    emr_summary: Optional[str] = None # Electronic Health Record summary
 
 class PatientCreate(PatientBase):
     patient_id: int # Added to link to an existing user
     user_id: int # Link to User table
     # creator_id will be set based on the logged-in user (Patient or Clinic Staff)
-    assigned_doctor_id: Optional[int] = None # Doctor can be assigned at creation or later
 
 class PatientUpdate(PatientBase):
     full_name: Optional[str] = None # All fields optional for update
-    assigned_doctor_id: Optional[int] = None
     emr_summary: Optional[str] = None # EMR summary field for updates
     # Add other updatable fields as necessary
 
 class PatientSchema(PatientBase):
     patient_id: int
     # creator_id: int
-    assigned_doctor_id: Optional[int] = None 
     # created_at: datetime
     # updated_at: datetime
     # creator: Optional[UserSchema] = None # Nested schema for creator info
-    assigned_doctor: Optional[UserSchema] = None # Nested schema for assigned doctor info.
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
@@ -234,7 +230,6 @@ class PatientSearchQuery(BaseModel):
     email: Optional[str] = None  # Search by email
     identification_id: Optional[str] = None  # Search by identification ID
     health_insurance_card_no: Optional[str] = None  # Search by health insurance card
-    assigned_doctor_id: Optional[int] = None  # Filter by assigned doctor
     gender: Optional[str] = None  # Filter by gender
     age_min: Optional[int] = None  # Minimum age filter
     age_max: Optional[int] = None  # Maximum age filter
@@ -253,8 +248,6 @@ class PatientSearchResult(BaseModel):
     email: Optional[str] = None
     identification_id: Optional[str] = None
     health_insurance_card_no: Optional[str] = None
-    assigned_doctor_id: Optional[int] = None
-    assigned_doctor_name: Optional[str] = None  # Doctor's name for display
     age: Optional[int] = None  # Calculated age
     
     model_config = ConfigDict(from_attributes=True)

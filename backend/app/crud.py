@@ -136,21 +136,10 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> O
 def delete_user(db: Session, user_id: int) -> Optional[models.User]:
     """
     Delete a user and handle cascade relationships.
-    
-    When deleting a doctor, their assignment in patient records is nullified.
     """
     db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not db_user:
         return None
-
-    # Handle doctor deletion - nullify their assignment in patient records
-    if str(db_user.role) == UserRole.DOCTOR.value:
-        db.query(models.Patient).filter(
-            models.Patient.assigned_doctor_id == user_id
-        ).update(
-            {models.Patient.assigned_doctor_id: None}, 
-            synchronize_session=False
-        )
 
     db.delete(db_user)
     db.commit()
@@ -202,10 +191,10 @@ def get_patients(db: Session, skip: int = 0, limit: int = 100) -> List[models.Pa
 
 
 def get_patients_by_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100) -> List[models.Patient]:
-    """Retrieve all patients assigned to a specific doctor."""
-    return db.query(models.Patient).filter(
-        models.Patient.assigned_doctor_id == doctor_id
-    ).offset(skip).limit(limit).all()
+    """Retrieve all patients - this function is deprecated since we removed assigned doctor relationship."""
+    # Since we removed the assigned doctor field, this function now returns all patients
+    # In the future, this could be replaced with a different relationship mechanism
+    return get_patients(db, skip=skip, limit=limit)
 
 
 def get_patient_by_user_id(db: Session, user_id: int) -> Optional[models.Patient]:
@@ -225,8 +214,7 @@ def create_patient(db: Session, patient_in: schemas.PatientCreate, creator_id: i
         "full_name": patient_in.full_name,
         "date_of_birth": patient_in.date_of_birth or date(2000, 1, 1),
         "gender": patient_in.gender or Gender.MALE,
-        "class_role": Class.OTHER,
-        "assigned_doctor_id": patient_in.assigned_doctor_id
+        "class_role": Class.OTHER
     }
     
     db_patient = models.Patient(**patient_data)
@@ -292,14 +280,13 @@ def search_patients(
     # Base query with joins
     query = db.query(models.Patient).join(
         models.User, models.Patient.patient_id == models.User.user_id
-    ).outerjoin(
-        models.Doctor, models.Patient.assigned_doctor_id == models.Doctor.doctor_id
     )
     
     # Role-based access control
     if current_user_role == UserRole.DOCTOR.value:
-        # Doctors can only see their assigned patients
-        query = query.filter(models.Patient.assigned_doctor_id == current_user_id)
+        # Doctors can see all patients since we removed the assigned doctor relationship
+        # In the future, this could be replaced with a different access control mechanism
+        pass
     elif current_user_role == UserRole.PATIENT.value:
         # Patients can only see their own record
         query = query.filter(models.Patient.patient_id == current_user_id)
@@ -338,9 +325,6 @@ def search_patients(
     
     if search_params.health_insurance_card_no:
         conditions.append(models.Patient.health_insurance_card_no.ilike(f"%{search_params.health_insurance_card_no}%"))
-    
-    if search_params.assigned_doctor_id:
-        conditions.append(models.Patient.assigned_doctor_id == search_params.assigned_doctor_id)
     
     if search_params.gender:
         conditions.append(models.Patient.gender == search_params.gender)
@@ -399,14 +383,6 @@ def get_patient_search_result(db: Session, patient: models.Patient) -> schemas.P
         ):
             age -= 1
     
-    # Get assigned doctor name
-    assigned_doctor_name = None
-    assigned_doctor_id = getattr(patient, 'assigned_doctor_id', None)
-    if assigned_doctor_id is not None:
-        doctor = get_doctor(db, assigned_doctor_id)
-        if doctor:
-            assigned_doctor_name = getattr(doctor, 'doctor_name', None)
-    
     # Get user email
     patient_id = getattr(patient, 'patient_id')
     user = get_user(db, patient_id)
@@ -426,8 +402,6 @@ def get_patient_search_result(db: Session, patient: models.Patient) -> schemas.P
         email=email,
         identification_id=getattr(patient, 'identification_id', None),
         health_insurance_card_no=getattr(patient, 'health_insurance_card_no', None),
-        assigned_doctor_id=assigned_doctor_id,
-        assigned_doctor_name=assigned_doctor_name,
         age=age
     )
 
