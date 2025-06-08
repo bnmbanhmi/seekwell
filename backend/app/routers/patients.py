@@ -22,17 +22,17 @@ def create_new_patient(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_clinic_staff_or_admin) # Use imported dependency
 ):
-    user_for_patient = crud.get_user(db, user_id=patient_in.user_id)
+    user_for_patient = crud.get_user(db, user_id=patient_in.patient_id)
     if not user_for_patient:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {patient_in.user_id} not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {patient_in.patient_id} not found.")
     if user_for_patient.role.value != UserRole.PATIENT.value:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User with id {patient_in.user_id} is not a Patient.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User with id {patient_in.patient_id} is not a Patient.")
 
-    existing_patient = crud.get_patient_by_user_id(db, user_id=patient_in.user_id) # This function needs to be added to crud.py
+    existing_patient = crud.get_patient_by_user_id(db, user_id=patient_in.patient_id) # This function needs to be added to crud.py
     if existing_patient:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Patient profile already exists for user id {patient_in.user_id}")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Patient profile already exists for user id {patient_in.patient_id}")
     
-    creator_id = cast(int, current_user.id)
+    creator_id = cast(int, current_user.user_id)
     return crud.create_patient(db=db, patient_in=patient_in, creator_id=creator_id)
 
 @router.get("/", response_model=List[schemas.PatientSchema])
@@ -64,7 +64,7 @@ def get_patient_details(
     current_user_role_val = current_user.role.value
     current_user_id_val = cast(int, current_user.user_id)
     
-    patient_user_id_val = cast(int, db_patient.user_id)
+    patient_user_id_val = cast(int, db_patient.patient_id)
 
     if (current_user_role_val == UserRole.ADMIN.value or
             current_user_role_val == UserRole.CLINIC_STAFF.value or
