@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Profile.css'; // Assuming you have a CSS file for styling
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import styles from './Profile.module.css'; // Import CSS module
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
+// Define all possible fields for user profile
+interface UserProfileForm {
+    full_name: string;
+    username: string;
+    email: string;
+    phone: string;
+    phone_number?: string;
+    address: string;
+    password?: string;
+    date_of_birth?: string;
+    gender?: string;
+    ethnic_group?: string;
+    health_insurance_card_no?: string;
+    identification_id?: string;
+    job?: string;
+    class_role?: string;
+}
+
 const Profile: React.FC = () => {
-    const [userData, setUserData] = useState({
+    const navigate = useNavigate();
+    const [userData, setUserData] = useState<UserProfileForm>({
         full_name: '',
         username: '',
         email: '',
@@ -14,17 +36,20 @@ const Profile: React.FC = () => {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState<UserProfileForm>({ ...userData });
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
-                const response = await axios.get(`${BACKEND_URL}/users/users/me`, {
+                const response = await axios.get(`${BACKEND_URL}/users/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 setUserData(response.data);
+                console.log("User data fetched successfully:", response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401) {
@@ -44,26 +69,199 @@ const Profile: React.FC = () => {
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        setFormData({ ...userData });
+    }, [userData]);
+
     const displayValue = (value: string) => value && value.trim() !== '' ? value : '—';
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleEdit = () => {
+        setEditMode(true);
+        setError('');
+    };
+
+    const handleCancel = () => {
+        setEditMode(false);
+        setFormData({ ...userData });
+        setError('');
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        try {
+            const token = localStorage.getItem('accessToken');
+            // Prepare payload: merge phone and phone_number, remove empty fields
+            const payload: { [key: string]: any } = { ...formData };
+            if (payload.phone && !payload.phone_number) payload.phone_number = payload.phone;
+            delete payload.phone;
+            if (!payload.password) delete payload.password;
+            Object.keys(payload).forEach((k) => { if (payload[k] === '' || payload[k] === undefined) delete payload[k]; });
+            await axios.put(`${BACKEND_URL}/users/me`, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setUserData((prev) => ({ ...prev, ...payload }));
+            toast.success('Profile updated successfully!');
+            setEditMode(false);
+        } catch (err) {
+            let msg = 'An unexpected error occurred while updating the profile.';
+            if (axios.isAxiosError(err) && err.response) {
+                msg = err.response.data.detail || err.message;
+            }
+            setError(msg);
+            toast.error(msg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Helper to safely display possibly undefined values
+    const safeDisplay = (value: string | undefined) => (value && value.trim() !== '' ? value : '—');
+
+    // Helper to render fields dynamically
+    const renderProfileDetails = () => {
+        if ('doctor_id' in userData) {
+            // Doctor
+            const doctorData = userData as any;
+            return (
+                <>
+                    <p><strong>Name:</strong> {safeDisplay(doctorData.doctor_name || doctorData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(doctorData.username)}</p>
+                    <p><strong>Email:</strong> {safeDisplay(doctorData.email)}</p>
+                    <p><strong>Major:</strong> {safeDisplay(doctorData.major)}</p>
+                    <p><strong>Hospital ID:</strong> {safeDisplay(doctorData.hospital_id?.toString())}</p>
+                </>
+            );
+        } else if ('patient_id' in userData) {
+            // Patient
+            const patientData = userData as any;
+            return (
+                <>
+                    <p><strong>Name:</strong> {safeDisplay(patientData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(patientData.username)}</p>
+                    <p><strong>Email:</strong> {safeDisplay(patientData.email)}</p>
+                    <p><strong>Phone:</strong> {safeDisplay(patientData.phone_number)}</p>
+                    <p><strong>Address:</strong> {safeDisplay(patientData.address)}</p>
+                    <p><strong>Date of Birth:</strong> {safeDisplay(patientData.date_of_birth)}</p>
+                    <p><strong>Gender:</strong> {safeDisplay(patientData.gender)}</p>
+                    <p><strong>Ethnic Group:</strong> {safeDisplay(patientData.ethnic_group)}</p>
+                    <p><strong>Health Insurance Card No:</strong> {safeDisplay(patientData.health_insurance_card_no)}</p>
+                    <p><strong>Identification ID:</strong> {safeDisplay(patientData.identification_id)}</p>
+                    <p><strong>Job:</strong> {safeDisplay(patientData.job)}</p>
+                    <p><strong>Class Role:</strong> {safeDisplay(patientData.class_role)}</p>
+                </>
+            );
+        } else {
+            // Generic user
+            return (
+                <>
+                    <p><strong>Name:</strong> {safeDisplay(userData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(userData.username)}</p>
+                    <p><strong>Email:</strong> {safeDisplay(userData.email)}</p>
+                    <p><strong>Phone:</strong> {safeDisplay(userData.phone)}</p>
+                    <p><strong>Address:</strong> {safeDisplay(userData.address)}</p>
+                </>
+            );
+        }
+    };
+
     if (loading) {
-        return <div className="profile-container">Loading...</div>;
+        return <div className={styles['profile-container']}>Loading...</div>;
     }
 
     if (error) {
-        return <div className="profile-container">{error}</div>;
+        return <div className={styles['profile-container']}>{error}</div>;
     }
 
     return (
-        <div className="profile-container">
-            <h1 className="profile-title">User Profile</h1>
-            <div className="profile-details">
-                <p><strong>Name:</strong> {displayValue(userData.full_name)}</p>
-                <p><strong>Username:</strong> {displayValue(userData.username)}</p>
-                <p><strong>Email:</strong> {displayValue(userData.email)}</p>
-                <p><strong>Phone:</strong> {displayValue(userData.phone)}</p>
-                <p><strong>Address:</strong> {displayValue(userData.address)}</p>
-            </div>
+        <div className={styles['profile-container']}>
+            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Go to Dashboard</button>
+            <h1 className={styles['profile-title']}>User Profile</h1>
+            {error && <div className={styles['profile-error']}>{error}</div>}
+            {editMode ? (
+                <form className={styles['profile-form']} onSubmit={handleSubmit}>
+                    <label className={styles['profile-label']}>
+                        Name:
+                        <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Username:
+                        <input name="username" value={formData.username} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Email:
+                        <input name="email" value={formData.email} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Phone:
+                        <input name="phone" value={formData.phone} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Address:
+                        <input name="address" value={formData.address} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    {/* Patient-specific fields (optional, shown for completeness) */}
+                    <label className={styles['profile-label']}>
+                        Date of Birth:
+                        <input name="date_of_birth" value={formData.date_of_birth || ''} onChange={handleChange} type="date" className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Gender:
+                        <select name="gender" value={formData.gender || ''} onChange={handleChange} className={styles['profile-input']}>
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Ethnic Group:
+                        <input name="ethnic_group" value={formData.ethnic_group || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Health Insurance Card No:
+                        <input name="health_insurance_card_no" value={formData.health_insurance_card_no || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Identification ID:
+                        <input name="identification_id" value={formData.identification_id || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Job:
+                        <input name="job" value={formData.job || ''} onChange={handleChange} className={styles['profile-input']} />
+                    </label>
+                    <label className={styles['profile-label']}>
+                        Class Role:
+                        <select name="class_role" value={formData.class_role || ''} onChange={handleChange} className={styles['profile-input']}>
+                            <option value="">Select</option>
+                            <option value="Assisted">Assisted</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Free">Free</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+                    {/* Password update (optional) */}
+                    <label className={styles['profile-label']}>
+                        New Password:
+                        <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
+                    </label>
+                    <div className={styles['profile-form-actions']}>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                    </div>
+                </form>
+            ) : (
+                <div className={styles['profile-details']}>
+                    {renderProfileDetails()}
+                    <button onClick={handleEdit} className={styles['profile-button']}>Edit Profile</button>
+                </div>
+            )}
         </div>
     );
 };

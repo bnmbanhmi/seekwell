@@ -46,5 +46,5 @@ app.include_router(reports.router, prefix="/medical_reports", tags=["Medical Rep
 async def read_root():
     return {
         "message": "Welcome to Clinic Management API",
-        "version": "v0.5.0"
+        "version": "v0.6.0"
     }

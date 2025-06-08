@@ -56,11 +56,18 @@ class TokenData(BaseModel):
 
 # Patient Schemas
 class PatientBase(BaseModel):
+    username: str  # Added username
+    email: Optional[EmailStr] = None  # Add email
     full_name: str
     date_of_birth: Optional[date] = None
     gender: Optional[str] = None
+    ehtnic_group: Optional[str] = None
     address: Optional[str] = None
     phone_number: Optional[str] = None
+    health_insurance_card_no: Optional[str] = None
+    identification_id: Optional[str] = None
+    job: Optional[str] = None
+    class_role: Optional[str] = None # Class role can be updated
     emr_summary: Optional[str] = None # Electronic Health Record summary
 
 class PatientCreate(PatientBase):
@@ -83,6 +90,8 @@ class PatientSchema(PatientBase):
 
 # Doctor Schemas
 class DoctorBase(BaseModel):
+    username: str  # Added username
+    email: Optional[EmailStr] = None  # Add email
     doctor_name: str
     major: Optional[str] = None
     hospital_id: int  # required as per the model (nullable=False)

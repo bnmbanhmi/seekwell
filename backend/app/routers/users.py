@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app import crud, schemas, models 
 from app.database import get_db, UserRole # Import UserRole
@@ -6,7 +6,10 @@ from app.dependencies import (
     get_current_active_user,
     get_current_active_admin,
 )
-from typing import List, cast # Updated import
+from typing import List, cast, Union # Updated import
+
+from datetime import date
+import enum
 
 router = APIRouter(
     tags=["Users"],
@@ -30,10 +33,111 @@ def create_user_by_admin(user: schemas.UserCreate, db: Session = Depends(get_db)
         raise HTTPException(status_code=400, detail="Username already registered")
     return crud.create_user(db=db, user=user)
 
-@router.get("/me", response_model=schemas.UserSchema)
-async def read_users_me(current_user: models.User = Depends(get_current_active_user)):
-    # Get current user's details
-    return current_user
+@router.get("/me", response_model=Union[schemas.UserSchema, schemas.PatientSchema, schemas.DoctorSchema])
+async def read_users_me(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    role = current_user.role
+    if role == UserRole.PATIENT:
+        patient = crud.get_patient(db, patient_id=current_user.user_id)
+        if patient:
+            patient_dict = patient.__dict__.copy()
+            patient_dict["username"] = current_user.username
+            patient_dict["email"] = current_user.email
+            return schemas.PatientSchema.model_validate(patient_dict)
+        else:
+            raise HTTPException(status_code=404, detail="Patient profile not found")
+    elif role == UserRole.DOCTOR:
+        doctor = crud.get_doctor(db, doctor_id=current_user.user_id)
+        if doctor:
+            doctor_dict = doctor.__dict__.copy()
+            doctor_dict["username"] = current_user.username
+            doctor_dict["email"] = current_user.email
+            return schemas.DoctorSchema.model_validate(doctor_dict)
+        else:
+            raise HTTPException(status_code=404, detail="Doctor profile not found")
+    elif role == UserRole.CLINIC_STAFF:
+        return schemas.UserSchema.model_validate(current_user)
+    else:
+        return schemas.UserSchema.model_validate(current_user)
+
+@router.put("/me")
+async def update_user_me(
+    reponse: Request,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    # Update current user's details
+    body = await reponse.json()
+    if not body:
+        raise HTTPException(status_code=400, detail="No user data provided")
+    
+    role = current_user.role
+
+    user_update = schemas.UserUpdate(
+        username=body.get("username", current_user.username),
+        email=body.get("email", current_user.email),
+        full_name=body.get("full_name", current_user.full_name),
+        role=role,  # Keep the current user's role
+        password=body.get("password", None)  # Password can be updated, but it's optional
+    )
+    db_user = crud.update_user(db=db, user_id=current_user.user_id, user_update=user_update)
+
+    if role == UserRole.PATIENT:
+        current_patient = crud.get_patient(db, patient_id=current_user.user_id)
+        # Convert gender string to Gender enum if needed
+        gender_str = body.get("gender", current_patient.gender)
+        from app.database import Gender, Class
+        gender = None
+        if isinstance(gender_str, str):
+            gender_map = {g.value.lower(): g for g in Gender}
+            gender = gender_map.get(gender_str.lower(), current_patient.gender)
+        else:
+            gender = current_patient.gender
+        # Convert class_role string to Class enum if needed
+        class_role_str = body.get("class_role", current_patient.class_role)
+        class_role = None
+        if isinstance(class_role_str, str):
+            class_map = {c.value.lower(): c for c in Class}
+            class_role = class_map.get(class_role_str.lower(), current_patient.class_role)
+        else:
+            class_role = current_patient.class_role
+        # Ensure gender and class_role are always the correct string value for the DB
+        if isinstance(gender, enum.Enum):
+            gender = gender.value
+        if isinstance(class_role, enum.Enum):
+            class_role = class_role.value
+        patient_update = schemas.PatientUpdate(
+            username=current_user.username,
+            email=current_user.email,
+            full_name=body.get("full_name", current_patient.full_name),
+            date_of_birth=body.get("date_of_birth", current_patient.date_of_birth),
+            gender=gender,
+            ethnic_group=body.get("ethic_group", current_patient.ethnic_group),
+            address=body.get("address", current_patient.address),
+            phone_number=body.get("phone_number", current_patient.phone_number),
+            health_insurance_card_no=body.get("health_insurance_card_no", current_patient.health_insurance_card_no),
+            identification_id=body.get("identification_id", current_patient.identification_id),
+            job=body.get("job", current_patient.job),
+            class_role=class_role
+        )
+        db_patient = crud.update_patient(db=db, patient_id=current_patient.patient_id, patient_update=patient_update)
+        return db_patient  # Return the updated patient details
+    elif role == UserRole.DOCTOR:
+        current_doctor = crud.get_doctor(db, doctor_id=current_user.user_id)
+        # If the user is a doctor, update the doctor profile
+        doctor_update = schemas.DoctorUpdate(
+            doctor_name=body.get("full_name", current_doctor.doctor_name),
+            major=body.get("major", current_doctor.major)
+        )
+        db_doctor = crud.update_doctor(db=db, doctor_id=current_doctor.doctor_id, doctor_update=doctor_update)
+        return db_doctor  # Return the updated doctor details
+    elif role == UserRole.CLINIC_STAFF:
+        pass
+
+    return {"message": "Error: update in users table successful, but cannot update patient or doctor profile"}
+
 
 @router.get("/", response_model=List[schemas.UserSchema], dependencies=[Depends(get_current_active_admin)])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
