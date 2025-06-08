@@ -9,7 +9,6 @@ from app.dependencies import (
 from typing import List, cast # Updated import
 
 router = APIRouter(
-    prefix="/users",
     tags=["Users"],
     responses={404: {"description": "Not found"}},
 )
