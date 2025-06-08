@@ -549,6 +549,13 @@ def get_medical_report(db: Session, record_id: int) -> Optional[models.MedicalRe
     """Retrieve a medical report by record ID."""
     return db.query(models.MedicalReport).filter(models.MedicalReport.record_id == record_id).first()
 
+def get_medical_reports_by_doctor(db: Session, doctor_id: int, skip: int = 0, limit: int = 100):
+    return (db.query(models.MedicalReport).filter(models.MedicalReport.doctor_id == doctor_id)
+            .order_by(models.MedicalReport.in_day.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+    )
 
 def get_medical_reports_for_patient(db: Session, patient_id: int, skip: int = 0, limit: int = 100) -> List[models.MedicalReport]:
     """Retrieve all medical reports for a specific patient, ordered by date."""
@@ -587,6 +594,19 @@ def delete_medical_report(db: Session, record_id: int) -> Optional[models.Medica
     db.commit()
     return db_report
 
+def search_medical_reports(db: Session, patient_id: Optional[int], doctor_id: Optional[int], in_day: Optional[date], out_day: Optional[date]):
+    query = db.query(models.MedicalReport)
+    if patient_id:
+        query = query.filter(models.MedicalReport.patient_id == patient_id)
+    if doctor_id:
+        query = query.filter(models.MedicalReport.doctor_id == doctor_id)
+    if in_day:
+        query = query.filter(models.MedicalReport.in_day == in_day)
+    if out_day:
+        query = query.filter(models.MedicalReport.out_day == out_day)
+    return query.all()
+
+# Placeholder for a function to get all messages in a conversation (if applicable)
 
 # ============================================================================
 # FUTURE ENHANCEMENTS (Placeholder Functions)
