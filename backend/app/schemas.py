@@ -56,36 +56,42 @@ class TokenData(BaseModel):
 
 # Patient Schemas
 class PatientBase(BaseModel):
+    username: Optional[str] = None  # Changed to optional
+    email: Optional[EmailStr] = None  # Add email
     full_name: str
     date_of_birth: Optional[date] = None
     gender: Optional[str] = None
+    ehtnic_group: Optional[str] = None
     address: Optional[str] = None
     phone_number: Optional[str] = None
-    # emr_summary: Optional[str] = None # Electronic Health Record summary
+    health_insurance_card_no: Optional[str] = None
+    identification_id: Optional[str] = None
+    job: Optional[str] = None
+    class_role: Optional[str] = None # Class role can be updated
+    emr_summary: Optional[str] = None # Electronic Health Record summary
 
 class PatientCreate(PatientBase):
     patient_id: int # Added to link to an existing user
     # creator_id will be set based on the logged-in user (Patient or Clinic Staff)
-    assigned_doctor_id: Optional[int] = None # Doctor can be assigned at creation or later
 
 class PatientUpdate(PatientBase):
     full_name: Optional[str] = None # All fields optional for update
-    assigned_doctor_id: Optional[int] = None
+    emr_summary: Optional[str] = None # EMR summary field for updates
     # Add other updatable fields as necessary
 
 class PatientSchema(PatientBase):
     patient_id: int
     # creator_id: int
-    assigned_doctor_id: Optional[int] = None 
     # created_at: datetime
     # updated_at: datetime
     # creator: Optional[UserSchema] = None # Nested schema for creator info
-    assigned_doctor: Optional[UserSchema] = None # Nested schema for assigned doctor info.
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
 # Doctor Schemas
 class DoctorBase(BaseModel):
+    username: Optional[str] = None  # Changed to optional
+    email: Optional[EmailStr] = None  # Add email
     doctor_name: str
     major: Optional[str] = None
     hospital_id: int  # required as per the model (nullable=False)
@@ -160,8 +166,7 @@ class AvailableSlot(BaseModel):
 
 # New schema for EMR updates
 class PatientEMRUpdate(BaseModel):
-    # emr_summary: Optional[str] = None # Optional: Summary of the patient's EMR
-    pass
+    emr_summary: Optional[str] = None # Optional: Summary of the patient's EMR
 
 class ChatMessageBase(BaseModel):
     chat_message: str
@@ -195,6 +200,8 @@ class MedicalReportBase(BaseModel):
     personal_history: Optional[str] = None
     family_history: Optional[str] = None
     diagnose_from_recommender: Optional[str] = None
+    prescription: Optional[str] = None  # Thêm trường prescription
+    doctor_notes: Optional[str] = None  # Thêm trường doctor_notes
 
 class MedicalReportCreate(MedicalReportBase):
     # Với create, bắt buộc có patient_id và doctor_id nên không để Optional
@@ -221,4 +228,50 @@ class MedicalReportUpdate(BaseModel):
 
     model_config = {
         "from_attributes": True  # mới trên Pydantic v2
+    }
+
+# Patient Search Schemas
+class PatientSearchQuery(BaseModel):
+    """Schema for patient search parameters"""
+    query: Optional[str] = None  # General search query for name, email, phone
+    patient_id: Optional[int] = None  # Search by specific patient ID
+    full_name: Optional[str] = None  # Search by full name (partial match)
+    phone_number: Optional[str] = None  # Search by phone number
+    email: Optional[str] = None  # Search by email
+    identification_id: Optional[str] = None  # Search by identification ID
+    health_insurance_card_no: Optional[str] = None  # Search by health insurance card
+    gender: Optional[str] = None  # Filter by gender
+    age_min: Optional[int] = None  # Minimum age filter
+    age_max: Optional[int] = None  # Maximum age filter
+    skip: int = 0  # Pagination offset
+    limit: int = 100  # Pagination limit
+    sort_by: Optional[str] = "full_name"  # Sort field: full_name, date_of_birth, patient_id
+    sort_order: Optional[str] = "asc"  # Sort order: asc, desc
+
+class PatientSearchResult(BaseModel):
+    """Enhanced patient schema for search results"""
+    patient_id: int
+    full_name: str
+    date_of_birth: Optional[date] = None
+    gender: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
+    identification_id: Optional[str] = None
+    health_insurance_card_no: Optional[str] = None
+    age: Optional[int] = None  # Calculated age
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class PatientSearchResponse(BaseModel):
+    """Response schema for patient search results"""
+    patients: List[PatientSearchResult]
+    total_count: int
+    page: int
+    per_page: int
+    total_pages: int
+class MedicalReportSchema(MedicalReportBase):
+    record_id: int
+
+    model_config = {
+        "from_attributes": True
     }

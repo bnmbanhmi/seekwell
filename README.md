@@ -78,9 +78,14 @@ This project follows a structured Git branching strategy to ensure clean develop
 *   **Merged into**: Both `main` and `develop`
 *   **Lifetime**: Deleted after merge
 
+### Current Branch Status
+*   **`main`**: Production-ready stable code
+*   **`develop`**: ✅ **Now available** - Integration branch for all new development
+*   **Existing feature branches**: Currently based on `main` (transition guidance below)
+
 ### Workflow Guidelines
 
-#### For New Features
+#### For New Features (Going Forward)
 1. Create feature branch from `develop`:
    ```bash
    git checkout develop
@@ -101,6 +106,18 @@ This project follows a structured Git branching strategy to ensure clean develop
 
 4. After code review and approval, merge into `develop`
 5. Delete feature branch after merge
+
+#### For Existing Feature Branches (Transition Period)
+Since your current feature branches (`feature/IChatbotService`, `feature/forgot_reset_password`, `feature/uc3_chatbot`) are based on `main`:
+
+1. **Continue development normally** on these branches
+2. **When ready to merge**, merge them into `develop` instead of `main`:
+   ```bash
+   git checkout develop
+   git merge feature/your-existing-branch
+   git push origin develop
+   ```
+3. **Delete the feature branch** after successful merge
 
 #### For Bug Fixes
 1. Create bugfix branch from `develop`:
@@ -313,7 +330,8 @@ API Versions:
 - v0.1.2: Introduced new API for `database-v2`.
 - v0.1.3: Added appointments API.
 - v0.1.4: Added doctorAPI, hospitalsAPI and updated `crud.create_user` to insert records not only into the `users` table but also into the `patients` or `doctors` tables, as appropriate.
-- v0.5.0: Add API for reset password
+- v0.5.0: Add API for reset password, Chatbot API
 - v0.5.1: Fixing API point for reset password (not finish yet)
+- v0.6.0: Add `search_patient` API, EMR API, update user API for updating profile.
 
 To check the current API version, send a `GET` request to the root endpoint (`/`).

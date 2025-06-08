@@ -39,7 +39,6 @@ class Patient(Base):
     health_insurance_card_no = Column(String(20), unique=True)
     identification_id = Column(String(20), unique=True)
     job = Column(String(100))
-    assigned_doctor_id = Column(Integer)
     class_role = Column(Enum(Class), nullable=False)
 
     # Quan hệ
@@ -115,6 +114,8 @@ class MedicalReport(Base):
     personal_history = Column(Text)
     family_history = Column(Text)
     diagnose_from_recommender = Column(Text)
+    prescription = Column(Text)  # Thêm trường prescription
+    doctor_notes = Column(Text)  # Thêm trường doctor_notes
 
     # Quan hệ
     patient = relationship("Patient", back_populates="medical_reports")
