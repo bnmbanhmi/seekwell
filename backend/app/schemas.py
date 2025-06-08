@@ -65,7 +65,6 @@ class PatientBase(BaseModel):
 
 class PatientCreate(PatientBase):
     patient_id: int # Added to link to an existing user
-    user_id: int # Link to User table
     # creator_id will be set based on the logged-in user (Patient or Clinic Staff)
 
 class PatientUpdate(PatientBase):

@@ -73,12 +73,7 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
         if user.role == "PATIENT":
             patient_in = schemas.PatientCreate(
                 patient_id=user_id_value,  # Use user_id as patient_id for linking
-                user_id=user_id_value,     # Link to User table
                 full_name=full_name_value,  # Required field from PatientBase
-                date_of_birth=date(2000, 1, 1),  # Default date
-                gender=Gender.MALE.value,  # Use Gender enum value
-                address="",  # Default empty address
-                phone_number="",  # Default empty phone (correct field name)
             )
             create_patient(db=db, patient_in=patient_in, creator_id=user_id_value)
 
