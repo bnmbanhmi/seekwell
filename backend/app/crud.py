@@ -63,23 +63,32 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
         )
         db.add(db_user)
         db.flush()  # Get db_user.user_id without committing yet
+        db.refresh(db_user)  # Refresh to ensure all attributes are populated
+
+        # Extract values using getattr to resolve type checker issues
+        user_id_value = getattr(db_user, 'user_id', 0)
+        full_name_value = getattr(db_user, 'full_name', 'Unknown')
 
         # Create role-specific records based on user role
         if user.role == "PATIENT":
             patient_in = schemas.PatientCreate(
-                patient_id=db_user.user_id,
-                full_name=db_user.full_name,
-                assigned_doctor_id=10  # TODO: Make this configurable instead of hardcoded
+                patient_id=user_id_value,  # Use user_id as patient_id for linking
+                user_id=user_id_value,     # Link to User table
+                full_name=full_name_value,  # Required field from PatientBase
+                date_of_birth=date(2000, 1, 1),  # Default date
+                gender=Gender.MALE.value,  # Use Gender enum value
+                address="",  # Default empty address
+                phone_number="",  # Default empty phone (correct field name)
             )
-            create_patient(db=db, patient_in=patient_in, creator_id=db_user.user_id)
+            create_patient(db=db, patient_in=patient_in, creator_id=user_id_value)
 
         elif user.role == "DOCTOR":
             doctor_in = schemas.DoctorCreate(
-                doctor_id=db_user.user_id,
-                doctor_name=db_user.full_name,
+                doctor_id=user_id_value,
+                doctor_name=full_name_value,
                 hospital_id=1  # TODO: Make this configurable instead of hardcoded
             )
-            create_doctor(db=db, doctor_in=doctor_in, creator_id=db_user.user_id)
+            create_doctor(db=db, doctor_in=doctor_in, creator_id=user_id_value)
 
         elif user.role == "CLINIC_STAFF":
             # No additional records needed for clinic staff currently
