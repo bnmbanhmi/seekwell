@@ -96,7 +96,7 @@ const PatientDashboard = () => {
         });
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
-        setError('Failed to load dashboard data.');
+        setError('Không thể tải dữ liệu bảng điều khiển.');
       } finally {
         setLoading(false);
       }
@@ -107,22 +107,22 @@ const PatientDashboard = () => {
 
   const quickActions = [
     {
-      title: 'Book New Appointment',
-      description: 'Schedule a new appointment with your doctor',
+      title: 'Đặt cuộc hẹn mới',
+      description: 'Lên lịch cuộc hẹn mới với bác sĩ của bạn',
       icon: '📅',
       action: () => navigate('/dashboard/appointments/book'),
       color: '#3b82f6'
     },
     {
-      title: 'View Medical History',
-      description: 'Access your complete medical records',
+      title: 'Xem tiền sử bệnh án',
+      description: 'Truy cập hồ sơ y tế đầy đủ của bạn',
       icon: '📋',
       action: () => navigate('/dashboard/medical-history'),
       color: '#10b981'
     },
     {
-      title: 'View Prescriptions',
-      description: 'Check your current prescriptions',
+      title: 'Xem đơn thuốc',
+      description: 'Kiểm tra đơn thuốc hiện tại của bạn',
       icon: '💊',
       action: () => navigate('/dashboard/prescriptions'),
       color: '#f59e0b'
@@ -132,7 +132,7 @@ const PatientDashboard = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading dashboard...</div>
+        <div className={styles.loading}>Đang tải bảng điều khiển...</div>
       </div>
     );
   }
@@ -140,8 +140,8 @@ const PatientDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Patient Dashboard</h2>
-        <p className={styles.subtitle}>Manage your appointments and health records</p>
+        <h2 className={styles.title}>Dashboard Bệnh nhân</h2>
+        <p className={styles.subtitle}>Quản lý cuộc hẹn và hồ sơ sức khỏe của bạn</p>
       </div>
 
       {error && (
@@ -153,7 +153,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📅</div>
           <div className={styles.statInfo}>
-            <h3>Today's Appointments</h3>
+            <h3>Cuộc hẹn hôm nay</h3>
             <p className={styles.statNumber}>{stats.todayAppointments}</p>
           </div>
         </div>
@@ -161,7 +161,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⏰</div>
           <div className={styles.statInfo}>
-            <h3>Upcoming Appointments</h3>
+            <h3>Cuộc hẹn sắp tới</h3>
             <p className={styles.statNumber}>{stats.upcomingAppointments}</p>
           </div>
         </div>
@@ -169,7 +169,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>✅</div>
           <div className={styles.statInfo}>
-            <h3>Completed Appointments</h3>
+            <h3>Cuộc hẹn đã hoàn thành</h3>
             <p className={styles.statNumber}>{stats.completedAppointments}</p>
           </div>
         </div>
@@ -177,7 +177,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>💊</div>
           <div className={styles.statInfo}>
-            <h3>Active Prescriptions</h3>
+            <h3>Đơn thuốc đang hoạt động</h3>
             <p className={styles.statNumber}>{stats.totalPrescriptions}</p>
           </div>
         </div>
@@ -185,7 +185,7 @@ const PatientDashboard = () => {
 
       {/* Quick Actions */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Quick Actions</h3>
+        <h3 className={styles.sectionTitle}>Hành động nhanh</h3>
         <div className={styles.actionsGrid}>
           {quickActions.map((action, index) => (
             <div
@@ -207,25 +207,25 @@ const PatientDashboard = () => {
       <div className={styles.gridLayout}>
         {/* Today's Appointments */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Today's Schedule</h3>
+          <h3 className={styles.sectionTitle}>Lịch hẹn hôm nay</h3>
           {appointments.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>No appointments scheduled for today</p>
+              <p>Không có cuộc hẹn nào được lên lịch cho hôm nay</p>
             </div>
           ) : (
             <div className={styles.appointmentsTable}>
               <div className={styles.tableHeader}>
-                <div>Time</div>
-                <div>Doctor</div>
-                <div>Reason</div>
-                <div>Status</div>
+                <div>Thời gian</div>
+                <div>Bác sĩ</div>
+                <div>Lý do</div>
+                <div>Trạng thái</div>
               </div>
               {appointments.map((appointment: any) => (
                 <div key={appointment.appointment_id} className={styles.tableRow}>
                   <div className={styles.timeCell}>{appointment.appointment_time}</div>
                   <div>{appointment.doctorName}</div>
                   <div className={styles.reasonCell}>{appointment.reason}</div>
-                  <div className={styles.statusUpcoming}>Scheduled</div>
+                  <div className={styles.statusUpcoming}>Đã lên lịch</div>
                 </div>
               ))}
             </div>
@@ -234,17 +234,17 @@ const PatientDashboard = () => {
 
         {/* AI Assistant */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>🤖 Your Personal Health Assistant</h3>
+          <h3 className={styles.sectionTitle}>🤖 Trợ lý sức khỏe cá nhân của bạn</h3>
           <div className={styles.chatCard}>
             <p className={styles.chatDescription}>
-              Chat with our AI assistant for personalized health guidance, appointment help, and medical questions.
+              Trò chuyện với trợ lý AI của chúng tôi để được hướng dẫn về sức khỏe cá nhân, trợ giúp về cuộc hẹn và các câu hỏi y tế.
             </p>
             <div className={styles.flexGrow}>
               <ChatbotWidget
                 userRole="PATIENT"
                 isAuthenticated={true}
                 position="inline"
-                placeholder="Ask about your health, symptoms, or appointments..."
+                placeholder="Hỏi về sức khỏe, triệu chứng hoặc cuộc hẹn của bạn..."
               />
             </div>
           </div>

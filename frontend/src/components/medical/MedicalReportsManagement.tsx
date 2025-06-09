@@ -174,7 +174,7 @@ const MedicalReportsManagement = () => {
   };
 
   const handleDeleteReport = async (recordId: number) => {
-    if (!window.confirm('Are you sure you want to delete this medical report?')) {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa báo cáo y tế này?')) {
       return;
     }
 
@@ -191,7 +191,7 @@ const MedicalReportsManagement = () => {
       setSelectedReport(null);
     } catch (err) {
       console.error('Failed to delete medical report:', err);
-      alert('Failed to delete medical report. Please try again.');
+      alert('Xóa báo cáo y tế thất bại. Vui lòng thử lại.');
     }
   };
 
@@ -214,10 +214,10 @@ const MedicalReportsManagement = () => {
       setShowEditModal(false);
       setEditingReport({});
       fetchMedicalReports();
-      alert('Medical report updated successfully!');
+      alert('Cập nhật báo cáo y tế thành công!');
     } catch (err) {
       console.error('Failed to update medical report:', err);
-      alert('Failed to update medical report. Please try again.');
+      alert('Cập nhật báo cáo y tế thất bại. Vui lòng thử lại.');
     }
   };
 
@@ -225,7 +225,7 @@ const MedicalReportsManagement = () => {
     const isCompleted = report.out_day !== null;
     return (
       <span className={`${styles.statusBadge} ${isCompleted ? styles.completed : styles.active}`}>
-        {isCompleted ? 'Completed' : 'Active'}
+        {isCompleted ? 'Hoàn thành' : 'Đang điều trị'}
       </span>
     );
   };
@@ -265,7 +265,7 @@ const MedicalReportsManagement = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading medical reports...</div>
+        <div className={styles.loading}>Đang tải báo cáo y tế...</div>
       </div>
     );
   }
@@ -274,14 +274,14 @@ const MedicalReportsManagement = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.backButton} onClick={() => navigate('/dashboard')}>
-          ← Back to Dashboard
+          ← Quay lại Dashboard
         </button>
-        <h2>Medical Reports Management</h2>
+        <h2>Quản lý Báo cáo Y tế</h2>
         <button 
           className={styles.createButton}
           onClick={() => navigate('/dashboard/create_records')}
         >
-          + Create New Report
+          + Tạo Báo cáo Mới
         </button>
       </div>
 
@@ -289,32 +289,32 @@ const MedicalReportsManagement = () => {
 
       {/* Search and Filter Controls */}
       <div className={styles.filtersContainer}>
-        <h3>Search & Filter Reports</h3>
+        <h3>Tìm kiếm & Lọc Báo cáo</h3>
         <div className={styles.filtersGrid}>
           <div className={styles.filterGroup}>
-            <label>Patient Name:</label>
+            <label>Tên bệnh nhân:</label>
             <input
               type="text"
               name="patientName"
               value={searchFilters.patientName}
               onChange={handleFilterChange}
-              placeholder="Search by patient name..."
+              placeholder="Tìm kiếm theo tên bệnh nhân..."
               className={styles.filterInput}
             />
           </div>
           <div className={styles.filterGroup}>
-            <label>Diagnosis:</label>
+            <label>Chẩn đoán:</label>
             <input
               type="text"
               name="diagnosis"
               value={searchFilters.diagnosis}
               onChange={handleFilterChange}
-              placeholder="Search by diagnosis..."
+              placeholder="Tìm kiếm theo chẩn đoán..."
               className={styles.filterInput}
             />
           </div>
           <div className={styles.filterGroup}>
-            <label>Date From:</label>
+            <label>Từ ngày:</label>
             <input
               type="date"
               name="dateFrom"
@@ -324,7 +324,7 @@ const MedicalReportsManagement = () => {
             />
           </div>
           <div className={styles.filterGroup}>
-            <label>Date To:</label>
+            <label>Đến ngày:</label>
             <input
               type="date"
               name="dateTo"
@@ -334,21 +334,21 @@ const MedicalReportsManagement = () => {
             />
           </div>
           <div className={styles.filterGroup}>
-            <label>Status:</label>
+            <label>Trạng thái:</label>
             <select
               name="status"
               value={searchFilters.status}
               onChange={handleFilterChange}
               className={styles.filterSelect}
             >
-              <option value="all">All Reports</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
+              <option value="all">Tất cả báo cáo</option>
+              <option value="active">Đang điều trị</option>
+              <option value="completed">Hoàn thành</option>
             </select>
           </div>
           <div className={styles.filterActions}>
             <button onClick={clearFilters} className={styles.clearButton}>
-              Clear Filters
+              Xóa bộ lọc
             </button>
           </div>
         </div>
@@ -357,23 +357,23 @@ const MedicalReportsManagement = () => {
       {/* Statistics Summary */}
       <div className={styles.statsContainer}>
         <div className={styles.statCard}>
-          <h4>Total Reports</h4>
+          <h4>Tổng số báo cáo</h4>
           <span className={styles.statNumber}>{reports.length}</span>
         </div>
         <div className={styles.statCard}>
-          <h4>Active</h4>
+          <h4>Đang điều trị</h4>
           <span className={styles.statNumber}>
             {reports.filter(r => !r.out_day).length}
           </span>
         </div>
         <div className={styles.statCard}>
-          <h4>Completed</h4>
+          <h4>Đã hoàn thành</h4>
           <span className={styles.statNumber}>
             {reports.filter(r => r.out_day).length}
           </span>
         </div>
         <div className={styles.statCard}>
-          <h4>This Month</h4>
+          <h4>Tháng này</h4>
           <span className={styles.statNumber}>
             {reports.filter(r => {
               const reportMonth = new Date(r.in_day).getMonth();
@@ -387,10 +387,10 @@ const MedicalReportsManagement = () => {
       {/* Reports Grid */}
       <div className={styles.reportsGrid}>
         <div className={styles.reportsList}>
-          <h3>Reports ({filteredReports.length})</h3>
+          <h3>Báo cáo ({filteredReports.length})</h3>
           {filteredReports.length === 0 ? (
             <div className={styles.noData}>
-              <p>No medical reports found matching your criteria.</p>
+              <p>Không tìm thấy báo cáo y tế nào phù hợp với tiêu chí của bạn.</p>
             </div>
           ) : (
             filteredReports.map((report) => (
@@ -401,7 +401,7 @@ const MedicalReportsManagement = () => {
               >
                 <div className={styles.reportHeader}>
                   <div>
-                    <h4>Report #{report.record_id}</h4>
+                    <h4>Báo cáo #{report.record_id}</h4>
                     <p className={styles.patientName}>{getPatientName(report.patient_id)}</p>
                   </div>
                   <div>
@@ -410,8 +410,8 @@ const MedicalReportsManagement = () => {
                   </div>
                 </div>
                 <div className={styles.reportPreview}>
-                  <p><strong>Diagnosis:</strong> {report.in_diagnosis || 'N/A'}</p>
-                  <p><strong>Reason:</strong> {report.reason_in || 'N/A'}</p>
+                  <p><strong>Chẩn đoán:</strong> {report.in_diagnosis || 'Không có'}</p>
+                  <p><strong>Lý do:</strong> {report.reason_in || 'Không có'}</p>
                 </div>
               </div>
             ))
@@ -422,25 +422,25 @@ const MedicalReportsManagement = () => {
         {selectedReport && (
           <div className={styles.reportDetails}>
             <div className={styles.detailsHeader}>
-              <h3>Medical Report #{selectedReport.record_id}</h3>
+              <h3>Báo cáo Y tế #{selectedReport.record_id}</h3>
               <div className={styles.detailsActions}>
                 <button
                   className={styles.actionButton}
                   onClick={() => handleEditReport(selectedReport)}
                 >
-                  ✏️ Edit
+                  ✏️ Sửa
                 </button>
                 <button
                   className={styles.actionButton}
                   onClick={() => exportReport(selectedReport)}
                 >
-                  📤 Export
+                  📤 Xuất
                 </button>
                 <button
                   className={`${styles.actionButton} ${styles.deleteButton}`}
                   onClick={() => handleDeleteReport(selectedReport.record_id)}
                 >
-                  🗑️ Delete
+                  🗑️ Xóa
                 </button>
                 <button
                   className={styles.closeButton}
@@ -453,82 +453,82 @@ const MedicalReportsManagement = () => {
 
             <div className={styles.detailsContent}>
               <div className={styles.section}>
-                <h4>Patient Information</h4>
+                <h4>Thông tin bệnh nhân</h4>
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
-                    <strong>Patient:</strong> {getPatientName(selectedReport.patient_id)}
+                    <strong>Bệnh nhân:</strong> {getPatientName(selectedReport.patient_id)}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Status:</strong> {getStatusBadge(selectedReport)}
+                    <strong>Trạng thái:</strong> {getStatusBadge(selectedReport)}
                   </div>
                 </div>
               </div>
 
               <div className={styles.section}>
-                <h4>Basic Information</h4>
+                <h4>Thông tin cơ bản</h4>
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
-                    <strong>Admission Date:</strong> {formatDate(selectedReport.in_day)}
+                    <strong>Ngày nhập viện:</strong> {formatDate(selectedReport.in_day)}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Discharge Date:</strong> {formatDate(selectedReport.out_day)}
+                    <strong>Ngày xuất viện:</strong> {formatDate(selectedReport.out_day)}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Reason for Visit:</strong>
-                    <p>{selectedReport.reason_in || 'N/A'}</p>
+                    <strong>Lý do khám:</strong>
+                    <p>{selectedReport.reason_in || 'Không có'}</p>
                   </div>
                 </div>
               </div>
 
               <div className={styles.section}>
-                <h4>Diagnosis & Treatment</h4>
+                <h4>Chẩn đoán & Điều trị</h4>
                 <div className={styles.infoItem}>
-                  <strong>Initial Diagnosis:</strong>
-                  <p>{selectedReport.in_diagnosis || 'N/A'}</p>
+                  <strong>Chẩn đoán ban đầu:</strong>
+                  <p>{selectedReport.in_diagnosis || 'Không có'}</p>
                 </div>
                 {selectedReport.out_diagnosis && (
                   <div className={styles.infoItem}>
-                    <strong>Final Diagnosis:</strong>
+                    <strong>Chẩn đoán cuối cùng:</strong>
                     <p>{selectedReport.out_diagnosis}</p>
                   </div>
                 )}
                 <div className={styles.infoItem}>
-                  <strong>Treatment Process:</strong>
-                  <p>{selectedReport.treatment_process || 'N/A'}</p>
+                  <strong>Quá trình điều trị:</strong>
+                  <p>{selectedReport.treatment_process || 'Không có'}</p>
                 </div>
                 <div className={styles.infoItem}>
-                  <strong>Doctor's Notes:</strong>
-                  <p>{selectedReport.doctor_notes || 'N/A'}</p>
+                  <strong>Ghi chú của bác sĩ:</strong>
+                  <p>{selectedReport.doctor_notes || 'Không có'}</p>
                 </div>
               </div>
 
               {(selectedReport.pulse_rate || selectedReport.temperature || selectedReport.blood_pressure || selectedReport.respiratory_rate || selectedReport.weight) && (
                 <div className={styles.section}>
-                  <h4>Vital Signs</h4>
+                  <h4>Chỉ số sinh tồn</h4>
                   <div className={styles.vitalSignsGrid}>
                     {selectedReport.pulse_rate && (
                       <div className={styles.vitalSign}>
-                        <strong>Pulse Rate:</strong> {selectedReport.pulse_rate}
+                        <strong>Nhịp tim:</strong> {selectedReport.pulse_rate}
                       </div>
                     )}
                     {selectedReport.temperature && (
                       <div className={styles.vitalSign}>
-                        <strong>Temperature:</strong> {selectedReport.temperature}
+                        <strong>Nhiệt độ:</strong> {selectedReport.temperature}
                       </div>
                     )}
                     {selectedReport.blood_pressure && (
                       <div className={styles.vitalSign}>
-                        <strong>Blood Pressure:</strong> {selectedReport.blood_pressure}
+                        <strong>Huyết áp:</strong> {selectedReport.blood_pressure}
                       </div>
                     )}
                     {selectedReport.respiratory_rate && (
                       <div className={styles.vitalSign}>
-                        <strong>Respiratory Rate:</strong> {selectedReport.respiratory_rate}
+                        <strong>Nhịp thở:</strong> {selectedReport.respiratory_rate}
                       </div>
                     )}
                     {selectedReport.weight && (
                       <div className={styles.vitalSign}>
-                        <strong>Weight:</strong> {selectedReport.weight}
+                        <strong>Cân nặng:</strong> {selectedReport.weight}
                       </div>
                     )}
                   </div>
@@ -537,15 +537,15 @@ const MedicalReportsManagement = () => {
 
               {selectedReport.prescription && (
                 <div className={styles.section}>
-                  <h4>Prescription</h4>
+                  <h4>Đơn thuốc</h4>
                   <div className={styles.prescriptionList}>
                     {parsePrescription(selectedReport.prescription).map((med: any, index: number) => (
                       <div key={index} className={styles.medicationItem}>
                         <div className={styles.medName}>{med.name}</div>
                         <div className={styles.medDetails}>
-                          <span><strong>Dosage:</strong> {med.dosage}</span>
-                          <span><strong>Quantity:</strong> {med.quantity}</span>
-                          <span><strong>Instructions:</strong> {med.instructions}</span>
+                          <span><strong>Liều dùng:</strong> {med.dosage}</span>
+                          <span><strong>Số lượng:</strong> {med.quantity}</span>
+                          <span><strong>Hướng dẫn:</strong> {med.instructions}</span>
                         </div>
                       </div>
                     ))}
@@ -555,16 +555,16 @@ const MedicalReportsManagement = () => {
 
               {(selectedReport.personal_history || selectedReport.family_history) && (
                 <div className={styles.section}>
-                  <h4>Patient History</h4>
+                  <h4>Tiền sử bệnh nhân</h4>
                   {selectedReport.personal_history && (
                     <div className={styles.infoItem}>
-                      <strong>Personal History:</strong>
+                      <strong>Tiền sử cá nhân:</strong>
                       <p>{selectedReport.personal_history}</p>
                     </div>
                   )}
                   {selectedReport.family_history && (
                     <div className={styles.infoItem}>
-                      <strong>Family History:</strong>
+                      <strong>Tiền sử gia đình:</strong>
                       <p>{selectedReport.family_history}</p>
                     </div>
                   )}
@@ -580,7 +580,7 @@ const MedicalReportsManagement = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
-              <h3>Edit Medical Report #{editingReport.record_id}</h3>
+              <h3>Sửa Báo cáo Y tế #{editingReport.record_id}</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowEditModal(false)}
@@ -590,7 +590,7 @@ const MedicalReportsManagement = () => {
             </div>
             <div className={styles.modalContent}>
               <div className={styles.formGroup}>
-                <label>Initial Diagnosis:</label>
+                <label>Chẩn đoán ban đầu:</label>
                 <textarea
                   value={editingReport.in_diagnosis || ''}
                   onChange={(e) => setEditingReport(prev => ({ ...prev, in_diagnosis: e.target.value }))}
@@ -598,7 +598,7 @@ const MedicalReportsManagement = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Final Diagnosis:</label>
+                <label>Chẩn đoán cuối cùng:</label>
                 <textarea
                   value={editingReport.out_diagnosis || ''}
                   onChange={(e) => setEditingReport(prev => ({ ...prev, out_diagnosis: e.target.value }))}
@@ -606,7 +606,7 @@ const MedicalReportsManagement = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Treatment Process:</label>
+                <label>Quá trình điều trị:</label>
                 <textarea
                   value={editingReport.treatment_process || ''}
                   onChange={(e) => setEditingReport(prev => ({ ...prev, treatment_process: e.target.value }))}
@@ -614,7 +614,7 @@ const MedicalReportsManagement = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Doctor's Notes:</label>
+                <label>Ghi chú của bác sĩ:</label>
                 <textarea
                   value={editingReport.doctor_notes || ''}
                   onChange={(e) => setEditingReport(prev => ({ ...prev, doctor_notes: e.target.value }))}
@@ -623,7 +623,7 @@ const MedicalReportsManagement = () => {
               </div>
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
-                  <label>Discharge Date:</label>
+                  <label>Ngày xuất viện:</label>
                   <input
                     type="date"
                     value={editingReport.out_day ? editingReport.out_day.split('T')[0] : ''}
@@ -638,13 +638,13 @@ const MedicalReportsManagement = () => {
                 className={styles.cancelButton}
                 onClick={() => setShowEditModal(false)}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 className={styles.saveButton}
                 onClick={handleUpdateReport}
               >
-                Save Changes
+                Lưu thay đổi
               </button>
             </div>
           </div>

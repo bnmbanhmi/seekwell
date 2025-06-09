@@ -94,13 +94,13 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
                   className="dropdown-item"
                   onClick={handleProfile}
                 >
-                  Profile
+                  Hồ sơ
                 </button>
                 <button
                   className="dropdown-item"
                   onClick={handleLogout}
                 >
-                  Logout
+                  Đăng xuất
                 </button>
               </div>
             )}

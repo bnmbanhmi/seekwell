@@ -20,12 +20,10 @@ import UserManagement from '../components/admin/UserManagement';
 import ReportsAnalytics from '../components/admin/ReportsAnalytics';
 import SystemLogs from '../components/admin/SystemLogs';
 import ScheduleSettings from '../components/admin/ScheduleSettings';
-import BillingOverview from '../components/admin/BillingOverview';
 import MedicalHistory from '../components/medical/MedicalHistory';
 import MedicalReportsManagement from '../components/medical/MedicalReportsManagement';
 import Prescriptions from '../components/medical/Prescriptions';
 import CheckInOut from '../components/staff/CheckInOut';
-import Billing from '../components/staff/Billing';
 
 type Props = {
   role: UserRole;
@@ -71,9 +69,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="reports" element={<ReportsAnalytics />} />
         <Route path="logs" element={<SystemLogs />} />
         <Route path="schedule-settings" element={<ScheduleSettings />} />
-        <Route path="billing-overview" element={<BillingOverview />} />
         <Route path="checkin" element={<CheckInOut />} />
-        <Route path="billing" element={<Billing />} />
       </Routes>
     </BaseDashboard>
   );

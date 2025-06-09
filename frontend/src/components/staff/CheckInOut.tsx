@@ -81,8 +81,8 @@ const CheckInOut: React.FC = () => {
             console.error('Failed to fetch names:', err);
             return {
               ...appointment,
-              patientName: 'Unknown Patient',
-              doctorName: 'Unknown Doctor',
+              patientName: 'Bệnh nhân không xác định',
+              doctorName: 'Bác sĩ không xác định',
               status: 'scheduled',
             };
           }
@@ -99,7 +99,7 @@ const CheckInOut: React.FC = () => {
       setAppointments(enrichedAppointments);
     } catch (err) {
       console.error('Failed to fetch appointments:', err);
-      setError('Failed to load appointments.');
+      setError('Không thể tải danh sách cuộc hẹn.');
     } finally {
       setLoading(false);
     }
@@ -154,10 +154,10 @@ const CheckInOut: React.FC = () => {
         )
       );
 
-      alert(`${appointment.patientName} has been checked in successfully!`);
+      alert(`${appointment.patientName} đã được check-in thành công!`);
     } catch (err) {
       console.error('Failed to check in patient:', err);
-      setError('Failed to check in patient.');
+      setError('Không thể check-in bệnh nhân.');
     }
   };
 
@@ -170,7 +170,7 @@ const CheckInOut: React.FC = () => {
     );
     saveCheckedInPatients(updatedRecords);
 
-    alert('Patient has been checked out successfully!');
+    alert('Bệnh nhân đã được check-out thành công!');
   };
 
   const filteredAppointments = appointments.filter(appointment =>
@@ -195,7 +195,7 @@ const CheckInOut: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading appointments...</div>
+        <div className={styles.loading}>Đang tải cuộc hẹn...</div>
       </div>
     );
   }
@@ -203,8 +203,8 @@ const CheckInOut: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Patient Check-in / Check-out</h2>
-        <p className={styles.subtitle}>Manage patient arrivals and departures</p>
+        <h2 className={styles.title}>Check-in / Check-out Bệnh nhân</h2>
+        <p className={styles.subtitle}>Quản lý việc đến và rời khỏi của bệnh nhân</p>
       </div>
 
       {error && (
@@ -215,7 +215,7 @@ const CheckInOut: React.FC = () => {
       <div className={styles.searchContainer}>
         <input
           type="text"
-          placeholder="Search patients, doctors, or reasons..."
+          placeholder="Tìm kiếm bệnh nhân, bác sĩ hoặc lý do..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className={styles.searchInput}
@@ -228,23 +228,23 @@ const CheckInOut: React.FC = () => {
           className={`${styles.tab} ${activeTab === 'appointments' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('appointments')}
         >
-          Today's Appointments ({filteredAppointments.length})
+          Cuộc hẹn hôm nay ({filteredAppointments.length})
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'checked-in' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('checked-in')}
         >
-          Checked-in Patients ({filteredCheckedIn.filter(r => r.status === 'checked-in').length})
+          Bệnh nhân đã check-in ({filteredCheckedIn.filter(r => r.status === 'checked-in').length})
         </button>
       </div>
 
       {/* Appointments Tab */}
       {activeTab === 'appointments' && (
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Today's Appointments</h3>
+          <h3 className={styles.sectionTitle}>Cuộc hẹn hôm nay</h3>
           {filteredAppointments.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>No appointments found for today</p>
+              <p>Không tìm thấy cuộc hẹn nào hôm nay</p>
             </div>
           ) : (
             <div className={styles.appointmentsList}>
@@ -254,20 +254,22 @@ const CheckInOut: React.FC = () => {
                     <div className={styles.appointmentHeader}>
                       <h4>{appointment.patientName}</h4>
                       <span className={`${styles.statusBadge} ${getStatusBadge(appointment.status || 'scheduled')}`}>
-                        {appointment.status || 'Scheduled'}
+                        {appointment.status === 'scheduled' ? 'Đã lên lịch' : 
+                         appointment.status === 'checked-in' ? 'Đã check-in' : 
+                         appointment.status === 'completed' ? 'Hoàn thành' : appointment.status}
                       </span>
                     </div>
                     <div className={styles.appointmentDetails}>
                       <div className={styles.detailRow}>
-                        <span className={styles.label}>Time:</span>
+                        <span className={styles.label}>Giờ:</span>
                         <span>{appointment.appointment_time}</span>
                       </div>
                       <div className={styles.detailRow}>
-                        <span className={styles.label}>Doctor:</span>
+                        <span className={styles.label}>Bác sĩ:</span>
                         <span>{appointment.doctorName}</span>
                       </div>
                       <div className={styles.detailRow}>
-                        <span className={styles.label}>Reason:</span>
+                        <span className={styles.label}>Lý do:</span>
                         <span>{appointment.reason}</span>
                       </div>
                     </div>
@@ -278,11 +280,11 @@ const CheckInOut: React.FC = () => {
                         className={styles.checkInButton}
                         onClick={() => handleCheckIn(appointment)}
                       >
-                        Check In
+                        Nhận bệnh
                       </button>
                     )}
                     {appointment.status === 'checked-in' && (
-                      <span className={styles.checkedInLabel}>✓ Checked In</span>
+                      <span className={styles.checkedInLabel}>✓ Đã Check In</span>
                     )}
                   </div>
                 </div>
@@ -295,10 +297,10 @@ const CheckInOut: React.FC = () => {
       {/* Checked-in Patients Tab */}
       {activeTab === 'checked-in' && (
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Checked-in Patients</h3>
+          <h3 className={styles.sectionTitle}>Bệnh nhân đã Check-in</h3>
           {filteredCheckedIn.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>No patients currently checked in</p>
+              <p>Hiện không có bệnh nhân nào đã check-in</p>
             </div>
           ) : (
             <div className={styles.checkedInList}>
@@ -308,35 +310,35 @@ const CheckInOut: React.FC = () => {
                     <div className={styles.patientHeader}>
                       <h4>{record.patient.full_name}</h4>
                       <span className={`${styles.statusBadge} ${getStatusBadge(record.status)}`}>
-                        {record.status === 'checked-in' ? 'In Clinic' : 'Completed'}
+                        {record.status === 'checked-in' ? 'Trong phòng khám' : 'Hoàn thành'}
                       </span>
                     </div>
                     <div className={styles.patientDetails}>
                       <div className={styles.detailRow}>
-                        <span className={styles.label}>Check-in Time:</span>
+                        <span className={styles.label}>Giờ check-in:</span>
                         <span>{new Date(record.checkInTime).toLocaleTimeString()}</span>
                       </div>
                       {record.checkOutTime && (
                         <div className={styles.detailRow}>
-                          <span className={styles.label}>Check-out Time:</span>
+                          <span className={styles.label}>Giờ check-out:</span>
                           <span>{new Date(record.checkOutTime).toLocaleTimeString()}</span>
                         </div>
                       )}
                       {record.appointment && (
                         <>
                           <div className={styles.detailRow}>
-                            <span className={styles.label}>Appointment:</span>
+                            <span className={styles.label}>Cuộc hẹn:</span>
                             <span>{record.appointment.appointment_time} - {record.appointment.doctorName}</span>
                           </div>
                           <div className={styles.detailRow}>
-                            <span className={styles.label}>Reason:</span>
+                            <span className={styles.label}>Lý do:</span>
                             <span>{record.appointment.reason}</span>
                           </div>
                         </>
                       )}
                       {record.patient.phone_number && (
                         <div className={styles.detailRow}>
-                          <span className={styles.label}>Phone:</span>
+                          <span className={styles.label}>Điện thoại:</span>
                           <span>{record.patient.phone_number}</span>
                         </div>
                       )}
@@ -348,11 +350,11 @@ const CheckInOut: React.FC = () => {
                         className={styles.checkOutButton}
                         onClick={() => handleCheckOut(record.id)}
                       >
-                        Check Out
+                        Rời khỏi
                       </button>
                     )}
                     {record.status === 'completed' && (
-                      <span className={styles.completedLabel}>✓ Completed</span>
+                      <span className={styles.completedLabel}>✓ Hoàn thành</span>
                     )}
                   </div>
                 </div>
@@ -364,19 +366,19 @@ const CheckInOut: React.FC = () => {
 
       {/* Statistics */}
       <div className={styles.statsSection}>
-        <h3 className={styles.sectionTitle}>Today's Statistics</h3>
+        <h3 className={styles.sectionTitle}>Thống kê hôm nay</h3>
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📅</div>
             <div className={styles.statInfo}>
-              <h4>Total Appointments</h4>
+              <h4>Tổng cuộc hẹn</h4>
               <p className={styles.statNumber}>{appointments.length}</p>
             </div>
           </div>
           <div className={styles.statCard}>
             <div className={styles.statIcon}>✅</div>
             <div className={styles.statInfo}>
-              <h4>Checked In</h4>
+              <h4>Đã Check In</h4>
               <p className={styles.statNumber}>
                 {checkedInPatients.filter(r => r.status === 'checked-in').length}
               </p>
@@ -385,7 +387,7 @@ const CheckInOut: React.FC = () => {
           <div className={styles.statCard}>
             <div className={styles.statIcon}>🏁</div>
             <div className={styles.statInfo}>
-              <h4>Completed</h4>
+              <h4>Hoàn thành</h4>
               <p className={styles.statNumber}>
                 {checkedInPatients.filter(r => r.status === 'completed').length}
               </p>
@@ -394,7 +396,7 @@ const CheckInOut: React.FC = () => {
           <div className={styles.statCard}>
             <div className={styles.statIcon}>⏳</div>
             <div className={styles.statInfo}>
-              <h4>Pending</h4>
+              <h4>Đang chờ</h4>
               <p className={styles.statNumber}>
                 {appointments.filter(a => a.status !== 'checked-in' && a.status !== 'completed').length}
               </p>

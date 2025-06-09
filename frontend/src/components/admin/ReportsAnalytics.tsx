@@ -99,8 +99,8 @@ const ReportsAnalytics: React.FC = () => {
       setReportData(stats);
     } catch (err: any) {
       console.error('Error fetching report data:', err);
-      setError('Failed to load reports data');
-      toast.error('Failed to load reports data');
+      setError('Không thể tải dữ liệu báo cáo');
+      toast.error('Không thể tải dữ liệu báo cáo');
     } finally {
       setLoading(false);
     }
@@ -133,44 +133,44 @@ const ReportsAnalytics: React.FC = () => {
 
   const exportReport = () => {
     const reportContent = `
-Clinic Management System - Analytics Report
-Generated on: ${new Date().toLocaleDateString()}
+Hệ thống quản lý phòng khám - Báo cáo phân tích
+Tạo vào ngày: ${new Date().toLocaleDateString('vi-VN')}
 
-=== OVERVIEW ===
-Total Users: ${reportData.totalUsers}
-Total Patients: ${reportData.totalPatients}
-Total Doctors: ${reportData.totalDoctors}
-Total Staff: ${reportData.totalStaff}
+=== TỔNG QUAN ===
+Tổng số người dùng: ${reportData.totalUsers}
+Tổng số bệnh nhân: ${reportData.totalPatients}
+Tổng số bác sĩ: ${reportData.totalDoctors}
+Tổng số nhân viên: ${reportData.totalStaff}
 
-=== APPOINTMENTS ===
-Total Appointments: ${reportData.totalAppointments}
-Today's Appointments: ${reportData.todayAppointments}
-This Week: ${reportData.weeklyAppointments}
-This Month: ${reportData.monthlyAppointments}
+=== CUỘC HẸN ===
+Tổng số cuộc hẹn: ${reportData.totalAppointments}
+Cuộc hẹn hôm nay: ${reportData.todayAppointments}
+Tuần này: ${reportData.weeklyAppointments}
+Tháng này: ${reportData.monthlyAppointments}
 
-=== STATUS BREAKDOWN ===
-Pending: ${reportData.appointmentStatusBreakdown.pending}
-Completed: ${reportData.appointmentStatusBreakdown.completed}
-Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
+=== PHÂN LOẠI TRẠNG THÁI ===
+Chờ xử lý: ${reportData.appointmentStatusBreakdown.pending}
+Hoàn thành: ${reportData.appointmentStatusBreakdown.completed}
+Đã hủy: ${reportData.appointmentStatusBreakdown.cancelled}
     `;
 
     const blob = new Blob([reportContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `clinic-report-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `bao-cao-phong-kham-${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    toast.success('Report exported successfully!');
+    toast.success('Xuất báo cáo thành công!');
   };
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading reports...</div>
+        <div className={styles.loading}>Đang tải báo cáo...</div>
       </div>
     );
   }
@@ -178,19 +178,19 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Reports & Analytics</h2>
+        <h2 className={styles.title}>Báo cáo & Phân tích</h2>
         <div className={styles.headerActions}>
           <select 
             value={selectedPeriod} 
             onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
             className={styles.periodSelect}
           >
-            <option value="week">Last 7 Days</option>
-            <option value="month">Last 30 Days</option>
-            <option value="year">Last Year</option>
+            <option value="week">7 ngày qua</option>
+            <option value="month">30 ngày qua</option>
+            <option value="year">Năm qua</option>
           </select>
           <button onClick={exportReport} className={styles.exportButton}>
-            Export Report
+            Xuất báo cáo
           </button>
         </div>
       </div>
@@ -201,12 +201,12 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
 
       {/* Overview Statistics */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>System Overview</h3>
+        <h3 className={styles.sectionTitle}>Tổng quan hệ thống</h3>
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <div className={styles.statIcon}>👥</div>
             <div className={styles.statInfo}>
-              <h4>Total Users</h4>
+              <h4>Tổng người dùng</h4>
               <p className={styles.statNumber}>{reportData.totalUsers}</p>
             </div>
           </div>
@@ -214,7 +214,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>🏥</div>
             <div className={styles.statInfo}>
-              <h4>Patients</h4>
+              <h4>Bệnh nhân</h4>
               <p className={styles.statNumber}>{reportData.totalPatients}</p>
             </div>
           </div>
@@ -222,7 +222,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>👨‍⚕️</div>
             <div className={styles.statInfo}>
-              <h4>Doctors</h4>
+              <h4>Bác sĩ</h4>
               <p className={styles.statNumber}>{reportData.totalDoctors}</p>
             </div>
           </div>
@@ -230,7 +230,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>👩‍💼</div>
             <div className={styles.statInfo}>
-              <h4>Staff</h4>
+              <h4>Nhân viên</h4>
               <p className={styles.statNumber}>{reportData.totalStaff}</p>
             </div>
           </div>
@@ -239,12 +239,12 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
 
       {/* Appointment Statistics */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Appointment Analytics</h3>
+        <h3 className={styles.sectionTitle}>Phân tích cuộc hẹn</h3>
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📅</div>
             <div className={styles.statInfo}>
-              <h4>Total Appointments</h4>
+              <h4>Tổng cuộc hẹn</h4>
               <p className={styles.statNumber}>{reportData.totalAppointments}</p>
             </div>
           </div>
@@ -252,7 +252,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📍</div>
             <div className={styles.statInfo}>
-              <h4>Today</h4>
+              <h4>Hôm nay</h4>
               <p className={styles.statNumber}>{reportData.todayAppointments}</p>
             </div>
           </div>
@@ -260,7 +260,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📊</div>
             <div className={styles.statInfo}>
-              <h4>This Week</h4>
+              <h4>Tuần này</h4>
               <p className={styles.statNumber}>{reportData.weeklyAppointments}</p>
             </div>
           </div>
@@ -268,7 +268,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📈</div>
             <div className={styles.statInfo}>
-              <h4>This Month</h4>
+              <h4>Tháng này</h4>
               <p className={styles.statNumber}>{reportData.monthlyAppointments}</p>
             </div>
           </div>
@@ -277,12 +277,12 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
 
       {/* Status Breakdown */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Appointment Status Distribution</h3>
+        <h3 className={styles.sectionTitle}>Phân bố trạng thái cuộc hẹn</h3>
         <div className={styles.statusGrid}>
           <div className={styles.statusCard}>
             <div className={styles.statusIcon} style={{ backgroundColor: '#f39c12' }}>⏳</div>
             <div className={styles.statusInfo}>
-              <h4>Pending</h4>
+              <h4>Chờ xử lý</h4>
               <p className={styles.statusNumber}>{reportData.appointmentStatusBreakdown.pending}</p>
             </div>
           </div>
@@ -290,7 +290,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statusCard}>
             <div className={styles.statusIcon} style={{ backgroundColor: '#27ae60' }}>✅</div>
             <div className={styles.statusInfo}>
-              <h4>Completed</h4>
+              <h4>Hoàn thành</h4>
               <p className={styles.statusNumber}>{reportData.appointmentStatusBreakdown.completed}</p>
             </div>
           </div>
@@ -298,7 +298,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           <div className={styles.statusCard}>
             <div className={styles.statusIcon} style={{ backgroundColor: '#e74c3c' }}>❌</div>
             <div className={styles.statusInfo}>
-              <h4>Cancelled</h4>
+              <h4>Đã hủy</h4>
               <p className={styles.statusNumber}>{reportData.appointmentStatusBreakdown.cancelled}</p>
             </div>
           </div>
@@ -307,10 +307,10 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
 
       {/* Trends */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Activity Trends ({selectedPeriod})</h3>
+        <h3 className={styles.sectionTitle}>Xu hướng hoạt động ({selectedPeriod})</h3>
         <div className={styles.trendsGrid}>
           <div className={styles.trendCard}>
-            <h4>User Registrations</h4>
+            <h4>Đăng ký người dùng</h4>
             <div className={styles.trendChart}>
               {reportData.userRegistrationTrend.slice(-7).map((item, index) => (
                 <div key={index} className={styles.trendBar}>
@@ -328,7 +328,7 @@ Cancelled: ${reportData.appointmentStatusBreakdown.cancelled}
           </div>
           
           <div className={styles.trendCard}>
-            <h4>Appointments Booked</h4>
+            <h4>Cuộc hẹn được đặt</h4>
             <div className={styles.trendChart}>
               {reportData.appointmentTrend.slice(-7).map((item, index) => (
                 <div key={index} className={styles.trendBar}>

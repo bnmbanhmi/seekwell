@@ -66,7 +66,7 @@
 }
 
 .statCard:nth-child(3) {
-  background: linear-gradient(135deg, var(--info-500) 0%, var(--info-700) 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 
 .statCard:nth-child(4) {

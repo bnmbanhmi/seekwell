@@ -49,8 +49,8 @@ const SystemLogs: React.FC = () => {
       
     } catch (err: any) {
       console.error('Error fetching system logs:', err);
-      setError('Failed to load system logs');
-      toast.error('Failed to load system logs');
+      setError('Không thể tải nhật ký hệ thống');
+      toast.error('Không thể tải nhật ký hệ thống');
     } finally {
       setLoading(false);
     }
@@ -62,46 +62,46 @@ const SystemLogs: React.FC = () => {
     
     const mockMessages = {
       AUTH: [
-        'User login successful',
-        'Failed login attempt',
-        'Password reset requested',
-        'User logout',
-        'Authentication token expired'
+        'Đăng nhập thành công',
+        'Thất bại khi đăng nhập',
+        'Yêu cầu đặt lại mật khẩu',
+        'Đăng xuất người dùng',
+        'Token xác thực đã hết hạn'
       ],
       APPOINTMENT: [
-        'Appointment created',
-        'Appointment cancelled',
-        'Appointment updated',
-        'Appointment reminder sent',
-        'Appointment completed'
+        'Cuộc hẹn đã được tạo',
+        'Cuộc hẹn đã được hủy',
+        'Cuộc hẹn đã được cập nhật',
+        'Nhắc nhở cuộc hẹn đã được gửi',
+        'Cuộc hẹn đã hoàn thành'
       ],
       USER: [
-        'User profile updated',
-        'New user registered',
-        'User role changed',
-        'User account deactivated',
-        'User permissions modified'
+        'Hồ sơ người dùng đã được cập nhật',
+        'Người dùng mới đã đăng ký',
+        'Vai trò người dùng đã được thay đổi',
+        'Tài khoản người dùng đã bị vô hiệu hóa',
+        'Quyền người dùng đã được sửa đổi'
       ],
       SYSTEM: [
-        'System backup completed',
-        'Database maintenance started',
-        'Server restart',
-        'System configuration updated',
-        'Performance monitoring alert'
+        'Sao lưu hệ thống đã hoàn thành',
+        'Bảo trì cơ sở dữ liệu đã bắt đầu',
+        'Khởi động lại máy chủ',
+        'Cấu hình hệ thống đã được cập nhật',
+        'Cảnh báo giám sát hiệu suất'
       ],
       DATABASE: [
-        'Database connection established',
-        'Query execution completed',
-        'Database backup created',
-        'Index optimization completed',
-        'Database error occurred'
+        'Kết nối cơ sở dữ liệu đã được thiết lập',
+        'Thực thi truy vấn đã hoàn thành',
+        'Bản sao lưu cơ sở dữ liệu đã được tạo',
+        'Tối ưu hóa chỉ mục đã hoàn thành',
+        'Lỗi cơ sở dữ liệu đã xảy ra'
       ],
       API: [
-        'API request processed',
-        'Rate limit exceeded',
-        'API endpoint accessed',
-        'Request validation failed',
-        'Response time threshold exceeded'
+        'Yêu cầu API đã được xử lý',
+        'Vượt quá giới hạn tốc độ',
+        'Điểm cuối API đã được truy cập',
+        'Xác thực yêu cầu thất bại',
+        'Vượt quá ngưỡng thời gian phản hồi'
       ]
     };
 
@@ -121,7 +121,7 @@ const SystemLogs: React.FC = () => {
         level,
         category,
         message,
-        details: level === 'ERROR' ? 'Stack trace and error details would appear here' : undefined,
+        details: level === 'ERROR' ? 'Chi tiết lỗi và stack trace sẽ xuất hiện ở đây' : undefined,
         userId: Math.random() > 0.5 ? Math.floor(Math.random() * 100) + 1 : undefined,
         ipAddress: `192.168.1.${Math.floor(Math.random() * 254) + 1}`
       });
@@ -162,24 +162,24 @@ const SystemLogs: React.FC = () => {
   };
 
   const clearLogs = async () => {
-    if (window.confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa tất cả nhật ký không? Hành động này không thể hoàn tác.')) {
       try {
         const token = localStorage.getItem('accessToken');
         // In a real system, this would make an API call to clear logs
         
         setLogs([]);
         setFilteredLogs([]);
-        toast.success('Logs cleared successfully');
+        toast.success('Nhật ký đã được xóa thành công');
       } catch (err: any) {
         console.error('Error clearing logs:', err);
-        toast.error('Failed to clear logs');
+        toast.error('Không thể xóa nhật ký');
       }
     }
   };
 
   const exportLogs = () => {
     const csvContent = [
-      'Timestamp,Level,Category,Message,User ID,IP Address',
+      'Thời gian,Mức độ,Danh mục,Tin nhắn,ID Người dùng,Địa chỉ IP',
       ...filteredLogs.map(log => 
         `"${log.timestamp}","${log.level}","${log.category}","${log.message}","${log.userId || ''}","${log.ipAddress || ''}"`
       )
@@ -189,13 +189,13 @@ const SystemLogs: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `system-logs-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `nhat-ky-he-thong-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    toast.success('Logs exported successfully!');
+    toast.success('Nhật ký đã được xuất thành công!');
   };
 
   const getLevelColor = (level: LogEntry['level']) => {
@@ -223,7 +223,7 @@ const SystemLogs: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading system logs...</div>
+        <div className={styles.loading}>Đang tải nhật ký hệ thống...</div>
       </div>
     );
   }
@@ -231,13 +231,13 @@ const SystemLogs: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>System Logs</h2>
+        <h2 className={styles.title}>Nhật ký Hệ thống</h2>
         <div className={styles.headerActions}>
           <button onClick={exportLogs} className={styles.exportButton}>
-            Export Logs
+            Xuất Nhật ký
           </button>
           <button onClick={clearLogs} className={styles.clearButton}>
-            Clear Logs
+            Xóa Nhật ký
           </button>
         </div>
       </div>
@@ -249,39 +249,39 @@ const SystemLogs: React.FC = () => {
       {/* Filters */}
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
-          <label>Level:</label>
+          <label>Mức độ:</label>
           <select 
             value={levelFilter} 
             onChange={(e) => setLevelFilter(e.target.value)}
             className={styles.filterSelect}
           >
-            <option value="ALL">All Levels</option>
-            <option value="ERROR">Error</option>
-            <option value="WARNING">Warning</option>
-            <option value="INFO">Info</option>
+            <option value="ALL">Tất cả Mức độ</option>
+            <option value="ERROR">Lỗi</option>
+            <option value="WARNING">Cảnh báo</option>
+            <option value="INFO">Thông tin</option>
             <option value="DEBUG">Debug</option>
           </select>
         </div>
 
         <div className={styles.filterGroup}>
-          <label>Category:</label>
+          <label>Danh mục:</label>
           <select 
             value={categoryFilter} 
             onChange={(e) => setCategoryFilter(e.target.value)}
             className={styles.filterSelect}
           >
-            <option value="ALL">All Categories</option>
-            <option value="AUTH">Authentication</option>
-            <option value="APPOINTMENT">Appointments</option>
-            <option value="USER">User Management</option>
-            <option value="SYSTEM">System</option>
-            <option value="DATABASE">Database</option>
+            <option value="ALL">Tất cả Danh mục</option>
+            <option value="AUTH">Xác thực</option>
+            <option value="APPOINTMENT">Cuộc hẹn</option>
+            <option value="USER">Quản lý Người dùng</option>
+            <option value="SYSTEM">Hệ thống</option>
+            <option value="DATABASE">Cơ sở dữ liệu</option>
             <option value="API">API</option>
           </select>
         </div>
 
         <div className={styles.filterGroup}>
-          <label>Date:</label>
+          <label>Ngày:</label>
           <input 
             type="date"
             value={dateFilter}
@@ -291,10 +291,10 @@ const SystemLogs: React.FC = () => {
         </div>
 
         <div className={styles.filterGroup}>
-          <label>Search:</label>
+          <label>Tìm kiếm:</label>
           <input 
             type="text"
-            placeholder="Search logs..."
+            placeholder="Tìm kiếm nhật ký..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles.filterInput}
@@ -305,17 +305,17 @@ const SystemLogs: React.FC = () => {
       {/* Log Summary */}
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total:</span>
+          <span className={styles.summaryLabel}>Tổng cộng:</span>
           <span className={styles.summaryValue}>{filteredLogs.length}</span>
         </div>
         <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Errors:</span>
+          <span className={styles.summaryLabel}>Lỗi:</span>
           <span className={styles.summaryValue} style={{ color: '#e74c3c' }}>
             {filteredLogs.filter(log => log.level === 'ERROR').length}
           </span>
         </div>
         <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Warnings:</span>
+          <span className={styles.summaryLabel}>Cảnh báo:</span>
           <span className={styles.summaryValue} style={{ color: '#f39c12' }}>
             {filteredLogs.filter(log => log.level === 'WARNING').length}
           </span>
@@ -325,7 +325,7 @@ const SystemLogs: React.FC = () => {
       {/* Logs Table */}
       <div className={styles.logsContainer}>
         {filteredLogs.length === 0 ? (
-          <div className={styles.noLogs}>No logs found matching your criteria.</div>
+          <div className={styles.noLogs}>Không tìm thấy nhật ký nào phù hợp với tiêu chí của bạn.</div>
         ) : (
           <div className={styles.logsList}>
             {filteredLogs.map((log) => (
@@ -341,11 +341,11 @@ const SystemLogs: React.FC = () => {
                     </span>
                     <span className={styles.logCategory}>{log.category}</span>
                     <span className={styles.logTimestamp}>
-                      {new Date(log.timestamp).toLocaleString()}
+                      {new Date(log.timestamp).toLocaleString('vi-VN')}
                     </span>
                   </div>
                   {log.userId && (
-                    <span className={styles.logUserId}>User: {log.userId}</span>
+                    <span className={styles.logUserId}>Người dùng: {log.userId}</span>
                   )}
                 </div>
                 <div className={styles.logMessage}>{log.message}</div>

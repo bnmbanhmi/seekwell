@@ -72,7 +72,7 @@ const MedicalHistory = () => {
       setMedicalReports(response.data);
     } catch (err) {
       console.error('Failed to fetch medical history:', err);
-      setError('Failed to load medical history.');
+      setError('Không thể tải lịch sử bệnh án.');
     } finally {
       setLoading(false);
     }
@@ -156,7 +156,7 @@ const MedicalHistory = () => {
       'Diagnosis': report.in_diagnosis || 'N/A',
       'Treatment': report.treatment_process || 'N/A',
       'Notes': report.doctor_notes || 'N/A',
-      'Status': report.out_day ? 'Completed' : 'Active'
+      'Status': report.out_day ? 'Hoàn thành' : 'Đang điều trị'
     }));
 
     const csvContent = [
@@ -180,7 +180,7 @@ const MedicalHistory = () => {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Medical History Report</title>
+          <title>Báo cáo lịch sử bệnh án</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
@@ -191,15 +191,15 @@ const MedicalHistory = () => {
           </style>
         </head>
         <body>
-          <h1>Medical History Report</h1>
-          <p><strong>Generated on:</strong> ${new Date().toLocaleDateString()}</p>
+          <h1>Báo cáo lịch sử bệnh án</h1>
+          <p><strong>Xuất ngày:</strong> ${new Date().toLocaleDateString()}</p>
           ${filteredReports.map(report => `
             <div class="report">
-              <div class="header">Report #${report.record_id} - ${formatDate(report.in_day)}</div>
-              <div class="section"><span class="label">Diagnosis:</span> ${report.in_diagnosis || 'N/A'}</div>
-              <div class="section"><span class="label">Reason:</span> ${report.reason_in || 'N/A'}</div>
-              <div class="section"><span class="label">Treatment:</span> ${report.treatment_process || 'N/A'}</div>
-              <div class="section"><span class="label">Notes:</span> ${report.doctor_notes || 'N/A'}</div>
+              <div class="header">Báo cáo #${report.record_id} - ${formatDate(report.in_day)}</div>
+              <div class="section"><span class="label">Chẩn đoán:</span> ${report.in_diagnosis || 'N/A'}</div>
+              <div class="section"><span class="label">Lý do:</span> ${report.reason_in || 'N/A'}</div>
+              <div class="section"><span class="label">Điều trị:</span> ${report.treatment_process || 'N/A'}</div>
+              <div class="section"><span class="label">Ghi chú:</span> ${report.doctor_notes || 'N/A'}</div>
             </div>
           `).join('')}
         </body>
@@ -231,18 +231,18 @@ const MedicalHistory = () => {
                   <span className={styles.timelineDate}>{formatDate(report.in_day)}</span>
                 </div>
                 <div className={styles.timelineBody}>
-                  <p><strong>Diagnosis:</strong> {report.in_diagnosis || 'N/A'}</p>
-                  <p><strong>Reason:</strong> {report.reason_in || 'N/A'}</p>
-                  <p><strong>Treatment:</strong> {report.treatment_process || 'N/A'}</p>
+                  <p><strong>Chẩn đoán:</strong> {report.in_diagnosis || 'N/A'}</p>
+                  <p><strong>Lý do:</strong> {report.reason_in || 'N/A'}</p>
+                  <p><strong>Điều trị:</strong> {report.treatment_process || 'N/A'}</p>
                   {report.doctor_notes && (
-                    <p><strong>Notes:</strong> {report.doctor_notes}</p>
+                    <p><strong>Ghi chú:</strong> {report.doctor_notes}</p>
                   )}
                 </div>
                 <button 
                   className={styles.viewDetailsButton}
                   onClick={() => setSelectedReport(report)}
                 >
-                  View Details
+                  Xem chi tiết
                 </button>
               </div>
             </div>
@@ -256,46 +256,46 @@ const MedicalHistory = () => {
     <div className={styles.medicalHistoryContainer}>
       <div className={styles.header}>
         <button className={styles.backButton} onClick={handleBackToDashboard}>
-          ← Back to Dashboard
+          ← Quay lại Dashboard
         </button>
-        <h2>Medical History</h2>
+        <h2>Lịch sử bệnh án</h2>
         <div className={styles.headerActions}>
           <button className={styles.exportButton} onClick={exportMedicalHistory}>
-            📤 Export
+            📤 Xuất file
           </button>
           <button className={styles.printButton} onClick={printMedicalHistory}>
-            🖨️ Print
+            🖨️ In
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className={styles.loading}>Loading medical history...</div>
+        <div className={styles.loading}>Đang tải lịch sử bệnh án...</div>
       ) : error ? (
         <div className={styles.error}>{error}</div>
       ) : medicalReports.length === 0 ? (
         <div className={styles.noData}>
-          <p>No medical history found.</p>
+          <p>Không tìm thấy lịch sử bệnh án nào.</p>
         </div>
       ) : (
         <>
           {/* Search and Filter Controls */}
           <div className={styles.filtersContainer}>
-            <h3>Search & Filter</h3>
+            <h3>Tìm kiếm & Lọc</h3>
             <div className={styles.filtersGrid}>
               <div className={styles.filterGroup}>
-                <label>Diagnosis:</label>
+                <label>Chẩn đoán:</label>
                 <input
                   type="text"
                   name="diagnosis"
                   value={searchFilters.diagnosis}
                   onChange={handleFilterChange}
-                  placeholder="Search by diagnosis..."
+                  placeholder="Tìm kiếm theo chẩn đoán..."
                   className={styles.filterInput}
                 />
               </div>
               <div className={styles.filterGroup}>
-                <label>Date From:</label>
+                <label>Từ ngày:</label>
                 <input
                   type="date"
                   name="dateFrom"
@@ -305,7 +305,7 @@ const MedicalHistory = () => {
                 />
               </div>
               <div className={styles.filterGroup}>
-                <label>Date To:</label>
+                <label>Đến ngày:</label>
                 <input
                   type="date"
                   name="dateTo"
@@ -315,21 +315,21 @@ const MedicalHistory = () => {
                 />
               </div>
               <div className={styles.filterGroup}>
-                <label>Status:</label>
+                <label>Trạng thái:</label>
                 <select
                   name="status"
                   value={searchFilters.status}
                   onChange={handleFilterChange}
                   className={styles.filterSelect}
                 >
-                  <option value="all">All Reports</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
+                  <option value="all">Tất cả báo cáo</option>
+                  <option value="active">Đang điều trị</option>
+                  <option value="completed">Hoàn thành</option>
                 </select>
               </div>
               <div className={styles.filterActions}>
                 <button onClick={clearFilters} className={styles.clearButton}>
-                  Clear
+                  Xóa bộ lọc
                 </button>
               </div>
             </div>
@@ -337,19 +337,19 @@ const MedicalHistory = () => {
 
           {/* View Mode Toggle */}
           <div className={styles.viewModeContainer}>
-            <h3>View Mode</h3>
+            <h3>Chế độ xem</h3>
             <div className={styles.viewModeToggle}>
               <button
                 className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
                 onClick={() => setViewMode('list')}
               >
-                📋 List View
+                📋 Dạng danh sách
               </button>
               <button
                 className={`${styles.toggleButton} ${viewMode === 'timeline' ? styles.active : ''}`}
                 onClick={() => setViewMode('timeline')}
               >
-                🕒 Timeline View
+                🕒 Dạng thời gian
               </button>
             </div>
           </div>
@@ -357,23 +357,23 @@ const MedicalHistory = () => {
           {/* Summary Statistics */}
           <div className={styles.statsContainer}>
             <div className={styles.statCard}>
-              <h4>Total Reports</h4>
+              <h4>Tổng số báo cáo</h4>
               <span className={styles.statNumber}>{medicalReports.length}</span>
             </div>
             <div className={styles.statCard}>
-              <h4>Active</h4>
+              <h4>Đang điều trị</h4>
               <span className={styles.statNumber}>
                 {medicalReports.filter(r => !r.out_day || r.out_day === '').length}
               </span>
             </div>
             <div className={styles.statCard}>
-              <h4>Completed</h4>
+              <h4>Hoàn thành</h4>
               <span className={styles.statNumber}>
                 {medicalReports.filter(r => r.out_day && r.out_day !== '').length}
               </span>
             </div>
             <div className={styles.statCard}>
-              <h4>Filtered Results</h4>
+              <h4>Kết quả lọc</h4>
               <span className={styles.statNumber}>{filteredReports.length}</span>
             </div>
           </div>
@@ -450,47 +450,47 @@ const MedicalHistory = () => {
                         <p>{selectedReport.out_diagnosis || 'N/A'}</p>
                       </div>
                       <div className={styles.infoItem}>
-                        <strong>Treatment Process:</strong>
-                        <p>{selectedReport.treatment_process || 'N/A'}</p>
+                        <strong>Quá trình điều trị:</strong>
+                        <p>{selectedReport.treatment_process || 'Không có'}</p>
                       </div>
                       <div className={styles.infoItem}>
-                        <strong>Doctor's Notes:</strong>
-                        <p>{selectedReport.doctor_notes || 'N/A'}</p>
+                        <strong>Ghi chú của bác sĩ:</strong>
+                        <p>{selectedReport.doctor_notes || 'Không có'}</p>
                       </div>
                     </div>
 
                     <div className={styles.section}>
-                      <h4>Vital Signs</h4>
+                      <h4>Chỉ số sinh tồn</h4>
                       <div className={styles.vitalSignsGrid}>
                         <div className={styles.vitalSign}>
-                          <strong>Pulse Rate:</strong> {selectedReport.pulse_rate || 'N/A'}
+                          <strong>Nhịp tim:</strong> {selectedReport.pulse_rate || 'Không có'}
                         </div>
                         <div className={styles.vitalSign}>
-                          <strong>Temperature:</strong> {selectedReport.temperature || 'N/A'}
+                          <strong>Nhiệt độ:</strong> {selectedReport.temperature || 'Không có'}
                         </div>
                         <div className={styles.vitalSign}>
-                          <strong>Blood Pressure:</strong> {selectedReport.blood_pressure || 'N/A'}
+                          <strong>Huyết áp:</strong> {selectedReport.blood_pressure || 'Không có'}
                         </div>
                         <div className={styles.vitalSign}>
-                          <strong>Respiratory Rate:</strong> {selectedReport.respiratory_rate || 'N/A'}
+                          <strong>Nhịp thở:</strong> {selectedReport.respiratory_rate || 'Không có'}
                         </div>
                         <div className={styles.vitalSign}>
-                          <strong>Weight:</strong> {selectedReport.weight || 'N/A'}
+                          <strong>Cân nặng:</strong> {selectedReport.weight || 'Không có'}
                         </div>
                       </div>
                     </div>
 
                     {selectedReport.prescription && (
                       <div className={styles.section}>
-                        <h4>Prescription</h4>
+                        <h4>Đơn thuốc</h4>
                         <div className={styles.prescriptionList}>
                           {parsePrescription(selectedReport.prescription).map((med: any, index: number) => (
                             <div key={index} className={styles.medicationItem}>
                               <div className={styles.medName}>{med.name}</div>
                               <div className={styles.medDetails}>
-                                <span><strong>Dosage:</strong> {med.dosage}</span>
-                                <span><strong>Quantity:</strong> {med.quantity}</span>
-                                <span><strong>Instructions:</strong> {med.instructions}</span>
+                                <span><strong>Liều dùng:</strong> {med.dosage}</span>
+                                <span><strong>Số lượng:</strong> {med.quantity}</span>
+                                <span><strong>Hướng dẫn:</strong> {med.instructions}</span>
                               </div>
                             </div>
                           ))}
@@ -500,16 +500,16 @@ const MedicalHistory = () => {
 
                     {(selectedReport.personal_history || selectedReport.family_history) && (
                       <div className={styles.section}>
-                        <h4>Patient History</h4>
+                        <h4>Tiền sử bệnh nhân</h4>
                         {selectedReport.personal_history && (
                           <div className={styles.infoItem}>
-                            <strong>Personal History:</strong>
+                            <strong>Tiền sử cá nhân:</strong>
                             <p>{selectedReport.personal_history}</p>
                           </div>
                         )}
                         {selectedReport.family_history && (
                           <div className={styles.infoItem}>
-                            <strong>Family History:</strong>
+                            <strong>Tiền sử gia đình:</strong>
                             <p>{selectedReport.family_history}</p>
                           </div>
                         )}

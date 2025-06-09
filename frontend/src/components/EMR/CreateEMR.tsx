@@ -92,7 +92,7 @@ const CreateEMR: React.FC = () => {
       setPatients(patientsList);
       } catch (err) {
       console.error('Failed to fetch patients:', err);
-      setError('Failed to load patients.');
+      setError('Không thể tải danh sách bệnh nhân.');
       }
     };
 
@@ -167,12 +167,12 @@ const CreateEMR: React.FC = () => {
     
     // Validation
     if (!selectedPatientId || !doctorId) {
-      setError('Patient and doctor selection are required.');
+      setError('Vui lòng chọn bệnh nhân và bác sĩ.');
       return;
     }
     
     if (!formData.in_diagnosis.trim() || !formData.reason_in.trim() || !formData.treatment_process.trim()) {
-      setError('Diagnosis, reason for admission, and treatment process are required.');
+      setError('Chẩn đoán, lý do nhập viện và quá trình điều trị là bắt buộc.');
       return;
     }
     
@@ -203,7 +203,7 @@ const CreateEMR: React.FC = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setSuccess('EMR saved successfully!');
+      setSuccess('Hồ sơ bệnh án đã được lưu thành công!');
       setFormData({
         in_diagnosis: '',
         doctor_notes: '',
@@ -233,29 +233,29 @@ const CreateEMR: React.FC = () => {
           ).join(', ');
           setError(`Validation error: ${errorMessages}`);
         } else {
-          setError('Validation error: Please check your input data.');
+          setError('Lỗi xác thực: Vui lòng kiểm tra dữ liệu đầu vào.');
         }
       } else if (err.response?.status === 400) {
-        setError(`Bad request: ${err.response.data?.detail || 'Invalid data'}`);
+        setError(`Yêu cầu không hợp lệ: ${err.response.data?.detail || 'Dữ liệu không hợp lệ'}`);
       } else {
-        setError('Failed to save EMR. Please try again.');
+        setError('Không thể lưu hồ sơ bệnh án. Vui lòng thử lại.');
       }
     }
   };
 
   return (
     <div className={styles.createEmrContainer}>
-      <h1 className={styles.title}>Create EMR</h1>
+      <h1 className={styles.title}>Tạo Hồ sơ Bệnh án</h1>
       {error && <p className={styles.errorMessage}>{error}</p>}
       {success && <p className={styles.successMessage}>{success}</p>}
 
       {/* Step 1: Patient Selection */}
       {step === 1 && (
         <div className={styles.patientSelection}>
-          <h2 className={styles.subtitle}>Select a Patient</h2>
+          <h2 className={styles.subtitle}>Chọn Bệnh nhân</h2>
 
           {patients.length === 0 && !error ? (
-            <p className={styles.loading}>Loading...</p>
+            <p className={styles.loading}>Đang tải...</p>
             ) : patients.length > 0 ? (
             <ul className={styles.patientList}>
               {patients.map((patient) => (
@@ -270,7 +270,7 @@ const CreateEMR: React.FC = () => {
               ))}
             </ul>
           ) : (
-            <p className={styles.noPatients}>No patients available.</p>
+            <p className={styles.noPatients}>Không có bệnh nhân nào.</p>
           )}
         </div>
       )}
@@ -279,7 +279,7 @@ const CreateEMR: React.FC = () => {
       {step === 2 && (
         <div className={styles.emrForm}>
           <div className={styles.formGroup}>
-            <label htmlFor="reason_in" className={styles.label}>Reason for Admission:</label>
+            <label htmlFor="reason_in" className={styles.label}>Lý do nhập viện:</label>
             <textarea
               id="reason_in"
               name="reason_in"
@@ -290,7 +290,7 @@ const CreateEMR: React.FC = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="doctor_notes" className={styles.label}>Consultation Notes:</label>
+            <label htmlFor="doctor_notes" className={styles.label}>Ghi chú tư vấn:</label>
             <textarea
               id="doctor_notes"
               name="doctor_notes"
@@ -301,7 +301,7 @@ const CreateEMR: React.FC = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="in_diagnosis" className={styles.label}>Diagnosis:</label>
+            <label htmlFor="in_diagnosis" className={styles.label}>Chẩn đoán:</label>
             <input
               type="text"
               id="in_diagnosis"
@@ -315,10 +315,10 @@ const CreateEMR: React.FC = () => {
 
           {/* Vital Signs Section */}
           <div className={styles.vitalSignsSection}>
-            <h3 className={styles.sectionTitle}>Vital Signs</h3>
+            <h3 className={styles.sectionTitle}>Dấu hiệu sinh tồn</h3>
             <div className={styles.vitalSignsGrid}>
               <div className={styles.formGroup}>
-                <label htmlFor="pulse_rate" className={styles.label}>Pulse Rate (bpm):</label>
+                <label htmlFor="pulse_rate" className={styles.label}>Nhịp tim (lần/phút):</label>
                 <input
                   type="number"
                   id="pulse_rate"
@@ -326,11 +326,11 @@ const CreateEMR: React.FC = () => {
                   value={formData.pulse_rate}
                   onChange={handleChange}
                   className={styles.input}
-                  placeholder="e.g., 72"
+                  placeholder="ví dụ: 72"
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="temperature" className={styles.label}>Temperature (°C):</label>
+                <label htmlFor="temperature" className={styles.label}>Nhiệt độ (°C):</label>
                 <input
                   type="number"
                   step="0.1"
@@ -339,11 +339,11 @@ const CreateEMR: React.FC = () => {
                   value={formData.temperature}
                   onChange={handleChange}
                   className={styles.input}
-                  placeholder="e.g., 36.5"
+                  placeholder="ví dụ: 36.5"
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="blood_pressure" className={styles.label}>Blood Pressure:</label>
+                <label htmlFor="blood_pressure" className={styles.label}>Huyết áp:</label>
                 <input
                   type="text"
                   id="blood_pressure"
@@ -351,11 +351,11 @@ const CreateEMR: React.FC = () => {
                   value={formData.blood_pressure}
                   onChange={handleChange}
                   className={styles.input}
-                  placeholder="e.g., 120/80"
+                  placeholder="ví dụ: 120/80"
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="respiratory_rate" className={styles.label}>Respiratory Rate (breaths/min):</label>
+                <label htmlFor="respiratory_rate" className={styles.label}>Nhịp thở (lần/phút):</label>
                 <input
                   type="number"
                   id="respiratory_rate"
@@ -363,11 +363,11 @@ const CreateEMR: React.FC = () => {
                   value={formData.respiratory_rate}
                   onChange={handleChange}
                   className={styles.input}
-                  placeholder="e.g., 16"
+                  placeholder="ví dụ: 16"
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="weight" className={styles.label}>Weight (kg):</label>
+                <label htmlFor="weight" className={styles.label}>Cân nặng (kg):</label>
                 <input
                   type="number"
                   step="0.1"
@@ -376,7 +376,7 @@ const CreateEMR: React.FC = () => {
                   value={formData.weight}
                   onChange={handleChange}
                   className={styles.input}
-                  placeholder="e.g., 70.5"
+                  placeholder="ví dụ: 70.5"
                 />
               </div>
             </div>
@@ -384,33 +384,33 @@ const CreateEMR: React.FC = () => {
 
           {/* Patient History Section */}
           <div className={styles.historySection}>
-            <h3 className={styles.sectionTitle}>Patient History</h3>
+            <h3 className={styles.sectionTitle}>Tiền sử Bệnh nhân</h3>
             <div className={styles.formGroup}>
-              <label htmlFor="personal_history" className={styles.label}>Personal History:</label>
+              <label htmlFor="personal_history" className={styles.label}>Tiền sử cá nhân:</label>
               <textarea
                 id="personal_history"
                 name="personal_history"
                 value={formData.personal_history}
                 onChange={handleChange}
                 className={styles.textarea}
-                placeholder="Patient's personal medical history, allergies, medications, etc."
+                placeholder="Tiền sử bệnh lý cá nhân, dị ứng, thuốc đang sử dụng, v.v."
               />
             </div>
             <div className={styles.formGroup}>
-              <label htmlFor="family_history" className={styles.label}>Family History:</label>
+              <label htmlFor="family_history" className={styles.label}>Tiền sử gia đình:</label>
               <textarea
                 id="family_history"
                 name="family_history"
                 value={formData.family_history}
                 onChange={handleChange}
                 className={styles.textarea}
-                placeholder="Family medical history, genetic conditions, etc."
+                placeholder="Tiền sử bệnh lý gia đình, các bệnh di truyền, v.v."
               />
             </div>
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="treatment_process" className={styles.label}>Treatment Process:</label>
+            <label htmlFor="treatment_process" className={styles.label}>Quá trình điều trị:</label>
             <textarea
               id="treatment_process"
               name="treatment_process"
@@ -420,16 +420,16 @@ const CreateEMR: React.FC = () => {
               className={styles.textarea}
             />
           </div>
-          <button className={styles.button} onClick={() => setStep(3)}>Add Prescription</button>
+          <button className={styles.button} onClick={() => setStep(3)}>Thêm đơn thuốc</button>
         </div>
       )}
 
       {/* Step 3: Prescription Entry */}
       {step === 3 && (
         <div className={styles.prescriptionForm}>
-          <h2>Prescription</h2>
+          <h2>Đơn thuốc</h2>
           <div className={styles.formGroup}>
-            <label htmlFor="newMedication" className={styles.label}>Medication:</label>
+            <label htmlFor="newMedication" className={styles.label}>Thuốc:</label>
             <input
               type="text"
               id="newMedication"
@@ -437,14 +437,14 @@ const CreateEMR: React.FC = () => {
               onChange={(e) => setNewMedication(e.target.value)}
               className={styles.input}
             />
-            <button className={styles.button} onClick={handleAddMedication}>Add Medication</button>
+            <button className={styles.button} onClick={handleAddMedication}>Thêm thuốc</button>
           </div>
           <ul className={styles.medicationList}>
             {formData.prescription.map((med, index) => (
               <li key={index} className={styles.medicationListItem}>
                 <strong>{med.name}</strong>
                 <div>
-                  <label className={styles.label}>Dosage:</label>
+                  <label className={styles.label}>Liều dùng:</label>
                   <input
                     type="text"
                     value={med.dosage}
@@ -459,7 +459,7 @@ const CreateEMR: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className={styles.label}>Quantity:</label>
+                  <label className={styles.label}>Số lượng:</label>
                   <input
                     type="number"
                     value={med.quantity}
@@ -474,7 +474,7 @@ const CreateEMR: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className={styles.label}>Instructions:</label>
+                  <label className={styles.label}>Hướng dẫn:</label>
                   <textarea
                     value={med.instructions}
                     onChange={(e) =>
@@ -490,33 +490,33 @@ const CreateEMR: React.FC = () => {
               </li>
             ))}
           </ul>
-          <button className={styles.button} onClick={() => setStep(4)}>Review EMR</button>
+          <button className={styles.button} onClick={() => setStep(4)}>Xem lại hồ sơ</button>
         </div>
       )}
 
       {/* Step 4: Review EMR */}
       {step === 4 && (
         <div className={styles.reviewEmr}>
-          <h2>Review EMR</h2>
+          <h2>Xem lại Hồ sơ Bệnh án</h2>
           <p>
-            <strong>Consultation Notes:</strong> {formData.doctor_notes}
+            <strong>Ghi chú tư vấn:</strong> {formData.doctor_notes}
           </p>
           <p>
-            <strong>Diagnosis:</strong> {formData.in_diagnosis}
+            <strong>Chẩn đoán:</strong> {formData.in_diagnosis}
           </p>
           <p>
-            <strong>Treatment Process:</strong> {formData.treatment_process}
+            <strong>Quá trình điều trị:</strong> {formData.treatment_process}
           </p>
-          <h3>Prescription:</h3>
+          <h3>Đơn thuốc:</h3>
           <ul>
             {formData.prescription.map((med, index) => (
               <li key={index}>
-                <strong>{med.name}</strong> - Dosage: {med.dosage}, Quantity: {med.quantity}, Instructions: {med.instructions}
+                <strong>{med.name}</strong> - Liều dùng: {med.dosage}, Số lượng: {med.quantity}, Hướng dẫn: {med.instructions}
               </li>
             ))}
           </ul>
-          <button className={styles.button} onClick={handleSaveEMR}>Save EMR</button>
-          <button className={styles.button} onClick={handleCancel}>Cancel</button>
+          <button className={styles.button} onClick={handleSaveEMR}>Lưu hồ sơ</button>
+          <button className={styles.button} onClick={handleCancel}>Hủy</button>
         </div>
       )}
     </div>

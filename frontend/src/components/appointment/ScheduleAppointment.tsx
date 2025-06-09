@@ -66,7 +66,7 @@ const ScheduleAppointment: React.FC = () => {
         setDoctors(doctorsResponse.data);
       } catch (err) {
         console.error('Failed to fetch initial data:', err);
-        setError('Failed to load patients and doctors.');
+        setError('Không thể tải danh sách bệnh nhân và bác sĩ.');
       }
     };
 
@@ -90,7 +90,7 @@ const ScheduleAppointment: React.FC = () => {
   // Fetch available slots when patient, doctor, and date are selected
   const fetchAvailableSlots = async () => {
     if (!formData.date) {
-      setError('Please select a date first.');
+      setError('Vui lòng chọn ngày trước.');
       return;
     }
 
@@ -115,7 +115,7 @@ const ScheduleAppointment: React.FC = () => {
       setStep(3);
     } catch (err) {
       console.error('Failed to fetch available slots:', err);
-      setError('Failed to fetch available time slots.');
+      setError('Không thể tải danh sách lịch trống.');
     } finally {
       setLoading(false);
     }
@@ -145,7 +145,7 @@ const ScheduleAppointment: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!formData.patientId || !formData.doctorId || !formData.date || !formData.time || !formData.reason) {
-      setError('Please fill in all required fields.');
+      setError('Vui lòng điền đầy đủ các thông tin bắt buộc.');
       return;
     }
 
@@ -167,8 +167,8 @@ const ScheduleAppointment: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setSuccess('Appointment scheduled successfully!');
-      toast.success('Appointment scheduled successfully!');
+      setSuccess('Sắp xếp lịch hẹn thành công!');
+      toast.success('Sắp xếp lịch hẹn thành công!');
       
       // Reset form
       setFormData({
@@ -182,8 +182,8 @@ const ScheduleAppointment: React.FC = () => {
       setSearchTerm('');
     } catch (err) {
       console.error('Failed to schedule appointment:', err);
-      setError('Failed to schedule appointment. Please try again.');
-      toast.error('Failed to schedule appointment.');
+      setError('Không thể sắp xếp lịch hẹn. Vui lòng thử lại.');
+      toast.error('Không thể sắp xếp lịch hẹn.');
     } finally {
       setLoading(false);
     }
@@ -191,7 +191,7 @@ const ScheduleAppointment: React.FC = () => {
 
   return (
     <div className="schedule-appointment">
-      <h1>Schedule Appointment</h1>
+      <h1>Sắp xếp lịch hẹn</h1>
       
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
@@ -199,12 +199,12 @@ const ScheduleAppointment: React.FC = () => {
       {/* Step 1: Select Patient */}
       {step === 1 && (
         <div className="step-container">
-          <h2>Step 1: Select Patient</h2>
+          <h2>Bước 1: Chọn bệnh nhân</h2>
           
           <div className="search-section">
             <input
               type="text"
-              placeholder="Search patients by name, phone, or email..."
+              placeholder="Tìm kiếm bệnh nhân theo tên, số điện thoại hoặc email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -213,7 +213,7 @@ const ScheduleAppointment: React.FC = () => {
 
           <div className="patients-grid">
             {filteredPatients.length === 0 ? (
-              <p>No patients found.</p>
+              <p>Không tìm thấy bệnh nhân nào.</p>
             ) : (
               filteredPatients.map((patient) => (
                 <div
@@ -223,9 +223,9 @@ const ScheduleAppointment: React.FC = () => {
                 >
                   <h3>{patient.full_name}</h3>
                   <p>ID: {patient.patient_id}</p>
-                  {patient.phone && <p>Phone: {patient.phone}</p>}
+                  {patient.phone && <p>SĐT: {patient.phone}</p>}
                   {patient.email && <p>Email: {patient.email}</p>}
-                  {patient.date_of_birth && <p>DOB: {patient.date_of_birth}</p>}
+                  {patient.date_of_birth && <p>Ngày sinh: {patient.date_of_birth}</p>}
                 </div>
               ))
             )}
@@ -236,22 +236,22 @@ const ScheduleAppointment: React.FC = () => {
       {/* Step 2: Select Doctor and Date */}
       {step === 2 && (
         <div className="step-container">
-          <h2>Step 2: Select Doctor and Date</h2>
+          <h2>Bước 2: Chọn bác sĩ và ngày</h2>
           
           <div className="selected-patient-info">
-            <h3>Selected Patient:</h3>
+            <h3>Bệnh nhân đã chọn:</h3>
             <p>{patients.find(p => p.patient_id === formData.patientId)?.full_name}</p>
           </div>
 
           <div className="form-section">
             <div className="form-group">
-              <label>Doctor (Optional - leave blank for any available doctor)</label>
+              <label>Bác sĩ (Tùy chọn - để trống để chọn bác sĩ bất kỳ)</label>
               <select
                 name="doctorId"
                 value={formData.doctorId || ''}
                 onChange={handleFormChange}
               >
-                <option value="">Any Doctor</option>
+                <option value="">Bác sĩ bất kỳ</option>
                 {doctors.map((doctor) => (
                   <option key={doctor.doctor_id} value={doctor.doctor_id}>
                     {doctor.doctor_name} - {doctor.major}
@@ -261,7 +261,7 @@ const ScheduleAppointment: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label>Date *</label>
+              <label>Ngày *</label>
               <input
                 type="date"
                 name="date"
@@ -274,10 +274,10 @@ const ScheduleAppointment: React.FC = () => {
 
             <div className="form-buttons">
               <button onClick={fetchAvailableSlots} disabled={loading || !formData.date}>
-                {loading ? 'Loading...' : 'Find Available Slots'}
+                {loading ? 'Đang tải...' : 'Tìm lịch trống'}
               </button>
               <button onClick={() => setStep(1)} className="back-button">
-                ← Back to Patient Selection
+                ← Quay lại chọn bệnh nhân
               </button>
             </div>
           </div>
@@ -287,21 +287,21 @@ const ScheduleAppointment: React.FC = () => {
       {/* Step 3: Select Time Slot */}
       {step === 3 && (
         <div className="step-container">
-          <h2>Step 3: Select Time Slot</h2>
+          <h2>Bước 3: Chọn khung giờ</h2>
           
           <div className="appointment-info">
-            <p><strong>Patient:</strong> {patients.find(p => p.patient_id === formData.patientId)?.full_name}</p>
-            <p><strong>Date:</strong> {formData.date}</p>
+            <p><strong>Bệnh nhân:</strong> {patients.find(p => p.patient_id === formData.patientId)?.full_name}</p>
+            <p><strong>Ngày:</strong> {formData.date}</p>
             {formData.doctorId && (
-              <p><strong>Preferred Doctor:</strong> {doctors.find(d => d.doctor_id === formData.doctorId)?.doctor_name}</p>
+              <p><strong>Bác sĩ ưu tiên:</strong> {doctors.find(d => d.doctor_id === formData.doctorId)?.doctor_name}</p>
             )}
           </div>
 
           {availableSlots.length === 0 ? (
             <div className="no-slots">
-              <p>No available slots for the selected date and doctor.</p>
+              <p>Không có lịch trống cho ngày và bác sĩ đã chọn.</p>
               <button onClick={() => setStep(2)} className="back-button">
-                ← Try Different Date/Doctor
+                ← Thử ngày/bác sĩ khác
               </button>
             </div>
           ) : (
@@ -326,7 +326,7 @@ const ScheduleAppointment: React.FC = () => {
               ))}
               
               <button onClick={() => setStep(2)} className="back-button">
-                ← Back to Date Selection
+                ← Quay lại chọn ngày
               </button>
             </div>
           )}
@@ -336,22 +336,22 @@ const ScheduleAppointment: React.FC = () => {
       {/* Step 4: Confirm Appointment */}
       {step === 4 && (
         <div className="step-container">
-          <h2>Step 4: Confirm Appointment</h2>
+          <h2>Bước 4: Xác nhận lịch hẹn</h2>
           
           <div className="confirmation-details">
-            <p><strong>Patient:</strong> {patients.find(p => p.patient_id === formData.patientId)?.full_name}</p>
-            <p><strong>Doctor:</strong> {doctors.find(d => d.doctor_id === formData.doctorId)?.doctor_name}</p>
-            <p><strong>Date:</strong> {formData.date}</p>
-            <p><strong>Time:</strong> {formData.time}</p>
+            <p><strong>Bệnh nhân:</strong> {patients.find(p => p.patient_id === formData.patientId)?.full_name}</p>
+            <p><strong>Bác sĩ:</strong> {doctors.find(d => d.doctor_id === formData.doctorId)?.doctor_name}</p>
+            <p><strong>Ngày:</strong> {formData.date}</p>
+            <p><strong>Giờ:</strong> {formData.time}</p>
           </div>
 
           <div className="form-group">
-            <label>Reason for Visit *</label>
+            <label>Lý do khám bệnh *</label>
             <textarea
               name="reason"
               value={formData.reason}
               onChange={handleFormChange}
-              placeholder="Enter the reason for this appointment..."
+              placeholder="Nhập lý do khám bệnh..."
               required
             />
           </div>
@@ -362,10 +362,10 @@ const ScheduleAppointment: React.FC = () => {
               disabled={loading || !formData.reason}
               className="confirm-button"
             >
-              {loading ? 'Scheduling...' : 'Confirm Appointment'}
+              {loading ? 'Đang sắp xếp...' : 'Xác nhận lịch hẹn'}
             </button>
             <button onClick={() => setStep(3)} className="back-button">
-              ← Back to Time Selection
+              ← Quay lại chọn giờ
             </button>
           </div>
         </div>

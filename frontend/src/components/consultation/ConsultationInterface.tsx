@@ -89,7 +89,7 @@ const ConsultationInterface: React.FC = () => {
       setLoading(false);
     } catch (err) {
       console.error('Error fetching patient data:', err);
-      setError('Failed to load patient information');
+      setError('Không thể tải thông tin bệnh nhân');
       setLoading(false);
     }
   };
@@ -124,7 +124,7 @@ const ConsultationInterface: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -132,7 +132,7 @@ const ConsultationInterface: React.FC = () => {
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading consultation interface...</div>;
+    return <div className={styles.loading}>Đang tải giao diện khám bệnh...</div>;
   }
 
   if (error) {
@@ -144,26 +144,26 @@ const ConsultationInterface: React.FC = () => {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.patientInfo}>
-          <h1>Consultation: {patient?.name}</h1>
+          <h1>Khám bệnh: {patient?.name}</h1>
           <div className={styles.patientDetails}>
-            <span>Age: {patient?.age}</span>
-            <span>Gender: {patient?.gender}</span>
-            <span>Phone: {patient?.phone}</span>
+            <span>Tuổi: {patient?.age}</span>
+            <span>Giới tính: {patient?.gender === 'male' ? 'Nam' : patient?.gender === 'female' ? 'Nữ' : 'Khác'}</span>
+            <span>Điện thoại: {patient?.phone}</span>
           </div>
         </div>
         <div className={styles.stepIndicator}>
-          <span className={currentStep >= 1 ? styles.active : ''}>1. Assessment</span>
-          <span className={currentStep >= 2 ? styles.active : ''}>2. Examination</span>
-          <span className={currentStep >= 3 ? styles.active : ''}>3. Diagnosis</span>
+          <span className={currentStep >= 1 ? styles.active : ''}>1. Đánh giá</span>
+          <span className={currentStep >= 2 ? styles.active : ''}>2. Khám</span>
+          <span className={currentStep >= 3 ? styles.active : ''}>3. Chẩn đoán</span>
         </div>
       </div>
 
       <div className={styles.consultationContent}>
         {/* Patient History Sidebar */}
         <div className={styles.historyPanel}>
-          <h3>Recent Medical History</h3>
+          <h3>Tiền Sử Bệnh Án Gần Đây</h3>
           {medicalHistory.length === 0 ? (
-            <p className={styles.noHistory}>No previous records</p>
+            <p className={styles.noHistory}>Không có hồ sơ trước đó</p>
           ) : (
             <div className={styles.historyList}>
               {medicalHistory.map((record) => (
@@ -171,9 +171,9 @@ const ConsultationInterface: React.FC = () => {
                   <div className={styles.historyDate}>{formatDate(record.created_at)}</div>
                   <div className={styles.historyDiagnosis}>{record.in_diagnosis}</div>
                   <div className={styles.historyVitals}>
-                    {record.pulse_rate && `Pulse: ${record.pulse_rate}`}
-                    {record.temperature && ` | Temp: ${record.temperature}°C`}
-                    {record.blood_pressure && ` | BP: ${record.blood_pressure}`}
+                    {record.pulse_rate && `Mạch: ${record.pulse_rate}`}
+                    {record.temperature && ` | Nhiệt độ: ${record.temperature}°C`}
+                    {record.blood_pressure && ` | Huyết áp: ${record.blood_pressure}`}
                   </div>
                 </div>
               ))}
@@ -186,27 +186,27 @@ const ConsultationInterface: React.FC = () => {
           {/* Step 1: Initial Assessment */}
           {currentStep === 1 && (
             <div className={styles.stepContent}>
-              <h2>Patient Assessment</h2>
+              <h2>Đánh Giá Bệnh Nhân</h2>
               <div className={styles.formGroup}>
-                <label>Chief Complaint & Symptoms:</label>
+                <label>Triệu Chứng Chính & Khiếu Nại:</label>
                 <textarea
                   value={consultationData.symptoms}
                   onChange={(e) => handleInputChange('symptoms', e.target.value)}
-                  placeholder="Describe the patient's main concerns and symptoms..."
+                  placeholder="Mô tả các mối quan tâm chính và triệu chứng của bệnh nhân..."
                   rows={4}
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Initial Consultation Notes:</label>
+                <label>Ghi Chú Khám Ban Đầu:</label>
                 <textarea
                   value={consultationData.consultation_notes}
                   onChange={(e) => handleInputChange('consultation_notes', e.target.value)}
-                  placeholder="Initial observations, patient behavior, additional notes..."
+                  placeholder="Quan sát ban đầu, hành vi bệnh nhân, ghi chú bổ sung..."
                   rows={4}
                 />
               </div>
               <button className={styles.nextButton} onClick={() => setCurrentStep(2)}>
-                Proceed to Examination
+                Tiến Hành Khám
               </button>
             </div>
           )}
@@ -214,10 +214,10 @@ const ConsultationInterface: React.FC = () => {
           {/* Step 2: Physical Examination & Vitals */}
           {currentStep === 2 && (
             <div className={styles.stepContent}>
-              <h2>Physical Examination & Vital Signs</h2>
+              <h2>Khám Thể Chất & Sinh Hiệu</h2>
               <div className={styles.vitalsGrid}>
                 <div className={styles.formGroup}>
-                  <label>Pulse Rate (bpm):</label>
+                  <label>Mạch (lần/phút):</label>
                   <input
                     type="number"
                     value={consultationData.current_vitals.pulse_rate}
@@ -226,7 +226,7 @@ const ConsultationInterface: React.FC = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Temperature (°C):</label>
+                  <label>Nhiệt Độ (°C):</label>
                   <input
                     type="number"
                     step="0.1"
@@ -236,7 +236,7 @@ const ConsultationInterface: React.FC = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Blood Pressure:</label>
+                  <label>Huyết Áp:</label>
                   <input
                     type="text"
                     value={consultationData.current_vitals.blood_pressure}
@@ -245,7 +245,7 @@ const ConsultationInterface: React.FC = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Respiratory Rate:</label>
+                  <label>Nhịp Thở:</label>
                   <input
                     type="number"
                     value={consultationData.current_vitals.respiratory_rate}
@@ -254,7 +254,7 @@ const ConsultationInterface: React.FC = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Weight (kg):</label>
+                  <label>Cân Nặng (kg):</label>
                   <input
                     type="number"
                     step="0.1"
@@ -266,10 +266,10 @@ const ConsultationInterface: React.FC = () => {
               </div>
               <div className={styles.buttonGroup}>
                 <button className={styles.backButton} onClick={() => setCurrentStep(1)}>
-                  Back
+                  Quay Lại
                 </button>
                 <button className={styles.nextButton} onClick={() => setCurrentStep(3)}>
-                  Proceed to Diagnosis
+                  Tiến Hành Chẩn Đoán
                 </button>
               </div>
             </div>
@@ -278,31 +278,31 @@ const ConsultationInterface: React.FC = () => {
           {/* Step 3: Diagnosis & Treatment Plan */}
           {currentStep === 3 && (
             <div className={styles.stepContent}>
-              <h2>Diagnosis & Treatment Planning</h2>
+              <h2>Chẩn Đoán & Kế Hoạch Điều Trị</h2>
               <div className={styles.formGroup}>
-                <label>Preliminary Diagnosis:</label>
+                <label>Chẩn Đoán Sơ Bộ:</label>
                 <input
                   type="text"
                   value={consultationData.preliminary_diagnosis}
                   onChange={(e) => handleInputChange('preliminary_diagnosis', e.target.value)}
-                  placeholder="Primary diagnosis based on examination..."
+                  placeholder="Chẩn đoán chính dựa trên khám bệnh..."
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Recommended Tests/Investigations:</label>
+                <label>Xét Nghiệm/Chẩn Đoán Hình Ảnh Khuyến Nghị:</label>
                 <textarea
                   value={consultationData.recommended_tests}
                   onChange={(e) => handleInputChange('recommended_tests', e.target.value)}
-                  placeholder="List any laboratory tests, imaging, or additional examinations needed..."
+                  placeholder="Liệt kê các xét nghiệm, chẩn đoán hình ảnh hoặc khám bổ sung cần thiết..."
                   rows={3}
                 />
               </div>
               <div className={styles.buttonGroup}>
                 <button className={styles.backButton} onClick={() => setCurrentStep(2)}>
-                  Back
+                  Quay Lại
                 </button>
                 <button className={styles.completeButton} onClick={handleProceedToEMR}>
-                  Complete Consultation & Create EMR
+                  Hoàn Thành Khám & Tạo Hồ Sơ Bệnh Án
                 </button>
               </div>
             </div>

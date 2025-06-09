@@ -102,7 +102,7 @@ const StaffDashboard = () => {
 
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
-        setError('Failed to load dashboard data.');
+        setError('Không thể tải dữ liệu bảng điều khiển.');
       } finally {
         setLoading(false);
       }
@@ -113,39 +113,32 @@ const StaffDashboard = () => {
 
   const quickActions = [
     {
-      title: 'Schedule Appointment',
-      description: 'Book appointments for patients',
+      title: 'Lên lịch cuộc hẹn',
+      description: 'Đặt cuộc hẹn cho bệnh nhân',
       icon: '📅',
       action: () => navigate('/dashboard/appointments/schedule'),
       color: '#3498db'
     },
     {
-      title: 'Patient Search',
-      description: 'Find and view patient records',
+      title: 'Tìm kiếm bệnh nhân',
+      description: 'Tìm và xem hồ sơ bệnh nhân',
       icon: '🔍',
       action: () => navigate('/dashboard/patients'),
       color: '#27ae60'
     },
     {
-      title: 'Check-in Patients',
-      description: 'Manage patient check-ins',
+      title: 'Check-in bệnh nhân',
+      description: 'Quản lý việc check-in của bệnh nhân',
       icon: '✅',
       action: () => navigate('/dashboard/checkin'),
       color: '#f39c12'
-    },
-    {
-      title: 'Billing & Invoices',
-      description: 'Handle billing and payments',
-      icon: '💰',
-      action: () => navigate('/dashboard/billing'),
-      color: '#e74c3c'
     }
   ];
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading dashboard...</div>
+        <div className={styles.loading}>Đang tải bảng điều khiển...</div>
       </div>
     );
   }
@@ -153,8 +146,8 @@ const StaffDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Staff Dashboard</h2>
-        <p className={styles.subtitle}>Manage clinic operations and patient care</p>
+        <h2 className={styles.title}>Bảng điều khiển nhân viên</h2>
+        <p className={styles.subtitle}>Quản lý hoạt động phòng khám và chăm sóc bệnh nhân</p>
       </div>
 
       {error && (
@@ -166,7 +159,7 @@ const StaffDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📅</div>
           <div className={styles.statInfo}>
-            <h3>Today's Appointments</h3>
+            <h3>Cuộc hẹn hôm nay</h3>
             <p className={styles.statNumber}>{stats.todayAppointments}</p>
           </div>
         </div>
@@ -174,7 +167,7 @@ const StaffDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>👥</div>
           <div className={styles.statInfo}>
-            <h3>Total Patients</h3>
+            <h3>Tổng số bệnh nhân</h3>
             <p className={styles.statNumber}>{stats.totalPatients}</p>
           </div>
         </div>
@@ -182,7 +175,7 @@ const StaffDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⏰</div>
           <div className={styles.statInfo}>
-            <h3>Pending Check-ins</h3>
+            <h3>Chờ check-in</h3>
             <p className={styles.statNumber}>{stats.pendingCheckIns}</p>
           </div>
         </div>
@@ -190,7 +183,7 @@ const StaffDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>✅</div>
           <div className={styles.statInfo}>
-            <h3>Completed Today</h3>
+            <h3>Hoàn thành hôm nay</h3>
             <p className={styles.statNumber}>{stats.completedToday}</p>
           </div>
         </div>
@@ -198,7 +191,7 @@ const StaffDashboard = () => {
 
       {/* Quick Actions */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Quick Actions</h3>
+        <h3 className={styles.sectionTitle}>Hành động nhanh</h3>
         <div className={styles.actionsGrid}>
           {quickActions.map((action, index) => (
             <div
@@ -219,19 +212,19 @@ const StaffDashboard = () => {
 
       {/* Today's Appointments */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Today's Schedule</h3>
+        <h3 className={styles.sectionTitle}>Lịch hôm nay</h3>
         {appointments.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>No appointments scheduled for today</p>
+            <p>Không có cuộc hẹn nào được lên lịch cho hôm nay</p>
           </div>
         ) : (
           <div className={styles.appointmentsTable}>
             <div className={styles.tableHeader}>
-              <div>Time</div>
-              <div>Patient</div>
-              <div>Doctor</div>
-              <div>Reason</div>
-              <div>Status</div>
+              <div>Thời gian</div>
+              <div>Bệnh nhân</div>
+              <div>Bác sĩ</div>
+              <div>Lý do</div>
+              <div>Trạng thái</div>
             </div>
             {appointments.map((appointment) => (
               <div key={appointment.appointment_id} className={styles.tableRow}>
@@ -240,7 +233,7 @@ const StaffDashboard = () => {
                 <div>{appointment.doctorName}</div>
                 <div className={styles.reasonCell}>{appointment.reason}</div>
                 <div>
-                  <span className={styles.statusPending}>Pending</span>
+                  <span className={styles.statusPending}>Chờ xử lý</span>
                 </div>
               </div>
             ))}

@@ -61,7 +61,7 @@ const DoctorSchedule = () => {
               console.error(`Failed to fetch patient name for patient_id ${appointment.patient_id}:`, err);
               return {
                 ...appointment,
-                patientName: 'Unknown Patient', // Fallback if patient name cannot be fetched
+                patientName: 'Bệnh nhân không xác định', // Fallback if patient name cannot be fetched
               };
             }
           })
@@ -76,7 +76,7 @@ const DoctorSchedule = () => {
         setAppointments(appointmentsWithPatientNames);
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
-        setError('Failed to load appointments.');
+        setError('Không thể tải danh sách lịch hẹn.');
       } finally {
         setLoading(false);
       }
@@ -124,12 +124,12 @@ const DoctorSchedule = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className={styles.appointmentsContainer}>
-        <h1 className={styles.appointmentsHeader}>Doctor's Schedule</h1>
+        <h1 className={styles.appointmentsHeader}>Lịch bác sĩ</h1>
 
         {loading ? (
           <div className={styles.loadingSpinner}>
             <CircularProgress />
-            <p>Loading...</p>
+            <p>Đang tải...</p>
           </div>
         ) : (
           <DateCalendar
@@ -146,9 +146,9 @@ const DoctorSchedule = () => {
           <table className={styles.appointmentsTable}>
             <thead>
               <tr>
-                <th>Time</th>
-                <th>Patient</th>
-                <th>Reason</th>
+                <th>Giờ</th>
+                <th>Bệnh nhân</th>
+                <th>Lý do</th>
               </tr>
             </thead>
             <tbody>
@@ -168,17 +168,17 @@ const DoctorSchedule = () => {
             </tbody>
           </table>
         ) : (
-          !loading && <p className={styles.noAppointments}>No appointments on this day.</p>
+          !loading && <p className={styles.noAppointments}>Không có lịch hẹn nào trong ngày này.</p>
         )}
 
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box className={styles.appointmentModal}>
-            <h2>Appointment Actions</h2>
+            <h2>Thao tác với lịch hẹn</h2>
             {selectedAppointment && (
                 <>
-                  <p><strong>Patient:</strong> {selectedAppointment.patientName}</p>
-                  <p><strong>Date:</strong> {selectedAppointment.appointment_day}</p>
-                  <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
+                  <p><strong>Bệnh nhân:</strong> {selectedAppointment.patientName}</p>
+                  <p><strong>Ngày:</strong> {selectedAppointment.appointment_day}</p>
+                  <p><strong>Giờ:</strong> {selectedAppointment.appointment_time}</p>
 
                   {error && (
                   <Box mt={2} color="error.main">

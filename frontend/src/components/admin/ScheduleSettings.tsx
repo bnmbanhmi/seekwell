@@ -52,7 +52,7 @@ const ScheduleSettings: React.FC = () => {
   const [error, setError] = useState('');
 
   const daysOfWeek = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'
   ];
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const ScheduleSettings: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Error fetching doctors:', err);
-      setError('Failed to load doctors');
+      setError('Không thể tải danh sách bác sĩ');
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ const ScheduleSettings: React.FC = () => {
   const initializeWeeklySchedule = () => {
     const defaultSchedule: DaySettings[] = daysOfWeek.map(day => ({
       dayOfWeek: day,
-      isEnabled: !['Saturday', 'Sunday'].includes(day),
+      isEnabled: !['Thứ Bảy', 'Chủ Nhật'].includes(day),
       timeSlots: [
         {
           id: `${day}-morning`,
@@ -157,7 +157,7 @@ const ScheduleSettings: React.FC = () => {
         holidayDates: [...clinicSettings.holidayDates, newHolidayDate].sort()
       });
       setNewHolidayDate('');
-      toast.success('Holiday date added');
+      toast.success('Đã thêm ngày nghỉ lễ');
     }
   };
 
@@ -165,7 +165,7 @@ const ScheduleSettings: React.FC = () => {
     updateClinicSettings({
       holidayDates: clinicSettings.holidayDates.filter(date => date !== dateToRemove)
     });
-    toast.success('Holiday date removed');
+    toast.success('Đã xóa ngày nghỉ lễ');
   };
 
   const saveSettings = async () => {
@@ -186,17 +186,17 @@ const ScheduleSettings: React.FC = () => {
       //   headers: { Authorization: `Bearer ${token}` }
       // });
       
-      toast.success('Settings saved successfully!');
+      toast.success('Cài đặt đã được lưu thành công!');
     } catch (err: any) {
       console.error('Error saving settings:', err);
-      toast.error('Failed to save settings');
+      toast.error('Không thể lưu cài đặt');
     } finally {
       setSaving(false);
     }
   };
 
   const resetToDefault = () => {
-    if (window.confirm('Are you sure you want to reset all settings to default values?')) {
+    if (window.confirm('Bạn có chắc chắn muốn đặt lại tất cả cài đặt về giá trị mặc định không?')) {
       initializeWeeklySchedule();
       setClinicSettings({
         appointmentDuration: 30,
@@ -206,14 +206,14 @@ const ScheduleSettings: React.FC = () => {
         allowWeekendAppointments: false,
         holidayDates: []
       });
-      toast.success('Settings reset to default values');
+      toast.success('Cài đặt đã được đặt lại về giá trị mặc định');
     }
   };
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading schedule settings...</div>
+        <div className={styles.loading}>Đang tải cài đặt lịch trình...</div>
       </div>
     );
   }
@@ -221,17 +221,17 @@ const ScheduleSettings: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Schedule Settings</h2>
+        <h2 className={styles.title}>Cài đặt Lịch trình</h2>
         <div className={styles.headerActions}>
           <button onClick={resetToDefault} className={styles.resetButton}>
-            Reset to Default
+            Đặt lại mặc định
           </button>
           <button 
             onClick={saveSettings} 
             disabled={saving}
             className={styles.saveButton}
           >
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? 'Đang lưu...' : 'Lưu cài đặt'}
           </button>
         </div>
       </div>
@@ -242,16 +242,16 @@ const ScheduleSettings: React.FC = () => {
 
       {/* Doctor Selection */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Doctor Schedule Configuration</h3>
+        <h3 className={styles.sectionTitle}>Cấu hình Lịch trình Bác sĩ</h3>
         <div className={styles.doctorSelection}>
-          <label htmlFor="doctor-select">Select Doctor:</label>
+          <label htmlFor="doctor-select">Chọn Bác sĩ:</label>
           <select
             id="doctor-select"
             value={selectedDoctor || ''}
             onChange={(e) => setSelectedDoctor(Number(e.target.value))}
             className={styles.doctorSelect}
           >
-            <option value="">Select a doctor...</option>
+            <option value="">Chọn một bác sĩ...</option>
             {doctors.map(doctor => (
               <option key={doctor.user_id} value={doctor.user_id}>
                 {doctor.full_name} ({doctor.username})
@@ -263,7 +263,7 @@ const ScheduleSettings: React.FC = () => {
 
       {/* Weekly Schedule */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Weekly Schedule</h3>
+        <h3 className={styles.sectionTitle}>Lịch trình Hàng tuần</h3>
         <div className={styles.weeklySchedule}>
           {weeklySchedule.map((day, dayIndex) => (
             <div key={day.dayOfWeek} className={styles.dayCard}>
@@ -284,7 +284,7 @@ const ScheduleSettings: React.FC = () => {
                     onClick={() => addTimeSlot(dayIndex)}
                     className={styles.addSlotButton}
                   >
-                    + Add Slot
+                    + Thêm Khung giờ
                   </button>
                 )}
               </div>
@@ -306,7 +306,7 @@ const ScheduleSettings: React.FC = () => {
                         className={styles.timeInput}
                         disabled={!slot.isEnabled}
                       />
-                      <span className={styles.timeSeparator}>to</span>
+                      <span className={styles.timeSeparator}>đến</span>
                       <input
                         type="time"
                         value={slot.endTime}
@@ -332,10 +332,10 @@ const ScheduleSettings: React.FC = () => {
 
       {/* Clinic Settings */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>General Clinic Settings</h3>
+        <h3 className={styles.sectionTitle}>Cài đặt Chung của Phòng khám</h3>
         <div className={styles.settingsGrid}>
           <div className={styles.settingItem}>
-            <label htmlFor="appointment-duration">Appointment Duration (minutes):</label>
+            <label htmlFor="appointment-duration">Thời lượng Cuộc hẹn (phút):</label>
             <input
               id="appointment-duration"
               type="number"
@@ -349,7 +349,7 @@ const ScheduleSettings: React.FC = () => {
           </div>
 
           <div className={styles.settingItem}>
-            <label htmlFor="buffer-time">Buffer Time Between Appointments (minutes):</label>
+            <label htmlFor="buffer-time">Thời gian Nghỉ giữa các Cuộc hẹn (phút):</label>
             <input
               id="buffer-time"
               type="number"
@@ -363,7 +363,7 @@ const ScheduleSettings: React.FC = () => {
           </div>
 
           <div className={styles.settingItem}>
-            <label htmlFor="advance-booking">Advance Booking Days:</label>
+            <label htmlFor="advance-booking">Số ngày Đặt trước:</label>
             <input
               id="advance-booking"
               type="number"
@@ -376,7 +376,7 @@ const ScheduleSettings: React.FC = () => {
           </div>
 
           <div className={styles.settingItem}>
-            <label htmlFor="max-appointments">Max Appointments Per Day:</label>
+            <label htmlFor="max-appointments">Số Cuộc hẹn Tối đa Mỗi ngày:</label>
             <input
               id="max-appointments"
               type="number"
@@ -396,7 +396,7 @@ const ScheduleSettings: React.FC = () => {
                 onChange={(e) => updateClinicSettings({ allowWeekendAppointments: e.target.checked })}
                 className={styles.settingCheckbox}
               />
-              Allow Weekend Appointments
+              Cho phép Cuộc hẹn Cuối tuần
             </label>
           </div>
         </div>
@@ -404,7 +404,7 @@ const ScheduleSettings: React.FC = () => {
 
       {/* Holiday Management */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Holiday Management</h3>
+        <h3 className={styles.sectionTitle}>Quản lý Ngày nghỉ lễ</h3>
         <div className={styles.holidaySection}>
           <div className={styles.addHoliday}>
             <input
@@ -414,24 +414,24 @@ const ScheduleSettings: React.FC = () => {
               className={styles.holidayInput}
             />
             <button onClick={addHoliday} className={styles.addHolidayButton}>
-              Add Holiday
+              Thêm Ngày nghỉ lễ
             </button>
           </div>
           
           <div className={styles.holidayList}>
             {clinicSettings.holidayDates.length === 0 ? (
-              <p className={styles.noHolidays}>No holidays configured</p>
+              <p className={styles.noHolidays}>Chưa cấu hình ngày nghỉ lễ nào</p>
             ) : (
               clinicSettings.holidayDates.map(date => (
                 <div key={date} className={styles.holidayItem}>
                   <span className={styles.holidayDate}>
-                    {new Date(date).toLocaleDateString()}
+                    {new Date(date).toLocaleDateString('vi-VN')}
                   </span>
                   <button
                     onClick={() => removeHoliday(date)}
                     className={styles.removeHolidayButton}
                   >
-                    Remove
+                    Xóa
                   </button>
                 </div>
               ))

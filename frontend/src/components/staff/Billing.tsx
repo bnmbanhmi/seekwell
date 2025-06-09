@@ -86,7 +86,7 @@ const Billing: React.FC = () => {
       setPatients(response.data);
     } catch (err) {
       console.error('Failed to fetch patients:', err);
-      setError('Failed to load patients.');
+      setError('Không thể tải danh sách bệnh nhân.');
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ const Billing: React.FC = () => {
 
   const addItemToInvoice = () => {
     if (!newItem.description || !newItem.quantity || !newItem.unitPrice) {
-      alert('Please fill in all item fields');
+      alert('Vui lòng điền đầy đủ thông tin mục dịch vụ');
       return;
     }
 
@@ -161,7 +161,7 @@ const Billing: React.FC = () => {
 
   const createInvoice = () => {
     if (!selectedPatient || !newInvoice.items?.length) {
-      alert('Please select a patient and add at least one item');
+      alert('Vui lòng chọn bệnh nhân và thêm ít nhất một dịch vụ');
       return;
     }
 
@@ -195,12 +195,12 @@ const Billing: React.FC = () => {
     setSelectedPatient(null);
     setShowCreateInvoice(false);
 
-    alert('Invoice created successfully!');
+    alert('Tạo hóa đơn thành công!');
   };
 
   const processPayment = () => {
     if (!selectedInvoice || paymentAmount <= 0) {
-      alert('Please enter a valid payment amount');
+      alert('Vui lòng nhập số tiền thanh toán hợp lệ');
       return;
     }
 
@@ -234,7 +234,7 @@ const Billing: React.FC = () => {
     setSelectedInvoice(null);
     setPaymentAmount(0);
 
-    alert('Payment processed successfully!');
+    alert('Xử lý thanh toán thành công!');
   };
 
   const filteredInvoices = invoices.filter(invoice => {
@@ -256,10 +256,10 @@ const Billing: React.FC = () => {
 
   const getStatusLabel = (status: Invoice['status']) => {
     const labels = {
-      'draft': 'Draft',
-      'sent': 'Sent',
-      'paid': 'Paid',
-      'overdue': 'Overdue',
+      'draft': 'Bản nháp',
+      'sent': 'Đã gửi',
+      'paid': 'Đã thanh toán',
+      'overdue': 'Quá hạn',
     };
     return labels[status];
   };
@@ -282,7 +282,7 @@ const Billing: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading billing data...</div>
+        <div className={styles.loading}>Đang tải dữ liệu thanh toán...</div>
       </div>
     );
   }
@@ -290,8 +290,8 @@ const Billing: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Billing & Invoices</h2>
-        <p className={styles.subtitle}>Manage patient billing and payment processing</p>
+        <h2 className={styles.title}>Thanh toán & Hóa đơn</h2>
+        <p className={styles.subtitle}>Quản lý thanh toán và xử lý hóa đơn bệnh nhân</p>
       </div>
 
       {error && (
@@ -303,29 +303,29 @@ const Billing: React.FC = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📋</div>
           <div className={styles.statInfo}>
-            <h4>Total Invoices</h4>
+            <h4>Tổng số hóa đơn</h4>
             <p className={styles.statNumber}>{stats.totalInvoices}</p>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statIcon}>💰</div>
           <div className={styles.statInfo}>
-            <h4>Total Revenue</h4>
-            <p className={styles.statNumber}>${stats.totalRevenue.toFixed(2)}</p>
+            <h4>Tổng doanh thu</h4>
+            <p className={styles.statNumber}>{stats.totalRevenue.toLocaleString('vi-VN')} VNĐ</p>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⏳</div>
           <div className={styles.statInfo}>
-            <h4>Pending Amount</h4>
-            <p className={styles.statNumber}>${stats.pendingAmount.toFixed(2)}</p>
+            <h4>Số tiền chờ thanh toán</h4>
+            <p className={styles.statNumber}>{stats.pendingAmount.toLocaleString('vi-VN')} VNĐ</p>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⚠️</div>
           <div className={styles.statInfo}>
-            <h4>Overdue Amount</h4>
-            <p className={styles.statNumber}>${stats.overdueAmount.toFixed(2)}</p>
+            <h4>Số tiền quá hạn</h4>
+            <p className={styles.statNumber}>{stats.overdueAmount.toLocaleString('vi-VN')} VNĐ</p>
           </div>
         </div>
       </div>
@@ -335,7 +335,7 @@ const Billing: React.FC = () => {
         <div className={styles.searchAndFilter}>
           <input
             type="text"
-            placeholder="Search invoices by patient name or invoice ID..."
+            placeholder="Tìm kiếm hóa đơn theo tên bệnh nhân hoặc mã hóa đơn..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}
@@ -345,44 +345,44 @@ const Billing: React.FC = () => {
             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
             className={styles.filterSelect}
           >
-            <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="sent">Sent</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
+            <option value="all">Tất cả trạng thái</option>
+            <option value="draft">Bản nháp</option>
+            <option value="sent">Đã gửi</option>
+            <option value="paid">Đã thanh toán</option>
+            <option value="overdue">Quá hạn</option>
           </select>
         </div>
         <button
           className={styles.createButton}
           onClick={() => setShowCreateInvoice(true)}
         >
-          Create Invoice
+          Tạo hóa đơn
         </button>
       </div>
 
       {/* Invoices List */}
       <div className={styles.invoicesList}>
-        <h3 className={styles.sectionTitle}>Invoices</h3>
+        <h3 className={styles.sectionTitle}>Danh sách hóa đơn</h3>
         {filteredInvoices.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>No invoices found</p>
+            <p>Không tìm thấy hóa đơn nào</p>
           </div>
         ) : (
           <div className={styles.invoicesTable}>
             <div className={styles.tableHeader}>
-              <div>Invoice ID</div>
-              <div>Patient</div>
-              <div>Date</div>
-              <div>Amount</div>
-              <div>Status</div>
-              <div>Actions</div>
+              <div>Mã hóa đơn</div>
+              <div>Bệnh nhân</div>
+              <div>Ngày tạo</div>
+              <div>Số tiền</div>
+              <div>Trạng thái</div>
+              <div>Thao tác</div>
             </div>
             {filteredInvoices.map((invoice) => (
               <div key={invoice.id} className={styles.tableRow}>
                 <div className={styles.invoiceId}>#{invoice.id.slice(-6)}</div>
-                <div>{invoice.patient?.full_name || 'Unknown Patient'}</div>
-                <div>{new Date(invoice.createdDate).toLocaleDateString()}</div>
-                <div className={styles.amount}>${invoice.total.toFixed(2)}</div>
+                <div>{invoice.patient?.full_name || 'Bệnh nhân không xác định'}</div>
+                <div>{new Date(invoice.createdDate).toLocaleDateString('vi-VN')}</div>
+                <div className={styles.amount}>{invoice.total.toLocaleString('vi-VN')} VNĐ</div>
                 <div>
                   <span className={`${styles.statusBadge} ${getStatusBadge(invoice.status)}`}>
                     {getStatusLabel(invoice.status)}
@@ -398,10 +398,10 @@ const Billing: React.FC = () => {
                         setShowPaymentModal(true);
                       }}
                     >
-                      Process Payment
+                      Xử lý thanh toán
                     </button>
                   )}
-                  <button className={styles.viewButton}>View</button>
+                  <button className={styles.viewButton}>Xem</button>
                 </div>
               </div>
             ))}
@@ -414,7 +414,7 @@ const Billing: React.FC = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3>Create New Invoice</h3>
+              <h3>Tạo hóa đơn mới</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowCreateInvoice(false)}
@@ -426,7 +426,7 @@ const Billing: React.FC = () => {
             <div className={styles.modalBody}>
               {/* Patient Selection */}
               <div className={styles.formGroup}>
-                <label>Select Patient:</label>
+                <label>Chọn bệnh nhân:</label>
                 <select
                   value={selectedPatient?.id || ''}
                   onChange={(e) => {
@@ -435,7 +435,7 @@ const Billing: React.FC = () => {
                   }}
                   className={styles.select}
                 >
-                  <option value="">Choose a patient...</option>
+                  <option value="">Chọn bệnh nhân...</option>
                   {patients.map((patient) => (
                     <option key={patient.id} value={patient.id}>
                       {patient.full_name}
@@ -446,25 +446,25 @@ const Billing: React.FC = () => {
 
               {/* Add Items */}
               <div className={styles.itemsSection}>
-                <h4>Invoice Items</h4>
+                <h4>Danh mục dịch vụ</h4>
                 <div className={styles.addItemForm}>
                   <input
                     type="text"
-                    placeholder="Description"
+                    placeholder="Mô tả dịch vụ"
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                     className={styles.input}
                   />
                   <input
                     type="number"
-                    placeholder="Quantity"
+                    placeholder="Số lượng"
                     value={newItem.quantity}
                     onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
                     className={styles.inputSmall}
                   />
                   <input
                     type="number"
-                    placeholder="Unit Price"
+                    placeholder="Đơn giá"
                     value={newItem.unitPrice}
                     onChange={(e) => setNewItem({ ...newItem, unitPrice: Number(e.target.value) })}
                     className={styles.inputSmall}
@@ -474,7 +474,7 @@ const Billing: React.FC = () => {
                     onClick={addItemToInvoice}
                     className={styles.addButton}
                   >
-                    Add Item
+                    Thêm dịch vụ
                   </button>
                 </div>
 
@@ -484,13 +484,13 @@ const Billing: React.FC = () => {
                     {newInvoice.items.map((item) => (
                       <div key={item.id} className={styles.itemRow}>
                         <div className={styles.itemDescription}>{item.description}</div>
-                        <div>{item.quantity} × ${item.unitPrice.toFixed(2)}</div>
-                        <div className={styles.itemTotal}>${item.total.toFixed(2)}</div>
+                        <div>{item.quantity} × {item.unitPrice.toLocaleString('vi-VN')} VNĐ</div>
+                        <div className={styles.itemTotal}>{item.total.toLocaleString('vi-VN')} VNĐ</div>
                         <button
                           onClick={() => removeItemFromInvoice(item.id)}
                           className={styles.removeButton}
                         >
-                          Remove
+                          Xóa
                         </button>
                       </div>
                     ))}
@@ -501,15 +501,15 @@ const Billing: React.FC = () => {
                 {newInvoice.items && newInvoice.items.length > 0 && (
                   <div className={styles.totalsSection}>
                     <div className={styles.totalRow}>
-                      <span>Subtotal:</span>
-                      <span>${newInvoice.subtotal?.toFixed(2)}</span>
+                      <span>Tạm tính:</span>
+                      <span>{newInvoice.subtotal?.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
                     <div className={styles.totalRow}>
-                      <span>Tax (10%):</span>
-                      <span>${newInvoice.tax?.toFixed(2)}</span>
+                      <span>Thuế (10%):</span>
+                      <span>{newInvoice.tax?.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
                     <div className={styles.totalRow}>
-                      <span>Discount:</span>
+                      <span>Giảm giá:</span>
                       <input
                         type="number"
                         value={newInvoice.discount}
@@ -522,8 +522,8 @@ const Billing: React.FC = () => {
                       />
                     </div>
                     <div className={`${styles.totalRow} ${styles.finalTotal}`}>
-                      <span>Total:</span>
-                      <span>${newInvoice.total?.toFixed(2)}</span>
+                      <span>Tổng cộng:</span>
+                      <span>{newInvoice.total?.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
                   </div>
                 )}
@@ -531,12 +531,12 @@ const Billing: React.FC = () => {
 
               {/* Notes */}
               <div className={styles.formGroup}>
-                <label>Notes:</label>
+                <label>Ghi chú:</label>
                 <textarea
                   value={newInvoice.notes || ''}
                   onChange={(e) => setNewInvoice({ ...newInvoice, notes: e.target.value })}
                   className={styles.textarea}
-                  placeholder="Additional notes or instructions..."
+                  placeholder="Ghi chú bổ sung hoặc hướng dẫn..."
                 />
               </div>
             </div>
@@ -546,13 +546,13 @@ const Billing: React.FC = () => {
                 className={styles.cancelButton}
                 onClick={() => setShowCreateInvoice(false)}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 className={styles.createInvoiceButton}
                 onClick={createInvoice}
               >
-                Create Invoice
+                Tạo hóa đơn
               </button>
             </div>
           </div>
@@ -564,7 +564,7 @@ const Billing: React.FC = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3>Process Payment</h3>
+              <h3>Xử lý thanh toán</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowPaymentModal(false)}
@@ -575,14 +575,14 @@ const Billing: React.FC = () => {
 
             <div className={styles.modalBody}>
               <div className={styles.paymentInfo}>
-                <h4>Invoice Details</h4>
-                <p><strong>Patient:</strong> {selectedInvoice.patient?.full_name}</p>
-                <p><strong>Invoice ID:</strong> #{selectedInvoice.id.slice(-6)}</p>
-                <p><strong>Total Amount:</strong> ${selectedInvoice.total.toFixed(2)}</p>
+                <h4>Thông tin hóa đơn</h4>
+                <p><strong>Bệnh nhân:</strong> {selectedInvoice.patient?.full_name}</p>
+                <p><strong>Mã hóa đơn:</strong> #{selectedInvoice.id.slice(-6)}</p>
+                <p><strong>Tổng số tiền:</strong> {selectedInvoice.total.toLocaleString('vi-VN')} VNĐ</p>
               </div>
 
               <div className={styles.formGroup}>
-                <label>Payment Amount:</label>
+                <label>Số tiền thanh toán:</label>
                 <input
                   type="number"
                   value={paymentAmount}
@@ -594,16 +594,16 @@ const Billing: React.FC = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Payment Method:</label>
+                <label>Phương thức thanh toán:</label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value as PaymentRecord['method'])}
                   className={styles.select}
                 >
-                  <option value="cash">Cash</option>
-                  <option value="card">Credit/Debit Card</option>
-                  <option value="insurance">Insurance</option>
-                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cash">Tiền mặt</option>
+                  <option value="card">Thẻ tín dụng/ghi nợ</option>
+                  <option value="insurance">Bảo hiểm</option>
+                  <option value="bank_transfer">Chuyển khoản ngân hàng</option>
                 </select>
               </div>
             </div>
@@ -613,13 +613,13 @@ const Billing: React.FC = () => {
                 className={styles.cancelButton}
                 onClick={() => setShowPaymentModal(false)}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 className={styles.processPaymentButton}
                 onClick={processPayment}
               >
-                Process Payment
+                Xử lý thanh toán
               </button>
             </div>
           </div>

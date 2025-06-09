@@ -175,7 +175,7 @@ const Prescriptions: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.loadingSpinner}>
           <div className={styles.spinner}></div>
-          <p>Loading prescriptions...</p>
+          <p>Đang tải đơn thuốc...</p>
         </div>
       </div>
     );
@@ -185,10 +185,10 @@ const Prescriptions: React.FC = () => {
     return (
       <div className={styles.container}>
         <div className={styles.errorMessage}>
-          <h3>Error</h3>
+          <h3>Lỗi</h3>
           <p>{error}</p>
           <button onClick={fetchPrescriptions} className={styles.retryButton}>
-            Try Again
+            Thử lại
           </button>
         </div>
       </div>
@@ -198,17 +198,17 @@ const Prescriptions: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>My Prescriptions</h1>
+        <h1>Đơn thuốc của tôi</h1>
         <div className={styles.filters}>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
             className={styles.filterSelect}
           >
-            <option value="all">All Prescriptions</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="discontinued">Discontinued</option>
+            <option value="all">Tất cả đơn thuốc</option>
+            <option value="active">Đang sử dụng</option>
+            <option value="completed">Đã hoàn thành</option>
+            <option value="discontinued">Đã ngừng</option>
           </select>
         </div>
       </div>
@@ -216,11 +216,11 @@ const Prescriptions: React.FC = () => {
       {filteredPrescriptions.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>💊</div>
-          <h3>No Prescriptions Found</h3>
+          <h3>Không tìm thấy đơn thuốc</h3>
           <p>
             {filterStatus === 'all' 
-              ? "You don't have any prescriptions yet."
-              : `No ${filterStatus} prescriptions found.`
+              ? "Bạn chưa có đơn thuốc nào."
+              : `Không tìm thấy đơn thuốc ${filterStatus === 'active' ? 'đang sử dụng' : filterStatus === 'completed' ? 'đã hoàn thành' : 'đã ngừng'}.`
             }
           </p>
         </div>
@@ -237,16 +237,17 @@ const Prescriptions: React.FC = () => {
               >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardDate}>
-                    {new Date(prescription.date).toLocaleDateString()}
+                    {new Date(prescription.date).toLocaleDateString('vi-VN')}
                   </div>
                   <span className={`${styles.statusBadge} ${getStatusBadgeClass(prescription.status)}`}>
-                    {prescription.status}
+                    {prescription.status === 'active' ? 'Đang sử dụng' : 
+                     prescription.status === 'completed' ? 'Đã hoàn thành' : 'Đã ngừng'}
                   </span>
                 </div>
                 <div className={styles.cardContent}>
                   <p className={styles.doctorName}>{prescription.doctor}</p>
                   <p className={styles.medicationCount}>
-                    {prescription.medications.length} medication{prescription.medications.length !== 1 ? 's' : ''}
+                    {prescription.medications.length} loại thuốc
                   </p>
                 </div>
               </div>
@@ -256,25 +257,26 @@ const Prescriptions: React.FC = () => {
           {selectedPrescription && (
             <div className={styles.prescriptionDetails}>
               <div className={styles.detailsHeader}>
-                <h2>Prescription Details</h2>
+                <h2>Chi tiết đơn thuốc</h2>
                 <span className={`${styles.statusBadge} ${getStatusBadgeClass(selectedPrescription.status)}`}>
-                  {selectedPrescription.status}
+                  {selectedPrescription.status === 'active' ? 'Đang sử dụng' : 
+                   selectedPrescription.status === 'completed' ? 'Đã hoàn thành' : 'Đã ngừng'}
                 </span>
               </div>
 
               <div className={styles.prescriptionInfo}>
                 <div className={styles.infoRow}>
-                  <label>Date:</label>
-                  <span>{new Date(selectedPrescription.date).toLocaleDateString()}</span>
+                  <label>Ngày:</label>
+                  <span>{new Date(selectedPrescription.date).toLocaleDateString('vi-VN')}</span>
                 </div>
                 <div className={styles.infoRow}>
-                  <label>Prescribed by:</label>
+                  <label>Bác sĩ kê đơn:</label>
                   <span>{selectedPrescription.doctor}</span>
                 </div>
               </div>
 
               <div className={styles.medicationsSection}>
-                <h3>Medications</h3>
+                <h3>Thuốc</h3>
                 {selectedPrescription.medications.length > 0 ? (
                   <div className={styles.medicationsList}>
                     {selectedPrescription.medications.map((medication, index) => (
@@ -284,20 +286,20 @@ const Prescriptions: React.FC = () => {
                         </div>
                         <div className={styles.medicationDetails}>
                           <div className={styles.medicationInfo}>
-                            <span className={styles.label}>Dosage:</span>
+                            <span className={styles.label}>Liều dùng:</span>
                             <span>{medication.dosage}</span>
                           </div>
                           <div className={styles.medicationInfo}>
-                            <span className={styles.label}>Frequency:</span>
+                            <span className={styles.label}>Tần suất:</span>
                             <span>{medication.frequency}</span>
                           </div>
                           <div className={styles.medicationInfo}>
-                            <span className={styles.label}>Duration:</span>
+                            <span className={styles.label}>Thời gian:</span>
                             <span>{medication.duration}</span>
                           </div>
                           {medication.instructions && (
                             <div className={styles.medicationInfo}>
-                              <span className={styles.label}>Instructions:</span>
+                              <span className={styles.label}>Hướng dẫn:</span>
                               <span>{medication.instructions}</span>
                             </div>
                           )}
@@ -306,13 +308,13 @@ const Prescriptions: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className={styles.noMedications}>No medications listed</p>
+                  <p className={styles.noMedications}>Không có thuốc nào được liệt kê</p>
                 )}
               </div>
 
               {selectedPrescription.notes && (
                 <div className={styles.notesSection}>
-                  <h3>Additional Notes</h3>
+                  <h3>Ghi chú thêm</h3>
                   <div className={styles.notesContent}>
                     {selectedPrescription.notes}
                   </div>

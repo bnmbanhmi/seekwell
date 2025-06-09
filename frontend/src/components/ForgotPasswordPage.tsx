@@ -23,9 +23,9 @@ const ForgotPasswordPage: React.FC = () => {
             setMessage(response.data.message);
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.detail || 'Failed to send reset link. Please try again.');
+                setError(err.response.data.detail || 'Không thể gửi liên kết đặt lại. Vui lòng thử lại.');
             } else {
-                setError('An unexpected error occurred. Please try again.');
+                setError('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
             }
             console.error("Forgot password error:", err);
         }
