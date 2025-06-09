@@ -1,4 +1,4 @@
-/* PatientDashboard.module.css - Updated to match design system patterns */
+/* DoctorDashboard.module.css - Updated to follow design system */
 
 /* Animations */
 @keyframes fadeInUp {
@@ -45,7 +45,7 @@
 /* Header */
 .header {
   margin-bottom: var(--spacing-10);
-  text-align: left;
+  text-align: left; /* Fixed: was center-aligned */
   padding: var(--spacing-8) 0;
   background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
   border-radius: var(--radius-xl);
@@ -102,13 +102,13 @@
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-5);
   border: 1px solid var(--error-200);
-  text-align: left;
+  text-align: left; /* Fixed: was center-aligned */
 }
 
-/* Statistics Grid */
+/* Statistics Grid - This is the key fix for the layout issue */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-5);
   margin-bottom: var(--spacing-10);
   animation: fadeInUp 1s ease-out;
@@ -117,12 +117,12 @@
 .statCard {
   background: var(--white);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-6);
+  padding: var(--spacing-5);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--secondary-200);
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: var(--spacing-3);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -132,7 +132,7 @@
 }
 
 .statIcon {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   width: 50px;
   height: 50px;
   display: flex;
@@ -140,7 +140,7 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
   border-radius: 50%;
-  color: var(--white);
+  color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -281,14 +281,6 @@
   text-align: left;
 }
 
-/* Grid Layout for appointments and chat */
-.gridLayout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-5);
-  margin-bottom: var(--spacing-5);
-}
-
 /* Appointments Table */
 .appointmentsTable {
   background: var(--white);
@@ -344,9 +336,31 @@
   text-align: left;
 }
 
+.statusCurrent {
+  background: var(--success-500);
+  color: var(--white);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  text-align: center;
+}
+
 .statusUpcoming {
   background: var(--warning-500);
   color: var(--warning-900);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.statusCompleted {
+  background: var(--secondary-500);
+  color: var(--white);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
@@ -370,35 +384,6 @@
   margin: 0;
 }
 
-/* Chat Card */
-.chatCard {
-  background: var(--white);
-  padding: var(--spacing-5);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--secondary-200);
-  height: 600px;
-  display: flex;
-  flex-direction: column;
-  transition: all var(--transition-fast) ease;
-}
-
-.chatCard:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.chatDescription {
-  color: var(--secondary-600);
-  margin-bottom: var(--spacing-4);
-  font-size: var(--font-size-sm);
-  text-align: left;
-}
-
-.flexGrow {
-  flex: 1;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
@@ -411,11 +396,6 @@
   }
   
   .actionsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-  
-  .gridLayout {
     grid-template-columns: 1fr;
     gap: var(--spacing-4);
   }
@@ -455,5 +435,25 @@
   
   .subtitle {
     font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .statCard {
+    padding: var(--spacing-4);
+  }
+  
+  .statIcon {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-xl);
+  }
+  
+  .statNumber {
+    font-size: var(--font-size-xl);
   }
 }

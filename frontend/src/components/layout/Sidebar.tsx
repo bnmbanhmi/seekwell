@@ -13,34 +13,32 @@ type Props = {
 
 const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
   PATIENT: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Book Appointment', path: '/dashboard/appointments/book' },
-    { label: 'My Appointments', path: '/dashboard/appointments' },
-    { label: 'Prescriptions', path: '/dashboard/prescriptions' },
-    { label: 'Medical History', path: '/dashboard/records' },
+    { label: 'Bảng điều khiển', path: '/dashboard' },
+    { label: 'Đặt lịch khám', path: '/dashboard/appointments/book' },
+    { label: 'Lịch khám của tôi', path: '/dashboard/appointments' },
+    { label: 'Đơn thuốc', path: '/dashboard/prescriptions' },
+    { label: 'Lịch sử khám bệnh', path: '/dashboard/records' },
   ],
   DOCTOR: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'My Schedule', path: '/dashboard/schedule' },
-    { label: 'Patient List', path: '/dashboard/patients' },
-    { label: 'Medical Records', path: '/dashboard/records' },
-    { label: 'Create Records', path: '/dashboard/create_records' },
+    { label: 'Bảng điều khiển', path: '/dashboard' },
+    { label: 'Lịch trình của tôi', path: '/dashboard/schedule' },
+    { label: 'Danh sách bệnh nhân', path: '/dashboard/patients' },
+    { label: 'Hồ sơ bệnh án', path: '/dashboard/records' },
+    { label: 'Tạo hồ sơ mới', path: '/dashboard/create_records' },
   ],
   CLINIC_STAFF: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Schedule Appointment', path: '/dashboard/appointments/schedule' },
-    { label: 'Check-in / Check-out', path: '/dashboard/checkin' },
-    { label: 'Billing & Invoices', path: '/dashboard/billing' },
-    { label: 'Patient Registry', path: '/dashboard/patients' },
-    { label: 'Messages', path: '/dashboard/messages' },
+    { label: 'Bảng điều khiển', path: '/dashboard' },
+    { label: 'Sắp xếp lịch hẹn', path: '/dashboard/appointments/schedule' },
+    { label: 'Đăng ký / Thanh toán', path: '/dashboard/checkin' },
+    { label: 'Đăng ký bệnh nhân', path: '/dashboard/patients' },
+    { label: 'Tin nhắn', path: '/dashboard/messages' },
   ],
   ADMIN: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'User Management', path: '/dashboard/users' },
-    { label: 'Schedule Settings', path: '/dashboard/schedule/settings' },
-    { label: 'Reports & Analytics', path: '/dashboard/reports' },
-    { label: 'System Logs', path: '/dashboard/logs' },
-    { label: 'Billing Overview', path: '/dashboard/billing/overview' },
+    { label: 'Bảng điều khiển', path: '/dashboard' },
+    { label: 'Quản lý người dùng', path: '/dashboard/users' },
+    { label: 'Cài đặt lịch trình', path: '/dashboard/schedule-settings' },
+    { label: 'Báo cáo & Phân tích', path: '/dashboard/reports' },
+    { label: 'Nhật ký hệ thống', path: '/dashboard/logs' },
   ],
 };
 
@@ -51,10 +49,10 @@ const Sidebar: React.FC<Props> = ({ role }) => {
     <nav className="nav-container">
       <img
         src="/logo.png"
-        alt="Clinic Logo"
+        alt="Logo phòng khám"
         className="nav-logo"
       />
-      <h2 className="nav-title">Navigation</h2>
+      <h2 className="nav-title">Điều hướng</h2>
 
       <hr className="nav-divider" />
 

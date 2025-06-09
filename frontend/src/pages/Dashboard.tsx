@@ -11,10 +11,19 @@ import PatientDashboard from '../components/dashboards/PatientDashboard';
 import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
 import BookAppointment from '../components/appointment/BookAppointment';
+import ScheduleAppointment from '../components/appointment/ScheduleAppointment';
 import PatientSearch from '../components/patients/PatientSearch';
 import MyAppointment from '../components/appointment/ViewAppointment';
+import DoctorSchedule from '../components/appointment/DoctorSchedule';
 import CreateEMR from '../components/EMR/CreateEMR';
 import UserManagement from '../components/admin/UserManagement';
+import ReportsAnalytics from '../components/admin/ReportsAnalytics';
+import SystemLogs from '../components/admin/SystemLogs';
+import ScheduleSettings from '../components/admin/ScheduleSettings';
+import MedicalHistory from '../components/medical/MedicalHistory';
+import MedicalReportsManagement from '../components/medical/MedicalReportsManagement';
+import Prescriptions from '../components/medical/Prescriptions';
+import CheckInOut from '../components/staff/CheckInOut';
 
 type Props = {
   role: UserRole;
@@ -47,13 +56,20 @@ const Dashboard: React.FC<Props> = ({ role }) => {
       <Routes>
         <Route path="/" element={renderDashboard()} />
         <Route path="appointments/book" element={<BookAppointment />} />
+        <Route path="appointments/schedule" element={<ScheduleAppointment />} />
         <Route path="patients" element={<PatientSearch />} />
         <Route path="appointments" element={<MyAppointment />} />
-        {/* <Route path="appointments" element={<Appointments />} />
+        <Route path="schedule" element={<DoctorSchedule />} />
+        <Route path="medical-history" element={<MedicalHistory />} />
+        <Route path="records" element={<MedicalHistory />} />
+        <Route path="medical-reports" element={<MedicalReportsManagement />} />
         <Route path="prescriptions" element={<Prescriptions />} />
-        <Route path="records" element={<MedicalHistory />} /> */}
         <Route path="create_records" element={<CreateEMR />} />
         <Route path="users" element={<UserManagement />} />
+        <Route path="reports" element={<ReportsAnalytics />} />
+        <Route path="logs" element={<SystemLogs />} />
+        <Route path="schedule-settings" element={<ScheduleSettings />} />
+        <Route path="checkin" element={<CheckInOut />} />
       </Routes>
     </BaseDashboard>
   );

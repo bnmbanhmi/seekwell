@@ -66,7 +66,7 @@ const ViewAppointment = () => {
               console.error(`Failed to fetch doctor name for doctor_id ${appointment.doctor_id}:`, err);
               return {
                 ...appointment,
-                doctorName: 'Unknown Doctor',
+                doctorName: 'Bác sĩ không xác định',
               };
             }
           })
@@ -81,7 +81,7 @@ const ViewAppointment = () => {
         setAppointments(appointmentsWithDoctorNames);
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
-        setError('Failed to load appointments.');
+        setError('Không thể tải danh sách lịch hẹn.');
       } finally {
         setLoading(false);
       }
@@ -111,7 +111,7 @@ const ViewAppointment = () => {
       setModalOpen(false);
     } catch (err) {
       console.error('Failed to cancel appointment:', err);
-      setError('Failed to cancel appointment.');
+      setError('Không thể hủy lịch hẹn.');
       throw new Error('Failed to cancel appointment.');
     }
   };
@@ -143,7 +143,7 @@ const ViewAppointment = () => {
       setModalOpen(false);
     } catch (err) {
       console.error('Failed to reschedule appointment:', err);
-      setError('Failed to reschedule appointment.');
+      setError('Không thể thay đổi lịch hẹn.');
       throw new Error('Failed to reschedule appointment.');
     }
   };
@@ -177,12 +177,12 @@ const ViewAppointment = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
       <div className="appointments-container">
-        <h1 className="appointments-header">Upcoming Appointments</h1>
+        <h1 className="appointments-header">Lịch hẹn sắp tới</h1>
 
         {loading ? (
           <div className="loading-spinner">
             <CircularProgress />
-            <p>Loading...</p>
+            <p>Đang tải...</p>
           </div>
         ) : (
           <DateCalendar
@@ -199,9 +199,9 @@ const ViewAppointment = () => {
           <table className="appointments-table">
             <thead>
               <tr>
-                <th>Time</th>
-                <th>Doctor</th>
-                <th>Reason</th>
+                <th>Giờ</th>
+                <th>Bác sĩ</th>
+                <th>Lý do</th>
               </tr>
             </thead>
             <tbody>
@@ -219,17 +219,17 @@ const ViewAppointment = () => {
             </tbody>
           </table>
         ) : (
-          !loading && <p>No appointments on this day.</p>
+          !loading && <p>Không có lịch hẹn nào trong ngày này.</p>
         )}
 
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box className="appointment-modal">
-            <h2>Appointment Actions</h2>
+            <h2>Thao tác với lịch hẹn</h2>
             {selectedAppointment && (
                 <>
-                  <p><strong>Doctor:</strong> {selectedAppointment.doctorName}</p>
-                  <p><strong>Date:</strong> {selectedAppointment.appointment_day}</p>
-                  <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
+                  <p><strong>Bác sĩ:</strong> {selectedAppointment.doctorName}</p>
+                  <p><strong>Ngày:</strong> {selectedAppointment.appointment_day}</p>
+                  <p><strong>Giờ:</strong> {selectedAppointment.appointment_time}</p>
 
                   {error && (
                   <Box mt={2} color="error.main">
@@ -244,14 +244,14 @@ const ViewAppointment = () => {
                     onClick={async () => {
                       try {
                         await handleCancelAppointment();
-                        toast.success('Appointment cancelled successfully!');
+                        toast.success('Hủy lịch hẹn thành công!');
                       } catch (err) {
                         console.error('Failed to cancel appointment:', err);
                       }
                     }}
                     sx={{ height: 40 }}
                   >
-                    Cancel Appointment
+                    Hủy lịch hẹn
                   </Button>
 
                   <Button
@@ -260,15 +260,15 @@ const ViewAppointment = () => {
                     onClick={handleToggleReschedule}
                     sx={{ height: 40 }}
                   >
-                    {showRescheduleFields ? "Hide Reschedule" : "Reschedule"}
+                    {showRescheduleFields ? "Ẩn thay đổi lịch" : "Thay đổi lịch"}
                   </Button>
                   </Box>
                   {showRescheduleFields && (
                   <div className="reschedule-section">
-                    <h2 className="reschedule-title">Reschedule Appointment</h2>
+                    <h2 className="reschedule-title">Thay đổi lịch hẹn</h2>
 
                     <div className="form-group">
-                    <label htmlFor="reschedule-date">New Date</label>
+                    <label htmlFor="reschedule-date">Ngày mới</label>
                     <input
                       id="reschedule-date"
                       type="date"
@@ -278,14 +278,14 @@ const ViewAppointment = () => {
                     </div>
 
                     <div className="form-group">
-                    <label htmlFor="reschedule-time">New Time</label>
+                    <label htmlFor="reschedule-time">Giờ mới</label>
                     <select
                       id="reschedule-time"
                       value={rescheduleTime}
                       onChange={(e) => setRescheduleTime(e.target.value)}
                     >
                       <option value="" disabled>
-                      Select Time
+                      Chọn giờ
                       </option>
                       {availableTimes.map((time) => (
                       <option key={time} value={time}>
@@ -300,13 +300,13 @@ const ViewAppointment = () => {
                     onClick={async () => {
                       try {
                         await handleRescheduleAppointment();
-                        toast.success('Appointment reschedule successfully!');
+                        toast.success('Thay đổi lịch hẹn thành công!');
                       } catch (err) {
                         console.error('Failed to reschedule appointment:', err);
                       }
                     }}
                     >
-                    Confirm Reschedule
+                    Xác nhận thay đổi
                     </button>
                   </div>
                   )}

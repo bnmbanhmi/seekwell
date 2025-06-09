@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './PatientSearch.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
@@ -43,6 +44,7 @@ interface PatientSearchResponse {
 }
 
 const PatientSearch: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useState<PatientSearchQuery>({
     limit: 10,
     skip: 0,
@@ -108,14 +110,14 @@ const PatientSearch: React.FC = () => {
       console.error('Search error:', err);
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
-          setError('Authentication failed. Please log in again.');
+          setError('Xác thực thất bại. Vui lòng đăng nhập lại.');
         } else if (err.response?.status === 403) {
-          setError('You do not have permission to search patients.');
+          setError('Bạn không có quyền tìm kiếm bệnh nhân.');
         } else {
-          setError(`Search failed: ${err.response?.data?.detail || err.message}`);
+          setError(`Tìm kiếm thất bại: ${err.response?.data?.detail || err.message}`);
         }
       } else {
-        setError('An unexpected error occurred during search.');
+        setError('Đã xảy ra lỗi không mong muốn trong quá trình tìm kiếm.');
       }
     } finally {
       setLoading(false);
@@ -166,13 +168,26 @@ const PatientSearch: React.FC = () => {
     setSelectedPatient(null);
   };
 
+  // Navigation functions
+  const navigateToAppointments = (patientId: number) => {
+    navigate(`/dashboard/appointments?patient_id=${patientId}`);
+  };
+
+  const navigateToEMR = (patientId: number) => {
+    navigate(`/dashboard/medical-history?patient_id=${patientId}`);
+  };
+
+  const navigateToCreateEMR = (patientId: number) => {
+    navigate(`/dashboard/create_records?patient_id=${patientId}`);
+  };
+
   return (
     <div className="patient-search-container">
       <div className="search-header">
-        <h2>Patient Search</h2>
+        <h2>Tìm Kiếm Bệnh Nhân</h2>
         <p className="role-info">
-          Searching as: <strong>{userRole}</strong>
-          {userRole === 'PATIENT' && ' (You can only see your own record)'}
+          Đang tìm kiếm với vai trò: <strong>{userRole}</strong>
+          {userRole === 'PATIENT' && ' (Bạn chỉ có thể xem hồ sơ của chính mình)'}
         </p>
       </div>
 
@@ -181,19 +196,19 @@ const PatientSearch: React.FC = () => {
         <div className="basic-search">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="query">General Search</label>
+              <label htmlFor="query">Tìm Kiếm Chung</label>
               <input
                 type="text"
                 id="query"
                 name="query"
                 value={searchParams.query || ''}
                 onChange={handleInputChange}
-                placeholder="Search by name, email, phone, or address..."
+                placeholder="Tìm kiếm theo tên, email, điện thoại hoặc địa chỉ..."
                 className="search-input"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="limit">Results per page</label>
+              <label htmlFor="limit">Số kết quả mỗi trang</label>
               <select
                 id="limit"
                 name="limit"
@@ -216,7 +231,7 @@ const PatientSearch: React.FC = () => {
           className="toggle-advanced"
           onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
         >
-          {showAdvancedSearch ? 'Hide' : 'Show'} Advanced Search
+          {showAdvancedSearch ? 'Ẩn' : 'Hiện'} Tìm Kiếm Nâng Cao
         </button>
 
         {/* Advanced Search Fields */}
@@ -224,14 +239,14 @@ const PatientSearch: React.FC = () => {
           <div className="advanced-search">
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="full_name">Full Name</label>
+                <label htmlFor="full_name">Họ và Tên</label>
                 <input
                   type="text"
                   id="full_name"
                   name="full_name"
                   value={searchParams.full_name || ''}
                   onChange={handleInputChange}
-                  placeholder="Patient full name"
+                  placeholder="Họ và tên bệnh nhân"
                 />
               </div>
               <div className="form-group">
@@ -242,55 +257,55 @@ const PatientSearch: React.FC = () => {
                   name="email"
                   value={searchParams.email || ''}
                   onChange={handleInputChange}
-                  placeholder="Patient email"
+                  placeholder="Email bệnh nhân"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="phone_number">Phone</label>
+                <label htmlFor="phone_number">Điện Thoại</label>
                 <input
                   type="text"
                   id="phone_number"
                   name="phone_number"
                   value={searchParams.phone_number || ''}
                   onChange={handleInputChange}
-                  placeholder="Phone number"
+                  placeholder="Số điện thoại"
                 />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="patient_id">Patient ID</label>
+                <label htmlFor="patient_id">ID Bệnh Nhân</label>
                 <input
                   type="number"
                   id="patient_id"
                   name="patient_id"
                   value={searchParams.patient_id || ''}
                   onChange={handleInputChange}
-                  placeholder="Patient ID number"
+                  placeholder="Số ID bệnh nhân"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="age_min">Min Age</label>
+                <label htmlFor="age_min">Tuổi Tối Thiểu</label>
                 <input
                   type="number"
                   id="age_min"
                   name="age_min"
                   value={searchParams.age_min || ''}
                   onChange={handleInputChange}
-                  placeholder="Minimum age"
+                  placeholder="Tuổi tối thiểu"
                   min="0"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="age_max">Max Age</label>
+                <label htmlFor="age_max">Tuổi Tối Đa</label>
                 <input
                   type="number"
                   id="age_max"
                   name="age_max"
                   value={searchParams.age_max || ''}
                   onChange={handleInputChange}
-                  placeholder="Maximum age"
+                  placeholder="Tuổi tối đa"
                   min="0"
                 />
               </div>
@@ -298,67 +313,67 @@ const PatientSearch: React.FC = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="gender">Gender</label>
+                <label htmlFor="gender">Giới Tính</label>
                 <select
                   id="gender"
                   name="gender"
                   value={searchParams.gender || ''}
                   onChange={handleInputChange}
                 >
-                  <option value="">Any Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="">Tất cả giới tính</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                  <option value="other">Khác</option>
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="identification_id">ID Number</label>
+                <label htmlFor="identification_id">Số CMND/CCCD</label>
                 <input
                   type="text"
                   id="identification_id"
                   name="identification_id"
                   value={searchParams.identification_id || ''}
                   onChange={handleInputChange}
-                  placeholder="Identification ID"
+                  placeholder="Số CMND/CCCD"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="health_insurance_card_no">Insurance Card</label>
+                <label htmlFor="health_insurance_card_no">Thẻ BHYT</label>
                 <input
                   type="text"
                   id="health_insurance_card_no"
                   name="health_insurance_card_no"
                   value={searchParams.health_insurance_card_no || ''}
                   onChange={handleInputChange}
-                  placeholder="Health insurance card number"
+                  placeholder="Số thẻ bảo hiểm y tế"
                 />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="sort_by">Sort By</label>
+                <label htmlFor="sort_by">Sắp Xếp Theo</label>
                 <select
                   id="sort_by"
                   name="sort_by"
                   value={searchParams.sort_by || 'full_name'}
                   onChange={handleInputChange}
                 >
-                  <option value="full_name">Full Name</option>
-                  <option value="date_of_birth">Date of Birth</option>
-                  <option value="patient_id">Patient ID</option>
+                  <option value="full_name">Họ và Tên</option>
+                  <option value="date_of_birth">Ngày Sinh</option>
+                  <option value="patient_id">ID Bệnh Nhân</option>
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="sort_order">Sort Order</label>
+                <label htmlFor="sort_order">Thứ Tự Sắp Xếp</label>
                 <select
                   id="sort_order"
                   name="sort_order"
                   value={searchParams.sort_order || 'asc'}
                   onChange={handleInputChange}
                 >
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
+                  <option value="asc">Tăng Dần</option>
+                  <option value="desc">Giảm Dần</option>
                 </select>
               </div>
             </div>
@@ -373,7 +388,7 @@ const PatientSearch: React.FC = () => {
             onClick={() => handleSearch(1)}
             disabled={loading}
           >
-            {loading ? 'Searching...' : 'Search Patients'}
+            {loading ? 'Đang tìm kiếm...' : 'Tìm Kiếm Bệnh Nhân'}
           </button>
           <button
             type="button"
@@ -381,7 +396,7 @@ const PatientSearch: React.FC = () => {
             onClick={clearSearch}
             disabled={loading}
           >
-            Clear
+            Xóa
           </button>
         </div>
       </div>
@@ -397,16 +412,16 @@ const PatientSearch: React.FC = () => {
       {searchResults && (
         <div className="search-results">
           <div className="results-header">
-            <h3>Search Results</h3>
+            <h3>Kết Quả Tìm Kiếm</h3>
             <p>
-              Found {searchResults.total_count} patient{searchResults.total_count !== 1 ? 's' : ''} 
-              (Page {searchResults.page} of {searchResults.total_pages})
+              Tìm thấy {searchResults.total_count} bệnh nhân{searchResults.total_count !== 1 ? '' : ''} 
+              (Trang {searchResults.page} / {searchResults.total_pages})
             </p>
           </div>
 
           {searchResults.patients.length === 0 ? (
             <div className="no-results">
-              <p>No patients found matching your search criteria.</p>
+              <p>Không tìm thấy bệnh nhân nào phù hợp với tiêu chí tìm kiếm.</p>
             </div>
           ) : (
             <>
@@ -414,14 +429,14 @@ const PatientSearch: React.FC = () => {
                 <table>
                   <thead>
                     <tr>
-                      <th>Patient ID</th>
-                      <th>Name</th>
+                      <th>ID Bệnh Nhân</th>
+                      <th>Họ và Tên</th>
                       <th>Email</th>
-                      <th>Phone</th>
-                      <th>Age</th>
-                      <th>Gender</th>
-                      <th>Date of Birth</th>
-                      <th>Actions</th>
+                      <th>Điện Thoại</th>
+                      <th>Tuổi</th>
+                      <th>Giới Tính</th>
+                      <th>Ngày Sinh</th>
+                      <th>Thao Tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -429,18 +444,44 @@ const PatientSearch: React.FC = () => {
                       <tr key={patient.patient_id}>
                         <td>{patient.patient_id}</td>
                         <td>{patient.full_name}</td>
-                        <td>{patient.email || 'N/A'}</td>
-                        <td>{patient.phone_number || 'N/A'}</td>
-                        <td>{patient.age || 'N/A'}</td>
-                        <td>{patient.gender || 'N/A'}</td>
-                        <td>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString() : 'N/A'}</td>
+                        <td>{patient.email || 'Không có'}</td>
+                        <td>{patient.phone_number || 'Không có'}</td>
+                        <td>{patient.age || 'Không có'}</td>
+                        <td>{patient.gender === 'male' ? 'Nam' : patient.gender === 'female' ? 'Nữ' : patient.gender === 'other' ? 'Khác' : 'Không có'}</td>
+                        <td>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('vi-VN') : 'Không có'}</td>
                         <td>
-                          <button
-                            className="view-btn"
-                            onClick={() => handlePatientSelect(patient)}
-                          >
-                            View
-                          </button>
+                          <div className="action-buttons">
+                            <button
+                              className="view-btn"
+                              onClick={() => handlePatientSelect(patient)}
+                              title="Xem chi tiết bệnh nhân"
+                            >
+                              Xem
+                            </button>
+                            <button
+                              className="appointment-btn"
+                              onClick={() => navigateToAppointments(patient.patient_id)}
+                              title="Xem lịch hẹn của bệnh nhân"
+                            >
+                              Lịch Hẹn
+                            </button>
+                            <button
+                              className="emr-btn"
+                              onClick={() => navigateToEMR(patient.patient_id)}
+                              title="Xem hồ sơ y tế của bệnh nhân"
+                            >
+                              Hồ Sơ Y Tế
+                            </button>
+                            {(userRole === 'DOCTOR' || userRole === 'CLINIC_STAFF') && (
+                              <button
+                                className="create-emr-btn"
+                                onClick={() => navigateToCreateEMR(patient.patient_id)}
+                                title="Tạo hồ sơ y tế mới"
+                              >
+                                Tạo EMR
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -456,11 +497,11 @@ const PatientSearch: React.FC = () => {
                     onClick={() => handlePageChange(searchResults.page - 1)}
                     disabled={searchResults.page <= 1 || loading}
                   >
-                    Previous
+                    Trang Trước
                   </button>
                   
                   <span className="page-info">
-                    Page {searchResults.page} of {searchResults.total_pages}
+                    Trang {searchResults.page} / {searchResults.total_pages}
                   </span>
                   
                   <button
@@ -468,7 +509,7 @@ const PatientSearch: React.FC = () => {
                     onClick={() => handlePageChange(searchResults.page + 1)}
                     disabled={searchResults.page >= searchResults.total_pages || loading}
                   >
-                    Next
+                    Trang Sau
                   </button>
                 </div>
               )}
@@ -482,37 +523,73 @@ const PatientSearch: React.FC = () => {
         <div className="modal-overlay" onClick={closePatientDetails}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Patient Details</h3>
+              <h3>Chi Tiết Bệnh Nhân</h3>
               <button className="close-btn" onClick={closePatientDetails}>×</button>
             </div>
             <div className="modal-body">
               <div className="patient-details">
                 <div className="detail-row">
-                  <strong>Patient ID:</strong> {selectedPatient.patient_id}
+                  <strong>ID Bệnh Nhân:</strong> {selectedPatient.patient_id}
                 </div>
                 <div className="detail-row">
-                  <strong>Full Name:</strong> {selectedPatient.full_name}
+                  <strong>Họ và Tên:</strong> {selectedPatient.full_name}
                 </div>
                 <div className="detail-row">
-                  <strong>Email:</strong> {selectedPatient.email || 'N/A'}
+                  <strong>Email:</strong> {selectedPatient.email || 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Phone:</strong> {selectedPatient.phone_number || 'N/A'}
+                  <strong>Điện Thoại:</strong> {selectedPatient.phone_number || 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Date of Birth:</strong> {selectedPatient.date_of_birth ? new Date(selectedPatient.date_of_birth).toLocaleDateString() : 'N/A'}
+                  <strong>Ngày Sinh:</strong> {selectedPatient.date_of_birth ? new Date(selectedPatient.date_of_birth).toLocaleDateString('vi-VN') : 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Age:</strong> {selectedPatient.age || 'N/A'}
+                  <strong>Tuổi:</strong> {selectedPatient.age || 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Gender:</strong> {selectedPatient.gender || 'N/A'}
+                  <strong>Giới Tính:</strong> {selectedPatient.gender === 'male' ? 'Nam' : selectedPatient.gender === 'female' ? 'Nữ' : selectedPatient.gender === 'other' ? 'Khác' : 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Identification ID:</strong> {selectedPatient.identification_id || 'N/A'}
+                  <strong>Số CMND/CCCD:</strong> {selectedPatient.identification_id || 'Không có'}
                 </div>
                 <div className="detail-row">
-                  <strong>Health Insurance Card:</strong> {selectedPatient.health_insurance_card_no || 'N/A'}
+                  <strong>Thẻ BHYT:</strong> {selectedPatient.health_insurance_card_no || 'Không có'}
+                </div>
+              </div>
+              
+              {/* Quick Actions in Modal */}
+              <div className="modal-actions">
+                <h4>Thao Tác Nhanh</h4>
+                <div className="modal-action-buttons">
+                  <button
+                    className="modal-appointment-btn"
+                    onClick={() => {
+                      navigateToAppointments(selectedPatient.patient_id);
+                      closePatientDetails();
+                    }}
+                  >
+                    📅 Xem Lịch Hẹn
+                  </button>
+                  <button
+                    className="modal-emr-btn"
+                    onClick={() => {
+                      navigateToEMR(selectedPatient.patient_id);
+                      closePatientDetails();
+                    }}
+                  >
+                    📋 Xem Hồ Sơ Y Tế
+                  </button>
+                  {(userRole === 'DOCTOR' || userRole === 'CLINIC_STAFF') && (
+                    <button
+                      className="modal-create-emr-btn"
+                      onClick={() => {
+                        navigateToCreateEMR(selectedPatient.patient_id);
+                        closePatientDetails();
+                      }}
+                    >
+                      ➕ Tạo EMR Mới
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

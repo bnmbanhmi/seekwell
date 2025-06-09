@@ -202,7 +202,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                             <div className="chatbot-header-info">
                                 <span className="chatbot-avatar">🤖</span>
                                 <div>
-                                    <h4>Clinic Assistant</h4>
+                                    <h4>Trợ lý Phòng khám</h4>
                                     <span className="chatbot-status">Trực tuyến</span>
                                 </div>
                             </div>

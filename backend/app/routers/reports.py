@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date
 from app import crud, schemas, models
 from app.database import get_db
 from app.dependencies import get_current_active_user
+import json
 
 router = APIRouter(
     tags=["Medical Reports"],

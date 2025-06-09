@@ -56,7 +56,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
         console.log(response.data)
       } catch (err) {
         console.error('Failed to fetch doctors:', err);
-        setError('Could not fetch doctors.');
+        setError('Không thể lấy danh sách bác sĩ.');
       }
     };
 
@@ -96,7 +96,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
       setStep(2);
     } catch (error) {
       console.error('Error fetching available slots:', error);
-      setError('Could not fetch available slots.');
+      setError('Không thể lấy lịch trống.');
     } finally {
       setLoading(false);
     }
@@ -130,12 +130,12 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
           Authorization: `Bearer ${token}`,
         },
       });
-      setSuccess('Appointment booked successfully!');
+      setSuccess('Đặt lịch khám thành công!');
       setFormData({ date: '', time: '', doctorId: null, reason: '' }); //reset
       setStep(4);
     } catch (err) {
       console.error('Failed to book appointment:', err);
-      setError('Failed to book appointment. Please try again.');
+      setError('Không thể đặt lịch khám. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   return (
     <div className="appointment-page">
-      <h1>Book Your Appointment</h1>
+      <h1>Đặt lịch khám</h1>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
 
@@ -162,20 +162,20 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
       {step === 1 && (
         <div className="filter-section">
           <div className="form-group">
-            <label>Service Type</label>
+            <label>Loại dịch vụ</label>
             <select
               name="service"
               value={filters.service}
               onChange={(e) => setFilters({ ...filters, service: e.target.value })}
             >
-              <option value="">Select Service</option>
-              <option value="consultation">Consultation</option>
-              <option value="checkup">Check-up</option>
+              <option value="">Chọn dịch vụ</option>
+              <option value="consultation">Khám tư vấn</option>
+              <option value="checkup">Khám tổng quát</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label>Date Range</label>
+            <label>Khoảng thời gian</label>
             <div className="date-range">
               <input
                 type="date"
@@ -193,7 +193,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
           </div>
 
           <div className="form-group">
-            <label>Doctor that you prefer (Optional)</label>
+            <label>Bác sĩ mong muốn (Tùy chọn)</label>
             <select
               name="doctorId"
               value={filters.doctorId ?? ''}
@@ -205,7 +205,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
                 });
               }}
             >
-              <option key="any" value="">Any</option>
+              <option key="any" value="">Bất kỳ</option>
               {doctors.map((doc) => (
                 <option key={doc.doctor_id} value={doc.doctor_id}>
                   {doc.doctor_name}
@@ -215,7 +215,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
           </div>
 
           <button onClick={fetchAvailableSlots} disabled={loading}>
-            {loading ? 'Searching...' : 'Search Available Slots'}
+            {loading ? 'Đang tìm kiếm...' : 'Tìm lịch trống'}
           </button>
         </div>
       )}
@@ -223,7 +223,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
       {/* Step 2: Available Slots */}
       {step === 2 && (
         <div className="slots-section">
-          <h2>Available Time Slots</h2>
+          <h2>Lịch trống khả dụng</h2>
 
           {/* Checkbox to toggle filter by doctor */}
           <div className="form-group">
@@ -234,12 +234,12 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
                 onChange={(e) => setFilterByDoctor(e.target.checked)}
                 disabled={!filters.doctorId} // disable if no doctor selected
               />
-              Show only slots that have your prefered doctor
+              Chỉ hiển thị lịch có bác sĩ mong muốn
             </label>
           </div>
 
           {slots.length === 0 ? (
-            <p>No slots available for the selected filters.</p>
+            <p>Không có lịch trống nào cho bộ lọc đã chọn.</p>
           ) : (
             // Filter slots based on filterByDoctor toggle
             slots
@@ -258,31 +258,31 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
                   }}
                 >
                   <p>
-                    <strong>{slot.time}</strong> on {slot.date}
+                    <strong>{slot.time}</strong> ngày {slot.date}
                   </p>
-                  <p>Doctor: {slot.doctorName}</p>
+                  <p>Bác sĩ: {slot.doctorName}</p>
                 </div>
               ))
           )}
-          <button onClick={() => setStep(1)}>← Back to Filters</button>
+          <button onClick={() => setStep(1)}>← Quay lại bộ lọc</button>
         </div>
       )}
 
       {/* Step 3: Confirm Appointment */}
       {step === 3 && selectedSlot && (
         <div className="confirmation-section">
-          <h2>Confirm Your Appointment</h2>
+          <h2>Xác nhận lịch khám</h2>
           <p>
-            <strong>Date:</strong> {selectedSlot.date}
+            <strong>Ngày:</strong> {selectedSlot.date}
           </p>
           <p>
-            <strong>Time:</strong> {selectedSlot.time}
+            <strong>Giờ:</strong> {selectedSlot.time}
           </p>
           <p>
-            <strong>Doctor:</strong> {selectedSlot.doctorName}
+            <strong>Bác sĩ:</strong> {selectedSlot.doctorName}
           </p>
           <div className="form-group">
-            <label>Reason for Visit</label>
+            <label>Lý do khám bệnh</label>
             <textarea
               name="reason"
               value={formData.reason}
@@ -291,16 +291,16 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
             />
           </div>
           <button onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Booking...' : 'Confirm Booking'}
+            {loading ? 'Đang đặt lịch...' : 'Xác nhận đặt lịch'}
           </button>
-          <button onClick={() => setStep(2)}>← Back to Slots</button>
+          <button onClick={() => setStep(2)}>← Quay lại danh sách lịch</button>
         </div>
       )}
 
       {/* Step 4: Success Message */}
       {step === 4 && success && (
         <div className="success-message">
-          <h2>✅ Appointment Booked!</h2>
+          <h2>✅ Đã đặt lịch khám!</h2>
           <p>{success}</p>
           <button
             onClick={() => {
@@ -310,7 +310,7 @@ const [doctors, setDoctors] = useState<Doctor[]>([]);
               setSuccess('');
             }}
           >
-            Book Another Appointment
+            Đặt lịch khám khác
           </button>
         </div>
       )}

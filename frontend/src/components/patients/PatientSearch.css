@@ -261,40 +261,61 @@
   background: #2980b9;
 }
 
-/* Pagination */
-.pagination {
+/* Action buttons container */
+.action-buttons {
   display: flex;
-  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #eee;
 }
 
-.page-btn {
-  background: #3498db;
+/* Individual action buttons */
+.appointment-btn {
+  background: #27ae60;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 10px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 11px;
   transition: background-color 0.3s ease;
+  min-width: 65px;
 }
 
-.page-btn:hover:not(:disabled) {
-  background: #2980b9;
+.appointment-btn:hover {
+  background: #229954;
 }
 
-.page-btn:disabled {
-  background: #95a5a6;
-  cursor: not-allowed;
+.emr-btn {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background-color 0.3s ease;
+  min-width: 65px;
 }
 
-.page-info {
-  font-weight: 600;
-  color: #333;
+.emr-btn:hover {
+  background: #d35400;
+}
+
+.create-emr-btn {
+  background: #9b59b6;
+  color: white;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background-color 0.3s ease;
+  min-width: 65px;
+}
+
+.create-emr-btn:hover {
+  background: #8e44ad;
 }
 
 /* Modal Styles */
@@ -400,6 +421,73 @@
   color: #333;
 }
 
+/* Modal action styles */
+.modal-actions {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.modal-actions h4 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.modal-action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-appointment-btn,
+.modal-emr-btn,
+.modal-create-emr-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal-appointment-btn {
+  background: #27ae60;
+  color: white;
+}
+
+.modal-appointment-btn:hover {
+  background: #229954;
+  transform: translateY(-2px);
+}
+
+.modal-emr-btn {
+  background: #e67e22;
+  color: white;
+}
+
+.modal-emr-btn:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+}
+
+.modal-create-emr-btn {
+  background: #9b59b6;
+  color: white;
+}
+
+.modal-create-emr-btn:hover {
+  background: #8e44ad;
+  transform: translateY(-2px);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .patient-search-container {
@@ -447,6 +535,29 @@
   
   .detail-row strong {
     min-width: auto;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .appointment-btn,
+  .emr-btn,
+  .create-emr-btn {
+    font-size: 10px;
+    padding: 4px 6px;
+    min-width: 50px;
+  }
+  
+  .modal-action-buttons {
+    flex-direction: column;
+  }
+  
+  .modal-appointment-btn,
+  .modal-emr-btn,
+  .modal-create-emr-btn {
+    min-width: 100%;
   }
 }
 

@@ -1,0 +1,409 @@
+/* ScheduleSettings.module.css */
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 80px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.resetButton,
+.saveButton {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 14px;
+}
+
+.resetButton {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.resetButton:hover {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.saveButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.saveButton:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #64748b;
+}
+
+.error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.doctorSelection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.doctorSelection label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.doctorSelection select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  min-width: 200px;
+}
+
+.scheduleGrid {
+  display: grid;
+  gap: 20px;
+}
+
+.dayCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9fafb;
+}
+
+.dayCard.disabled {
+  opacity: 0.6;
+  background-color: #f3f4f6;
+}
+
+.dayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dayName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.dayToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dayToggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.timeSlots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeSlot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.timeSlot.disabled {
+  opacity: 0.5;
+}
+
+.timeInput {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 80px;
+}
+
+.timeSlotActions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.addSlotButton,
+.removeSlotButton,
+.toggleSlotButton {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addSlotButton {
+  background-color: #10b981;
+  color: white;
+  margin-top: 8px;
+}
+
+.addSlotButton:hover {
+  background-color: #059669;
+}
+
+.removeSlotButton {
+  background-color: #ef4444;
+  color: white;
+}
+
+.removeSlotButton:hover {
+  background-color: #dc2626;
+}
+
+.toggleSlotButton {
+  background-color: #6b7280;
+  color: white;
+}
+
+.toggleSlotButton:hover {
+  background-color: #4b5563;
+}
+
+.toggleSlotButton.enabled {
+  background-color: #3b82f6;
+}
+
+.toggleSlotButton.enabled:hover {
+  background-color: #2563eb;
+}
+
+.clinicSettingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.settingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settingGroup label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.settingGroup input,
+.settingGroup select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.settingGroup input:focus,
+.settingGroup select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.holidayManagement {
+  margin-top: 24px;
+}
+
+.holidayInput {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.holidayInput input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.addHolidayButton {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.addHolidayButton:hover {
+  background-color: #2563eb;
+}
+
+.holidayList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.holidayItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.removeHolidayButton {
+  background: none;
+  border: none;
+  color: #d97706;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.removeHolidayButton:hover {
+  color: #92400e;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: center;
+  }
+
+  .clinicSettingsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeSlot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .timeSlotActions {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .holidayInput {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .dayCard {
+    padding: 16px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+}
