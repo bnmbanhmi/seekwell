@@ -216,6 +216,8 @@ class MedicalReportUpdate(BaseModel):
     personal_history: Optional[str] = None
     family_history: Optional[str] = None
     diagnose_from_recommender: Optional[str] = None
+    prescription: Optional[str] = None  # Added missing field
+    doctor_notes: Optional[str] = None  # Added missing field
 
     model_config = {
         "from_attributes": True  # mới trên Pydantic v2

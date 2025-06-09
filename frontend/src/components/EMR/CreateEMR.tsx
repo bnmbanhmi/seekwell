@@ -22,6 +22,15 @@ interface FormData {
   prescription: PrescriptionItem[];
   reason_in: string;
   treatment_process: string;
+  // Vital Signs
+  pulse_rate: string;
+  temperature: string;
+  blood_pressure: string;
+  respiratory_rate: string;
+  weight: string;
+  // Patient History
+  personal_history: string;
+  family_history: string;
 }
 
 const CreateEMR: React.FC = () => {
@@ -33,6 +42,15 @@ const CreateEMR: React.FC = () => {
     prescription: [],
     reason_in: '',
     treatment_process: '',
+    // Vital Signs
+    pulse_rate: '',
+    temperature: '',
+    blood_pressure: '',
+    respiratory_rate: '',
+    weight: '',
+    // Patient History
+    personal_history: '',
+    family_history: '',
   });
   const [doctorId, setDoctorId] = useState('');
   const [medications, setMedications] = useState<string[]>([]);
@@ -81,7 +99,7 @@ const CreateEMR: React.FC = () => {
     const fetchDoctorDetails = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`${BACKEND_URL}/users/users/me`, {
+        const response = await axios.get(`${BACKEND_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -115,6 +133,15 @@ const CreateEMR: React.FC = () => {
       prescription: [],
       reason_in: '',
       treatment_process: '',
+      // Vital Signs
+      pulse_rate: '',
+      temperature: '',
+      blood_pressure: '',
+      respiratory_rate: '',
+      weight: '',
+      // Patient History
+      personal_history: '',
+      family_history: '',
     });
     setError('');
     setSuccess('');
@@ -134,18 +161,44 @@ const CreateEMR: React.FC = () => {
   const handleSaveEMR = async () => {
     setError('');
     setSuccess('');
+    
+    // Validation
+    if (!selectedPatientId || !doctorId) {
+      setError('Patient and doctor selection are required.');
+      return;
+    }
+    
+    if (!formData.in_diagnosis.trim() || !formData.reason_in.trim() || !formData.treatment_process.trim()) {
+      setError('Diagnosis, reason for admission, and treatment process are required.');
+      return;
+    }
+    
     try {
       const emrData = {
-        patient_id: selectedPatientId,
-        doctor_id: doctorId,
+        patient_id: parseInt(selectedPatientId),
+        doctor_id: parseInt(doctorId),
         in_diagnosis: formData.in_diagnosis,
         doctor_notes: formData.doctor_notes,
         prescription: JSON.stringify(formData.prescription),
         reason_in: formData.reason_in,
         treatment_process: formData.treatment_process,
+        // Vital Signs - only include if not empty
+        ...(formData.pulse_rate && { pulse_rate: formData.pulse_rate }),
+        ...(formData.temperature && { temperature: formData.temperature }),
+        ...(formData.blood_pressure && { blood_pressure: formData.blood_pressure }),
+        ...(formData.respiratory_rate && { respiratory_rate: formData.respiratory_rate }),
+        ...(formData.weight && { weight: formData.weight }),
+        // Patient History - only include if not empty
+        ...(formData.personal_history && { personal_history: formData.personal_history }),
+        ...(formData.family_history && { family_history: formData.family_history }),
       };
 
-      const response = await axios.post(`${BACKEND_URL}/medical_reports`, emrData, {
+      console.log('Sending EMR data:', emrData); // Debug log
+      console.log('Selected Patient ID:', selectedPatientId);
+      console.log('Doctor ID:', doctorId);
+      console.log('Form Data:', formData);
+
+      const response = await axios.post(`${BACKEND_URL}/medical_reports/`, emrData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -157,11 +210,39 @@ const CreateEMR: React.FC = () => {
         prescription: [],
         reason_in: '',
         treatment_process: '',
+        // Vital Signs
+        pulse_rate: '',
+        temperature: '',
+        blood_pressure: '',
+        respiratory_rate: '',
+        weight: '',
+        // Patient History
+        personal_history: '',
+        family_history: '',
       });
       setStep(1); // Reset to the patient selection step
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving EMR:', err);
-      setError('Failed to save EMR. Please try again.');
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      
+      // Enhanced error handling to show specific validation errors
+      if (err.response?.status === 422) {
+        const validationErrors = err.response.data?.detail;
+        console.error('422 Validation errors:', validationErrors);
+        if (Array.isArray(validationErrors)) {
+          const errorMessages = validationErrors.map((error: any) => 
+            `${error.loc?.join('.')}: ${error.msg}`
+          ).join(', ');
+          setError(`Validation error: ${errorMessages}`);
+        } else {
+          setError('Validation error: Please check your input data.');
+        }
+      } else if (err.response?.status === 400) {
+        setError(`Bad request: ${err.response.data?.detail || 'Invalid data'}`);
+      } else {
+        setError('Failed to save EMR. Please try again.');
+      }
     }
   };
 
@@ -234,6 +315,103 @@ const CreateEMR: React.FC = () => {
               className={styles.input}
             />
           </div>
+
+          {/* Vital Signs Section */}
+          <div className={styles.vitalSignsSection}>
+            <h3 className={styles.sectionTitle}>Vital Signs</h3>
+            <div className={styles.vitalSignsGrid}>
+              <div className={styles.formGroup}>
+                <label htmlFor="pulse_rate" className={styles.label}>Pulse Rate (bpm):</label>
+                <input
+                  type="number"
+                  id="pulse_rate"
+                  name="pulse_rate"
+                  value={formData.pulse_rate}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="e.g., 72"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="temperature" className={styles.label}>Temperature (°C):</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="temperature"
+                  name="temperature"
+                  value={formData.temperature}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="e.g., 36.5"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="blood_pressure" className={styles.label}>Blood Pressure:</label>
+                <input
+                  type="text"
+                  id="blood_pressure"
+                  name="blood_pressure"
+                  value={formData.blood_pressure}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="e.g., 120/80"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="respiratory_rate" className={styles.label}>Respiratory Rate (breaths/min):</label>
+                <input
+                  type="number"
+                  id="respiratory_rate"
+                  name="respiratory_rate"
+                  value={formData.respiratory_rate}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="e.g., 16"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="weight" className={styles.label}>Weight (kg):</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="weight"
+                  name="weight"
+                  value={formData.weight}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="e.g., 70.5"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Patient History Section */}
+          <div className={styles.historySection}>
+            <h3 className={styles.sectionTitle}>Patient History</h3>
+            <div className={styles.formGroup}>
+              <label htmlFor="personal_history" className={styles.label}>Personal History:</label>
+              <textarea
+                id="personal_history"
+                name="personal_history"
+                value={formData.personal_history}
+                onChange={handleChange}
+                className={styles.textarea}
+                placeholder="Patient's personal medical history, allergies, medications, etc."
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="family_history" className={styles.label}>Family History:</label>
+              <textarea
+                id="family_history"
+                name="family_history"
+                value={formData.family_history}
+                onChange={handleChange}
+                className={styles.textarea}
+                placeholder="Family medical history, genetic conditions, etc."
+              />
+            </div>
+          </div>
+
           <div className={styles.formGroup}>
             <label htmlFor="treatment_process" className={styles.label}>Treatment Process:</label>
             <textarea

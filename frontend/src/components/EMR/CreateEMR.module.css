@@ -118,3 +118,43 @@
 .noPatients {
   color: #718096;
 }
+
+/* Vital Signs Section */
+.vitalSignsSection {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2d3748;
+  border-bottom: 2px solid #4299e1;
+  padding-bottom: 5px;
+}
+
+.vitalSignsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* Patient History Section */
+.historySection {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .vitalSignsGrid {
+    grid-template-columns: 1fr;
+  }
+}
