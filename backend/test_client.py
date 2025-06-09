@@ -58,7 +58,7 @@ def test_get_doctors():
     except Exception as e:
         print(f"Error during request: {e}")
 
-def test_register_user():
+def test_register_user(user_type="patient"):
     url = "http://localhost:8000/auth/register/"
     payload_patient = {
         "username": "patientuser10",
@@ -75,12 +75,58 @@ def test_register_user():
         "password": "12345",
         "role": "DOCTOR"
     }
+    if user_type == "patient":
+        payload = payload_patient
+    else:
+        payload = payload_doctor
     try:
-        response = requests.post(url, json=payload_patient)
+        response = requests.post(url, json=payload)
         print(f"Status Code: {response.status_code}")
         print("Response JSON:", response.json())
     except Exception as e:
         print(f"Error during request: {e}")
 
+def test_get_appointments():
+    url = "http://localhost:8000/appointments"  # Adjust if the router is mounted under a prefix
+
+    params = {
+        "skip": 0,
+        "limit": 10
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        print(f"Status Code: {response.status_code}")
+        if response.status_code == 200:
+            appointments = response.json()
+            print("Appointments List:", appointments)
+        else:
+            print("Failed to fetch appointments:", response.json())
+    except Exception as e:
+        print(f"Error during request: {e}")
+
+def test_get_patients():
+    url = "http://localhost:8000/patients"  # Adjust if the router is mounted under a prefix
+
+    params = {
+        "skip": 0,
+        "limit": 10
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        print(f"Status Code: {response.status_code}")
+        if response.status_code == 200:
+            patients = response.json()
+            print("Patients List:", patients)
+        else:
+            print("Failed to fetch patients:", response.json())
+    except Exception as e:
+        print(f"Error during request: {e}")
+
 if __name__ == "__main__":
-    test_register_user()
+    # in the case the database is empty, you need to create a hospital first
+    #test_get_hospitals()
+    test_create_hospital()
+    test_register_user(user_type="doctor")
+    test_get_patients()

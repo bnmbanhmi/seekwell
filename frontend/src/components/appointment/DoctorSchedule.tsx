@@ -176,7 +176,7 @@ const DoctorSchedule = () => {
             <h2>Appointment Actions</h2>
             {selectedAppointment && (
                 <>
-                  <p><strong>Doctor:</strong> {selectedAppointment.patientName}</p>
+                  <p><strong>Patient:</strong> {selectedAppointment.patientName}</p>
                   <p><strong>Date:</strong> {selectedAppointment.appointment_day}</p>
                   <p><strong>Time:</strong> {selectedAppointment.appointment_time}</p>
 
