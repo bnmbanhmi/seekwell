@@ -37,10 +37,10 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
   ADMIN: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'User Management', path: '/dashboard/users' },
-    { label: 'Schedule Settings', path: '/dashboard/schedule/settings' },
+    { label: 'Schedule Settings', path: '/dashboard/schedule-settings' },
     { label: 'Reports & Analytics', path: '/dashboard/reports' },
     { label: 'System Logs', path: '/dashboard/logs' },
-    { label: 'Billing Overview', path: '/dashboard/billing/overview' },
+    { label: 'Billing Overview', path: '/dashboard/billing-overview' },
   ],
 };
 

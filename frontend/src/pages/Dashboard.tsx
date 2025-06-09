@@ -17,7 +17,12 @@ import MyAppointment from '../components/appointment/ViewAppointment';
 import DoctorSchedule from '../components/appointment/DoctorSchedule';
 import CreateEMR from '../components/EMR/CreateEMR';
 import UserManagement from '../components/admin/UserManagement';
+import ReportsAnalytics from '../components/admin/ReportsAnalytics';
+import SystemLogs from '../components/admin/SystemLogs';
+import ScheduleSettings from '../components/admin/ScheduleSettings';
+import BillingOverview from '../components/admin/BillingOverview';
 import MedicalHistory from '../components/medical/MedicalHistory';
+import MedicalReportsManagement from '../components/medical/MedicalReportsManagement';
 import Prescriptions from '../components/medical/Prescriptions';
 import CheckInOut from '../components/staff/CheckInOut';
 import Billing from '../components/staff/Billing';
@@ -58,9 +63,15 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="appointments" element={<MyAppointment />} />
         <Route path="schedule" element={<DoctorSchedule />} />
         <Route path="medical-history" element={<MedicalHistory />} />
+        <Route path="records" element={<MedicalHistory />} />
+        <Route path="medical-reports" element={<MedicalReportsManagement />} />
         <Route path="prescriptions" element={<Prescriptions />} />
         <Route path="create_records" element={<CreateEMR />} />
         <Route path="users" element={<UserManagement />} />
+        <Route path="reports" element={<ReportsAnalytics />} />
+        <Route path="logs" element={<SystemLogs />} />
+        <Route path="schedule-settings" element={<ScheduleSettings />} />
+        <Route path="billing-overview" element={<BillingOverview />} />
         <Route path="checkin" element={<CheckInOut />} />
         <Route path="billing" element={<Billing />} />
       </Routes>

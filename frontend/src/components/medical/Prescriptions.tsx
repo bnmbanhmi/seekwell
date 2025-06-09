@@ -51,7 +51,7 @@ const Prescriptions: React.FC = () => {
   const fetchPrescriptions = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       
       if (!token) {
         setError('No authentication token found');

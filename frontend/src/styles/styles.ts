@@ -1,73 +1,100 @@
-// styles.ts
+// Updated styles.ts - Now follows the design system
 import React from 'react';
 
 const styles: { [key: string]: React.CSSProperties } = {
+  // Main layout container with improved styling
   container: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: 'linear-gradient(to right, #eef2f3, #8e9eab)',
-    padding: '20px',
+    background: 'linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-100) 100%)',
+    padding: 'var(--spacing-5)',
   },
+  
+  // Improved card design following design system
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-    padding: '32px',
+    backgroundColor: 'white',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-lg)',
+    padding: 'var(--spacing-8)',
     maxWidth: '400px',
     width: '100%',
-    boxSizing: 'border-box',
+    border: '1px solid var(--secondary-200)',
   },
+  
+  // Left-aligned heading (fixing center alignment issue)
   heading: {
-    textAlign: 'center',
-    marginBottom: '12px',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#333',
+    textAlign: 'left' as const,
+    marginBottom: 'var(--spacing-3)',
+    fontSize: 'var(--font-size-2xl)',
+    fontWeight: 'var(--font-weight-bold)',
+    color: 'var(--secondary-900)',
+    lineHeight: 'var(--line-height-tight)',
   },
+  
+  // Left-aligned subheading
   subHeading: {
-    textAlign: 'center',
-    marginBottom: '24px',
-    color: '#666',
-    fontSize: '14px',
+    textAlign: 'left' as const,
+    marginBottom: 'var(--spacing-6)',
+    color: 'var(--secondary-600)',
+    fontSize: 'var(--font-size-sm)',
+    lineHeight: 'var(--line-height-normal)',
   },
+  
+  // Improved form styling
   form: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
+    flexDirection: 'column' as const,
+    gap: 'var(--spacing-4)',
   },
+  
   formGroup: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
   },
+  
+  // Left-aligned label following design system
   label: {
-    marginBottom: '6px',
-    fontWeight: 500,
-    color: '#333',
+    marginBottom: 'var(--spacing-2)',
+    fontWeight: 'var(--font-weight-medium)',
+    color: 'var(--secondary-700)',
+    fontSize: 'var(--font-size-sm)',
+    textAlign: 'left' as const,
   },
+  
+  // Input styling following design system
   input: {
-    padding: '10px 12px',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    fontSize: '14px',
-    outlineColor: '#007bff',
+    padding: 'var(--spacing-3)',
+    border: '1px solid var(--secondary-300)',
+    borderRadius: 'var(--radius-md)',
+    fontSize: 'var(--font-size-sm)',
+    color: 'var(--secondary-900)',
+    backgroundColor: 'white',
+    transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
+    outline: 'none',
   },
+  
+  // Button styling following design system
   button: {
-    padding: '12px',
-    color: '#fff',
-    fontSize: '15px',
+    padding: 'var(--spacing-3) var(--spacing-4)',
+    color: 'white',
+    fontSize: 'var(--font-size-sm)',
+    fontWeight: 'var(--font-weight-medium)',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
-    transition: 'background-color 0.2s',
+    transition: 'all var(--transition-fast)',
+    backgroundColor: 'var(--primary-600)',
   },
+  
+  // Left-aligned error text (fixing center alignment)
   errorText: {
-    color: 'red',
-    fontSize: '14px',
-    textAlign: 'center',
-    marginTop: '-8px',
-    marginBottom: '8px',
+    color: 'var(--error-600)',
+    fontSize: 'var(--font-size-xs)',
+    textAlign: 'left' as const,
+    marginTop: 'var(--spacing-1)',
+    marginBottom: 'var(--spacing-2)',
   },
 };
 

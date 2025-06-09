@@ -110,21 +110,37 @@ const AdminDashboard = () => {
             </div>
           </Link>
           
-          <div className={styles.actionCard}>
+          <Link to="/dashboard/reports" className={styles.actionCard}>
             <div className={styles.actionIcon}>📊</div>
             <div className={styles.actionContent}>
               <h4>Reports & Analytics</h4>
               <p>View system usage and performance reports</p>
             </div>
-          </div>
+          </Link>
           
-          <div className={styles.actionCard}>
+          <Link to="/dashboard/schedule-settings" className={styles.actionCard}>
             <div className={styles.actionIcon}>⚙️</div>
             <div className={styles.actionContent}>
-              <h4>System Settings</h4>
-              <p>Configure clinic settings and preferences</p>
+              <h4>Schedule Settings</h4>
+              <p>Configure doctor schedules and clinic settings</p>
             </div>
-          </div>
+          </Link>
+          
+          <Link to="/dashboard/billing-overview" className={styles.actionCard}>
+            <div className={styles.actionIcon}>💰</div>
+            <div className={styles.actionContent}>
+              <h4>Billing Overview</h4>
+              <p>Manage invoices and payment tracking</p>
+            </div>
+          </Link>
+
+          <Link to="/dashboard/logs" className={styles.actionCard}>
+            <div className={styles.actionIcon}>🗂️</div>
+            <div className={styles.actionContent}>
+              <h4>System Logs</h4>
+              <p>Monitor system activities and debug issues</p>
+            </div>
+          </Link>
           
           <div className={styles.actionCard}>
             <div className={styles.actionIcon}>🔒</div>

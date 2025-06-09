@@ -1,41 +1,44 @@
+/* Register Page - Updated to follow design system */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(to right, #eef2f3, #8e9eab);
-  padding: 20px;
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-100) 100%);
+  padding: var(--spacing-5);
 }
 
 .card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  padding: 32px;
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-8);
   max-width: 400px;
   width: 100%;
-  box-sizing: border-box;
+  border: 1px solid var(--secondary-200);
 }
 
 .heading {
-  text-align: center;
-  margin-bottom: 12px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+  text-align: left; /* Fixed: was center-aligned */
+  margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--secondary-900);
+  line-height: var(--line-height-tight);
 }
 
 .subheading {
-  text-align: center;
-  margin-bottom: 24px;
-  color: #666;
-  font-size: 14px;
+  text-align: left; /* Fixed: was center-aligned */
+  margin-bottom: var(--spacing-6);
+  color: var(--secondary-600);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-4);
 }
 
 .formGroup {
@@ -44,33 +47,63 @@
 }
 
 .label {
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #333;
+  margin-bottom: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
+  color: var(--secondary-700);
+  font-size: var(--font-size-sm);
+  text-align: left;
 }
 
 .input {
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline-color: #007bff;
+  padding: var(--spacing-3);
+  border: 1px solid var(--secondary-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--secondary-900);
+  background-color: white;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select {
+  padding: var(--spacing-3);
+  border: 1px solid var(--secondary-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--secondary-900);
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--spacing-3) center;
+  background-repeat: no-repeat;
+  background-size: 16px 12px;
+  padding-right: var(--spacing-10);
 }
 
 .button {
-  padding: 12px;
-  color: #fff;
-  font-size: 15px;
+  padding: var(--spacing-3) var(--spacing-4);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-fast);
+  background-color: var(--primary-600);
+}
+
+.button:hover {
+  background-color: var(--primary-700);
 }
 
 .errorText {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-  margin-top: -8px;
-  margin-bottom: 8px;
+  color: var(--error-600);
+  font-size: var(--font-size-xs);
+  text-align: left; /* Fixed: was center-aligned */
+  margin-top: var(--spacing-1);
+  margin-bottom: var(--spacing-2);
 }

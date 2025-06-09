@@ -28,34 +28,101 @@ type MedicalReport = {
   doctor_notes: string;
 };
 
+type ViewMode = 'list' | 'timeline';
+
+type SearchFilters = {
+  diagnosis: string;
+  dateFrom: string;
+  dateTo: string;
+  status: 'all' | 'active' | 'completed';
+};
+
 const MedicalHistory = () => {
   const [medicalReports, setMedicalReports] = useState<MedicalReport[]>([]);
+  const [filteredReports, setFilteredReports] = useState<MedicalReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedReport, setSelectedReport] = useState<MedicalReport | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    diagnosis: '',
+    dateFrom: '',
+    dateTo: '',
+    status: 'all'
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchMedicalHistory = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`${BACKEND_URL}/medical_reports/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setMedicalReports(response.data);
-      } catch (err) {
-        console.error('Failed to fetch medical history:', err);
-        setError('Failed to load medical history.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMedicalHistory();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [medicalReports, searchFilters]);
+
+  const fetchMedicalHistory = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await axios.get(`${BACKEND_URL}/medical_reports/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setMedicalReports(response.data);
+    } catch (err) {
+      console.error('Failed to fetch medical history:', err);
+      setError('Failed to load medical history.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...medicalReports];
+
+    if (searchFilters.diagnosis) {
+      filtered = filtered.filter(report =>
+        (report.in_diagnosis || '').toLowerCase().includes(searchFilters.diagnosis.toLowerCase()) ||
+        (report.out_diagnosis || '').toLowerCase().includes(searchFilters.diagnosis.toLowerCase())
+      );
+    }
+
+    if (searchFilters.dateFrom) {
+      filtered = filtered.filter(report =>
+        new Date(report.in_day) >= new Date(searchFilters.dateFrom)
+      );
+    }
+
+    if (searchFilters.dateTo) {
+      filtered = filtered.filter(report =>
+        new Date(report.in_day) <= new Date(searchFilters.dateTo)
+      );
+    }
+
+    if (searchFilters.status !== 'all') {
+      filtered = filtered.filter(report => {
+        const isCompleted = report.out_day !== null && report.out_day !== '';
+        return searchFilters.status === 'completed' ? isCompleted : !isCompleted;
+      });
+    }
+
+    setFilteredReports(filtered);
+  };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSearchFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const clearFilters = () => {
+    setSearchFilters({
+      diagnosis: '',
+      dateFrom: '',
+      dateTo: '',
+      status: 'all'
+    });
+  };
 
   const handleBackToDashboard = () => {
     navigate('/dashboard');
@@ -82,6 +149,109 @@ const MedicalHistory = () => {
     }
   };
 
+  const exportMedicalHistory = () => {
+    const csvData = filteredReports.map(report => ({
+      'Report ID': report.record_id,
+      'Date': formatDate(report.in_day),
+      'Diagnosis': report.in_diagnosis || 'N/A',
+      'Treatment': report.treatment_process || 'N/A',
+      'Notes': report.doctor_notes || 'N/A',
+      'Status': report.out_day ? 'Completed' : 'Active'
+    }));
+
+    const csvContent = [
+      Object.keys(csvData[0]).join(','),
+      ...csvData.map(row => Object.values(row).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'medical-history.csv';
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const printMedicalHistory = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Medical History Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+            .report { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+            .header { font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
+            .section { margin: 10px 0; }
+            .label { font-weight: bold; color: #333; }
+          </style>
+        </head>
+        <body>
+          <h1>Medical History Report</h1>
+          <p><strong>Generated on:</strong> ${new Date().toLocaleDateString()}</p>
+          ${filteredReports.map(report => `
+            <div class="report">
+              <div class="header">Report #${report.record_id} - ${formatDate(report.in_day)}</div>
+              <div class="section"><span class="label">Diagnosis:</span> ${report.in_diagnosis || 'N/A'}</div>
+              <div class="section"><span class="label">Reason:</span> ${report.reason_in || 'N/A'}</div>
+              <div class="section"><span class="label">Treatment:</span> ${report.treatment_process || 'N/A'}</div>
+              <div class="section"><span class="label">Notes:</span> ${report.doctor_notes || 'N/A'}</div>
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `;
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const renderTimelineView = () => {
+    const sortedReports = [...filteredReports].sort((a, b) => 
+      new Date(b.in_day).getTime() - new Date(a.in_day).getTime()
+    );
+
+    return (
+      <div className={styles.timelineContainer}>
+        <div className={styles.timeline}>
+          {sortedReports.map((report, index) => (
+            <div key={report.record_id} className={styles.timelineItem}>
+              <div className={styles.timelineMarker}>
+                <div className={styles.timelineDot}></div>
+                {index < sortedReports.length - 1 && <div className={styles.timelineLine}></div>}
+              </div>
+              <div className={styles.timelineContent}>
+                <div className={styles.timelineHeader}>
+                  <h4>Report #{report.record_id}</h4>
+                  <span className={styles.timelineDate}>{formatDate(report.in_day)}</span>
+                </div>
+                <div className={styles.timelineBody}>
+                  <p><strong>Diagnosis:</strong> {report.in_diagnosis || 'N/A'}</p>
+                  <p><strong>Reason:</strong> {report.reason_in || 'N/A'}</p>
+                  <p><strong>Treatment:</strong> {report.treatment_process || 'N/A'}</p>
+                  {report.doctor_notes && (
+                    <p><strong>Notes:</strong> {report.doctor_notes}</p>
+                  )}
+                </div>
+                <button 
+                  className={styles.viewDetailsButton}
+                  onClick={() => setSelectedReport(report)}
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.medicalHistoryContainer}>
       <div className={styles.header}>
@@ -89,6 +259,14 @@ const MedicalHistory = () => {
           ← Back to Dashboard
         </button>
         <h2>Medical History</h2>
+        <div className={styles.headerActions}>
+          <button className={styles.exportButton} onClick={exportMedicalHistory}>
+            📤 Export
+          </button>
+          <button className={styles.printButton} onClick={printMedicalHistory}>
+            🖨️ Print
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -100,130 +278,249 @@ const MedicalHistory = () => {
           <p>No medical history found.</p>
         </div>
       ) : (
-        <div className={styles.reportsGrid}>
-          <div className={styles.reportsList}>
-            <h3>Medical Reports ({medicalReports.length})</h3>
-            {medicalReports.map((report) => (
-              <div
-                key={report.record_id}
-                className={`${styles.reportCard} ${selectedReport?.record_id === report.record_id ? styles.selected : ''}`}
-                onClick={() => handleReportSelect(report)}
-              >
-                <div className={styles.reportHeader}>
-                  <h4>Report #{report.record_id}</h4>
-                  <span className={styles.date}>{formatDate(report.in_day)}</span>
-                </div>
-                <div className={styles.reportPreview}>
-                  <p><strong>Diagnosis:</strong> {report.in_diagnosis || 'N/A'}</p>
-                  <p><strong>Reason:</strong> {report.reason_in || 'N/A'}</p>
-                </div>
+        <>
+          {/* Search and Filter Controls */}
+          <div className={styles.filtersContainer}>
+            <h3>Search & Filter</h3>
+            <div className={styles.filtersGrid}>
+              <div className={styles.filterGroup}>
+                <label>Diagnosis:</label>
+                <input
+                  type="text"
+                  name="diagnosis"
+                  value={searchFilters.diagnosis}
+                  onChange={handleFilterChange}
+                  placeholder="Search by diagnosis..."
+                  className={styles.filterInput}
+                />
               </div>
-            ))}
-          </div>
-
-          {selectedReport && (
-            <div className={styles.reportDetails}>
-              <div className={styles.detailsHeader}>
-                <h3>Medical Report #{selectedReport.record_id}</h3>
-                <button className={styles.closeButton} onClick={handleCloseDetails}>×</button>
+              <div className={styles.filterGroup}>
+                <label>Date From:</label>
+                <input
+                  type="date"
+                  name="dateFrom"
+                  value={searchFilters.dateFrom}
+                  onChange={handleFilterChange}
+                  className={styles.filterInput}
+                />
               </div>
-
-              <div className={styles.detailsContent}>
-                <div className={styles.section}>
-                  <h4>Basic Information</h4>
-                  <div className={styles.infoGrid}>
-                    <div className={styles.infoItem}>
-                      <strong>Admission Date:</strong> {formatDate(selectedReport.in_day)}
-                    </div>
-                    <div className={styles.infoItem}>
-                      <strong>Discharge Date:</strong> {formatDate(selectedReport.out_day)}
-                    </div>
-                    <div className={styles.infoItem}>
-                      <strong>Reason for Visit:</strong> {selectedReport.reason_in || 'N/A'}
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.section}>
-                  <h4>Diagnosis & Treatment</h4>
-                  <div className={styles.infoItem}>
-                    <strong>Initial Diagnosis:</strong>
-                    <p>{selectedReport.in_diagnosis || 'N/A'}</p>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <strong>Final Diagnosis:</strong>
-                    <p>{selectedReport.out_diagnosis || 'N/A'}</p>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <strong>Treatment Process:</strong>
-                    <p>{selectedReport.treatment_process || 'N/A'}</p>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <strong>Doctor's Notes:</strong>
-                    <p>{selectedReport.doctor_notes || 'N/A'}</p>
-                  </div>
-                </div>
-
-                <div className={styles.section}>
-                  <h4>Vital Signs</h4>
-                  <div className={styles.vitalSignsGrid}>
-                    <div className={styles.vitalSign}>
-                      <strong>Pulse Rate:</strong> {selectedReport.pulse_rate || 'N/A'}
-                    </div>
-                    <div className={styles.vitalSign}>
-                      <strong>Temperature:</strong> {selectedReport.temperature || 'N/A'}
-                    </div>
-                    <div className={styles.vitalSign}>
-                      <strong>Blood Pressure:</strong> {selectedReport.blood_pressure || 'N/A'}
-                    </div>
-                    <div className={styles.vitalSign}>
-                      <strong>Respiratory Rate:</strong> {selectedReport.respiratory_rate || 'N/A'}
-                    </div>
-                    <div className={styles.vitalSign}>
-                      <strong>Weight:</strong> {selectedReport.weight || 'N/A'}
-                    </div>
-                  </div>
-                </div>
-
-                {selectedReport.prescription && (
-                  <div className={styles.section}>
-                    <h4>Prescription</h4>
-                    <div className={styles.prescriptionList}>
-                      {parsePrescription(selectedReport.prescription).map((med: any, index: number) => (
-                        <div key={index} className={styles.medicationItem}>
-                          <div className={styles.medName}>{med.name}</div>
-                          <div className={styles.medDetails}>
-                            <span><strong>Dosage:</strong> {med.dosage}</span>
-                            <span><strong>Quantity:</strong> {med.quantity}</span>
-                            <span><strong>Instructions:</strong> {med.instructions}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {(selectedReport.personal_history || selectedReport.family_history) && (
-                  <div className={styles.section}>
-                    <h4>Patient History</h4>
-                    {selectedReport.personal_history && (
-                      <div className={styles.infoItem}>
-                        <strong>Personal History:</strong>
-                        <p>{selectedReport.personal_history}</p>
-                      </div>
-                    )}
-                    {selectedReport.family_history && (
-                      <div className={styles.infoItem}>
-                        <strong>Family History:</strong>
-                        <p>{selectedReport.family_history}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+              <div className={styles.filterGroup}>
+                <label>Date To:</label>
+                <input
+                  type="date"
+                  name="dateTo"
+                  value={searchFilters.dateTo}
+                  onChange={handleFilterChange}
+                  className={styles.filterInput}
+                />
+              </div>
+              <div className={styles.filterGroup}>
+                <label>Status:</label>
+                <select
+                  name="status"
+                  value={searchFilters.status}
+                  onChange={handleFilterChange}
+                  className={styles.filterSelect}
+                >
+                  <option value="all">All Reports</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div className={styles.filterActions}>
+                <button onClick={clearFilters} className={styles.clearButton}>
+                  Clear
+                </button>
               </div>
             </div>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className={styles.viewModeContainer}>
+            <h3>View Mode</h3>
+            <div className={styles.viewModeToggle}>
+              <button
+                className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                📋 List View
+              </button>
+              <button
+                className={`${styles.toggleButton} ${viewMode === 'timeline' ? styles.active : ''}`}
+                onClick={() => setViewMode('timeline')}
+              >
+                🕒 Timeline View
+              </button>
+            </div>
+          </div>
+
+          {/* Summary Statistics */}
+          <div className={styles.statsContainer}>
+            <div className={styles.statCard}>
+              <h4>Total Reports</h4>
+              <span className={styles.statNumber}>{medicalReports.length}</span>
+            </div>
+            <div className={styles.statCard}>
+              <h4>Active</h4>
+              <span className={styles.statNumber}>
+                {medicalReports.filter(r => !r.out_day || r.out_day === '').length}
+              </span>
+            </div>
+            <div className={styles.statCard}>
+              <h4>Completed</h4>
+              <span className={styles.statNumber}>
+                {medicalReports.filter(r => r.out_day && r.out_day !== '').length}
+              </span>
+            </div>
+            <div className={styles.statCard}>
+              <h4>Filtered Results</h4>
+              <span className={styles.statNumber}>{filteredReports.length}</span>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          {viewMode === 'timeline' ? (
+            renderTimelineView()
+          ) : (
+            <div className={styles.reportsGrid}>
+              <div className={styles.reportsList}>
+                <h3>Medical Reports ({filteredReports.length})</h3>
+                {filteredReports.length === 0 ? (
+                  <div className={styles.noData}>
+                    <p>No reports match your search criteria.</p>
+                  </div>
+                ) : (
+                  filteredReports.map((report) => (
+                    <div
+                      key={report.record_id}
+                      className={`${styles.reportCard} ${selectedReport?.record_id === report.record_id ? styles.selected : ''}`}
+                      onClick={() => handleReportSelect(report)}
+                    >
+                      <div className={styles.reportHeader}>
+                        <h4>Report #{report.record_id}</h4>
+                        <span className={styles.date}>{formatDate(report.in_day)}</span>
+                      </div>
+                      <div className={styles.reportPreview}>
+                        <p><strong>Diagnosis:</strong> {report.in_diagnosis || 'N/A'}</p>
+                        <p><strong>Reason:</strong> {report.reason_in || 'N/A'}</p>
+                        <div className={styles.statusBadge}>
+                          {report.out_day && report.out_day !== '' ? (
+                            <span className={styles.completed}>Completed</span>
+                          ) : (
+                            <span className={styles.active}>Active</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {selectedReport && (
+                <div className={styles.reportDetails}>
+                  <div className={styles.detailsHeader}>
+                    <h3>Medical Report #{selectedReport.record_id}</h3>
+                    <button className={styles.closeButton} onClick={handleCloseDetails}>×</button>
+                  </div>
+
+                  <div className={styles.detailsContent}>
+                    <div className={styles.section}>
+                      <h4>Basic Information</h4>
+                      <div className={styles.infoGrid}>
+                        <div className={styles.infoItem}>
+                          <strong>Admission Date:</strong> {formatDate(selectedReport.in_day)}
+                        </div>
+                        <div className={styles.infoItem}>
+                          <strong>Discharge Date:</strong> {formatDate(selectedReport.out_day)}
+                        </div>
+                        <div className={styles.infoItem}>
+                          <strong>Reason for Visit:</strong> {selectedReport.reason_in || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={styles.section}>
+                      <h4>Diagnosis & Treatment</h4>
+                      <div className={styles.infoItem}>
+                        <strong>Initial Diagnosis:</strong>
+                        <p>{selectedReport.in_diagnosis || 'N/A'}</p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <strong>Final Diagnosis:</strong>
+                        <p>{selectedReport.out_diagnosis || 'N/A'}</p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <strong>Treatment Process:</strong>
+                        <p>{selectedReport.treatment_process || 'N/A'}</p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <strong>Doctor's Notes:</strong>
+                        <p>{selectedReport.doctor_notes || 'N/A'}</p>
+                      </div>
+                    </div>
+
+                    <div className={styles.section}>
+                      <h4>Vital Signs</h4>
+                      <div className={styles.vitalSignsGrid}>
+                        <div className={styles.vitalSign}>
+                          <strong>Pulse Rate:</strong> {selectedReport.pulse_rate || 'N/A'}
+                        </div>
+                        <div className={styles.vitalSign}>
+                          <strong>Temperature:</strong> {selectedReport.temperature || 'N/A'}
+                        </div>
+                        <div className={styles.vitalSign}>
+                          <strong>Blood Pressure:</strong> {selectedReport.blood_pressure || 'N/A'}
+                        </div>
+                        <div className={styles.vitalSign}>
+                          <strong>Respiratory Rate:</strong> {selectedReport.respiratory_rate || 'N/A'}
+                        </div>
+                        <div className={styles.vitalSign}>
+                          <strong>Weight:</strong> {selectedReport.weight || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedReport.prescription && (
+                      <div className={styles.section}>
+                        <h4>Prescription</h4>
+                        <div className={styles.prescriptionList}>
+                          {parsePrescription(selectedReport.prescription).map((med: any, index: number) => (
+                            <div key={index} className={styles.medicationItem}>
+                              <div className={styles.medName}>{med.name}</div>
+                              <div className={styles.medDetails}>
+                                <span><strong>Dosage:</strong> {med.dosage}</span>
+                                <span><strong>Quantity:</strong> {med.quantity}</span>
+                                <span><strong>Instructions:</strong> {med.instructions}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {(selectedReport.personal_history || selectedReport.family_history) && (
+                      <div className={styles.section}>
+                        <h4>Patient History</h4>
+                        {selectedReport.personal_history && (
+                          <div className={styles.infoItem}>
+                            <strong>Personal History:</strong>
+                            <p>{selectedReport.personal_history}</p>
+                          </div>
+                        )}
+                        {selectedReport.family_history && (
+                          <div className={styles.infoItem}>
+                            <strong>Family History:</strong>
+                            <p>{selectedReport.family_history}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

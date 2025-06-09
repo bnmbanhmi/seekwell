@@ -1,32 +1,34 @@
 /* Check-in/Check-out Component Styles */
 .container {
-  padding: 24px;
+  padding: var(--spacing-lg);
   max-width: 1200px;
   margin: 0 auto;
-  background-color: #f8f9fa;
+  background-color: var(--color-background);
   min-height: 100vh;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 32px;
-  padding: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-lg);
+  background: var(--gradient-primary);
+  border-radius: var(--border-radius-lg);
+  color: var(--color-white);
+  box-shadow: var(--shadow-md);
 }
 
 .title {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   font-weight: 700;
-  margin: 0 0 8px 0;
+  margin: 0 0 var(--spacing-sm) 0;
+  text-align: left;
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   margin: 0;
   opacity: 0.9;
+  text-align: left;
 }
 
 .loading {
@@ -34,113 +36,116 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  font-size: 1.1rem;
-  color: #666;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  text-align: left;
 }
 
 .error {
-  background-color: #fee;
-  color: #c33;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  border: 1px solid #fcc;
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-error-border);
+  text-align: left;
 }
 
 /* Search Bar */
 .searchContainer {
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .searchInput {
   width: 100%;
-  padding: 16px 20px;
-  font-size: 1rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  background-color: white;
-  transition: border-color 0.3s ease;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-white);
+  transition: var(--transition-all);
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  margin-bottom: 24px;
-  background-color: white;
-  border-radius: 8px;
-  padding: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xs);
+  box-shadow: var(--shadow-md);
 }
 
 .tab {
   flex: 1;
-  padding: 12px 16px;
+  padding: var(--spacing-md) var(--spacing-md);
   background: none;
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #666;
+  transition: var(--transition-all);
+  color: var(--color-text-secondary);
 }
 
 .tab:hover {
-  background-color: #f8f9fa;
+  background-color: var(--color-background-secondary);
 }
 
 .activeTab {
-  background-color: #667eea !important;
-  color: white !important;
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
 }
 
 /* Section */
 .section {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-2xl);
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+  text-align: left;
 }
 
 .emptyState {
-  text-align: center;
-  padding: 48px 24px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: #666;
+  text-align: left;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-secondary);
 }
 
 /* Appointments List */
 .appointmentsList {
   display: grid;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 .appointmentCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: var(--spacing-lg);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-all);
 }
 
 .appointmentCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .appointmentInfo {
@@ -151,77 +156,81 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-md);
 }
 
 .appointmentHeader h4 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
-  color: #333;
+  color: var(--color-text-primary);
+  text-align: left;
 }
 
 .appointmentDetails {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .detailRow {
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .label {
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-secondary);
   min-width: 80px;
+  text-align: left;
 }
 
 .appointmentActions {
-  margin-left: 20px;
+  margin-left: var(--spacing-lg);
 }
 
 .checkInButton {
-  padding: 10px 20px;
-  background-color: #27ae60;
-  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-success);
+  color: var(--color-white);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition-all);
 }
 
 .checkInButton:hover {
-  background-color: #219a52;
+  background-color: var(--color-success-dark);
+  transform: translateY(-1px);
 }
 
 .checkedInLabel {
-  color: #27ae60;
+  color: var(--color-success);
   font-weight: 600;
+  text-align: left;
 }
 
 /* Checked-in Patients */
 .checkedInList {
   display: grid;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 .checkedInCard {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: var(--spacing-lg);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-all);
 }
 
 .checkedInCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .patientInfo {
@@ -232,44 +241,47 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-md);
 }
 
 .patientHeader h4 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
-  color: #333;
+  color: var(--color-text-primary);
+  text-align: left;
 }
 
 .patientDetails {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .patientActions {
-  margin-left: 20px;
+  margin-left: var(--spacing-lg);
 }
 
 .checkOutButton {
-  padding: 10px 20px;
-  background-color: #e74c3c;
-  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-error);
+  color: var(--color-white);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition-all);
 }
 
 .checkOutButton:hover {
-  background-color: #c0392b;
+  background-color: var(--color-error-dark);
+  transform: translateY(-1px);
 }
 
 .completedLabel {
-  color: #27ae60;
+  color: var(--color-success);
   font-weight: 600;
+  text-align: left;
 }
 
 /* Status Badges */
