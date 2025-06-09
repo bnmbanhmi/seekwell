@@ -1,0 +1,136 @@
+.appointmentsContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.appointmentsHeader {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loadingSpinner p {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #555;
+}
+
+.appointmentDot {
+  height: 6px;
+  width: 6px;
+  background-color: #1976d2; /* MUI primary color */
+  border-radius: 50%;
+  margin-top: 2px;
+}
+
+.appointmentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.appointmentsTable th,
+.appointmentsTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.appointmentsTable thead th {
+  background-color: #f8f9fa;
+  color: #34495e;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .appointmentsTable thead {
+    display: none;
+  }
+
+  .appointmentsTable, 
+  .appointmentsTable tbody, 
+  .appointmentsTable tr, 
+  .appointmentsTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .appointmentsTable tr {
+    margin-bottom: 1.2rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.5rem;
+  }
+
+  .appointmentsTable td {
+    padding: 0.6rem 1rem;
+    text-align: right;
+    position: relative;
+  }
+
+  .appointmentsTable td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    top: 0.6rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: capitalize;
+  }
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clickableRow:hover {
+  background-color: #f1f1f1;
+}
+
+/* Center modal with flexbox on parent (Modal) */
+.MuiModal-root {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal box styling */
+.appointmentModal {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.appointmentModal h2 {
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.appointmentModal p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+  .currentAppointmentRow {
+  background-color: #4caf50; /* Highlight color */
+  font-weight: bold;
+}
