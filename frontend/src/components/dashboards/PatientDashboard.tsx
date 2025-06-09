@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ChatbotWidget from '../Chatbot/ChatbotWidget';
 import styles from './PatientDashboard.module.css';
 import axios from 'axios';
@@ -19,6 +20,7 @@ const PatientDashboard = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -70,6 +72,18 @@ const PatientDashboard = () => {
     fetchAppointments();
   }, []);
 
+  const handleBookAppointment = () => {
+    navigate('/dashboard/appointments/book');
+  };
+
+  const handleViewMedicalHistory = () => {
+    navigate('/dashboard/medical-history');
+  };
+
+  const handleViewPrescriptions = () => {
+    navigate('/dashboard/prescriptions');
+  };
+
   return (
     <div className={styles.dashboardContainer}>
       <h2 className={styles.header}>Welcome, Patient</h2>
@@ -112,13 +126,22 @@ const PatientDashboard = () => {
           <div className={styles.card}>
             <h3>Quick Actions</h3>
             <div className={styles.quickActions}>
-              <button className={`${styles.button} ${styles.bookButton}`}>
+              <button 
+                className={`${styles.button} ${styles.bookButton}`}
+                onClick={handleBookAppointment}
+              >
                 Book New Appointment
               </button>
-              <button className={`${styles.button} ${styles.historyButton}`}>
+              <button 
+                className={`${styles.button} ${styles.historyButton}`}
+                onClick={handleViewMedicalHistory}
+              >
                 View Medical History
               </button>
-              <button className={`${styles.button} ${styles.prescriptionButton}`}>
+              <button 
+                className={`${styles.button} ${styles.prescriptionButton}`}
+                onClick={handleViewPrescriptions}
+              >
                 View Prescriptions
               </button>
             </div>

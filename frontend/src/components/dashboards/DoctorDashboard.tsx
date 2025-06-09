@@ -74,10 +74,92 @@ const DoctorDashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Welcome, Doctor</h2>
-      <p>Here are your appointments for today...</p>
-      {/* Render dynamic data */}
+    <div className={styles.dashboardContainer}>
+      <div className={styles.header}>
+        <h2>Welcome, Doctor</h2>
+        <p>Here's your schedule for today</p>
+      </div>
+
+      {error && (
+        <div className={styles.error}>{error}</div>
+      )}
+
+      {loading ? (
+        <div className={styles.loading}>Loading your appointments...</div>
+      ) : appointments.length === 0 ? (
+        <div className={styles.card}>
+          <h3>Today's Schedule</h3>
+          <p>No appointments scheduled for today. Enjoy your free time!</p>
+        </div>
+      ) : (
+        <div className={styles.card}>
+          <h3>Today's Appointments ({appointments.length})</h3>
+          <div className={styles.tableContainer}>
+            <table className={styles.appointmentTable}>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Patient</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointments.map((appointment) => {
+                  const currentTime = new Date();
+                  const appointmentTime = new Date(`${appointment.appointment_day}T${appointment.appointment_time}`);
+                  const isUpcoming = appointmentTime > currentTime;
+                  const isNow = Math.abs(appointmentTime.getTime() - currentTime.getTime()) < 3600000; // Within 1 hour
+                  
+                  return (
+                    <tr 
+                      key={appointment.appointment_id} 
+                      className={`${styles.appointmentRow} ${isNow ? styles.currentAppointment : ''}`}
+                    >
+                      <td className={styles.timeCell}>{appointment.appointment_time}</td>
+                      <td>{appointment.patientName}</td>
+                      <td>{appointment.reason}</td>
+                      <td>
+                        <span className={
+                          isNow ? styles.statusCurrent :
+                          isUpcoming ? styles.statusUpcoming : styles.statusCompleted
+                        }>
+                          {isNow ? 'Current' : isUpcoming ? 'Upcoming' : 'Completed'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className={styles.card}>
+        <h3>Quick Actions</h3>
+        <div className={styles.quickActions}>
+          <button 
+            className={styles.actionButton}
+            onClick={() => window.location.href = '/dashboard/schedule'}
+          >
+            📅 View Full Schedule
+          </button>
+          <button 
+            className={styles.actionButton}
+            onClick={() => window.location.href = '/dashboard/patients'}
+          >
+            👥 Patient List
+          </button>
+          <button 
+            className={styles.actionButton}
+            onClick={() => window.location.href = '/dashboard/create_records'}
+          >
+            📝 Create Medical Record
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

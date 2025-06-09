@@ -104,7 +104,10 @@ const CreateEMR: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setDoctorId(response.data.user_id);
+        
+        // For doctors, use doctor_id (which is the same as user_id in the database)
+        const id = response.data.doctor_id || response.data.user_id;
+        setDoctorId(id);
       } catch (err) {
         console.error('Failed to fetch doctor details:', err);
       }
@@ -194,9 +197,6 @@ const CreateEMR: React.FC = () => {
       };
 
       console.log('Sending EMR data:', emrData); // Debug log
-      console.log('Selected Patient ID:', selectedPatientId);
-      console.log('Doctor ID:', doctorId);
-      console.log('Form Data:', formData);
 
       const response = await axios.post(`${BACKEND_URL}/medical_reports/`, emrData, {
         headers: {
@@ -223,13 +223,10 @@ const CreateEMR: React.FC = () => {
       setStep(1); // Reset to the patient selection step
     } catch (err: any) {
       console.error('Error saving EMR:', err);
-      console.error('Error response:', err.response);
-      console.error('Error data:', err.response?.data);
       
       // Enhanced error handling to show specific validation errors
       if (err.response?.status === 422) {
         const validationErrors = err.response.data?.detail;
-        console.error('422 Validation errors:', validationErrors);
         if (Array.isArray(validationErrors)) {
           const errorMessages = validationErrors.map((error: any) => 
             `${error.loc?.join('.')}: ${error.msg}`
