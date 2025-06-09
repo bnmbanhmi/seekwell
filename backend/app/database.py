@@ -24,6 +24,7 @@ class UserRole(str, enum.Enum):
 class Gender(str, enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
+    OTHER = "Other"
 
 class Class(str, enum.Enum):
     # 'Assisted', 'Normal', 'Free', 'Other'

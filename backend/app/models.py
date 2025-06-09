@@ -39,7 +39,6 @@ class Patient(Base):
     health_insurance_card_no = Column(String(20), unique=True)
     identification_id = Column(String(20), unique=True)
     job = Column(String(100))
-    assigned_doctor_id = Column(Integer)
     class_role = Column(Enum(Class), nullable=False)
 
     # Quan hệ

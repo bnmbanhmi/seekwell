@@ -187,7 +187,7 @@ const ViewAppointment = () => {
         ) : (
           <DateCalendar
             value={selectedDate}
-            onChange={(newValue) => {
+            onChange={(newValue: Dayjs | null) => {
               if (newValue) setSelectedDate(newValue);
             }}
             views={['year', 'month', 'day']}
