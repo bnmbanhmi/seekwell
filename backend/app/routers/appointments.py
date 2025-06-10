@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List, Dict, Any, cast
 from app import crud, schemas, models
 from app.database import get_db
 from app.dependencies import get_current_active_user, get_current_active_admin
@@ -18,7 +18,7 @@ async def create_appointment(
     current_user: models.User = Depends(get_current_active_user)
 ):
     print("Received appointment payload:", appointment)
-    return crud.create_appointment(db=db, appointment=appointment, creator_id=current_user.user_id)
+    return crud.create_appointment(db=db, appointment=appointment, creator_id=cast(int, current_user.user_id))
 
 @router.get("/", response_model=List[schemas.AppointmentSchema])
 def get_all_appointments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -63,10 +63,16 @@ def get_appointments_for_patient(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
 ):
-    if current_user.role == models.UserRole.PATIENT:
-        return crud.get_appointments_for_patient(db, patient_id=current_user.user_id)
-    elif current_user.role == models.UserRole.DOCTOR:
-        return crud.get_appointments_for_doctor(db, doctor_id=current_user.user_id)
+    if current_user.role.value == models.UserRole.PATIENT.value:
+        return crud.get_appointments_for_patient(db, patient_id=cast(int, current_user.user_id))
+    elif current_user.role.value == models.UserRole.DOCTOR.value:
+        return crud.get_appointments_for_doctor(db, doctor_id=cast(int, current_user.user_id))
+    elif current_user.role.value in [models.UserRole.ADMIN.value, models.UserRole.CLINIC_STAFF.value]:
+        # Admin and clinic staff can see all appointments
+        return crud.get_all_appointments(db, skip=0, limit=1000)
+    else:
+        # Return empty list for any other roles
+        return []
     
 
 @router.get("/{appointment_id}", response_model=schemas.AppointmentSchema)
@@ -80,9 +86,9 @@ def get_appointment(
         raise HTTPException(status_code=404, detail="Appointment not found")
     
     # Allow only admins, the assigned doctor, or the patient to access
-    if (current_user.role != models.UserRole.ADMIN and 
-        current_user.id != db_appointment.patient_id and 
-        current_user.id != db_appointment.doctor_id):
+    if (current_user.role.value != models.UserRole.ADMIN.value and 
+        cast(int, current_user.user_id) != db_appointment.patient_id and 
+        cast(int, current_user.user_id) != db_appointment.doctor_id):
         raise HTTPException(status_code=403, detail="Not enough permissions to view this appointment")
     
     return db_appointment
@@ -98,9 +104,9 @@ def update_appointment(
     if db_appointment is None:
         raise HTTPException(status_code=404, detail="Appointment not found")
     
-    if (current_user.role != models.UserRole.ADMIN and 
-        current_user.user_id != db_appointment.patient_id and 
-        current_user.user_id != db_appointment.doctor_id):
+    if (current_user.role.value != models.UserRole.ADMIN.value and 
+        cast(int, current_user.user_id) != db_appointment.patient_id and 
+        cast(int, current_user.user_id) != db_appointment.doctor_id):
         raise HTTPException(status_code=403, detail="Not enough permissions to update this appointment")
     
     return crud.update_appointment(db, appointment_id, appointment_update)
@@ -115,9 +121,9 @@ def delete_appointment(
     if db_appointment is None:
         raise HTTPException(status_code=404, detail="Appointment not found")
     
-    if (current_user.role != models.UserRole.ADMIN and 
-        current_user.user_id != db_appointment.patient_id and 
-        current_user.user_id != db_appointment.doctor_id):
+    if (current_user.role.value != models.UserRole.ADMIN.value and 
+        cast(int, current_user.user_id) != db_appointment.patient_id and 
+        cast(int, current_user.user_id) != db_appointment.doctor_id):
         raise HTTPException(status_code=403, detail="Not enough permissions to delete this appointment")
     
     return crud.delete_appointment(db, appointment_id)

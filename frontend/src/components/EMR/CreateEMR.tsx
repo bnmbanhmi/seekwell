@@ -35,6 +35,8 @@ interface FormData {
 
 const CreateEMR: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [formData, setFormData] = useState<FormData>({
     in_diagnosis: '',
@@ -62,37 +64,58 @@ const CreateEMR: React.FC = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-      const token = localStorage.getItem('accessToken');
-      const appointmentsResponse = await axios.get(`${BACKEND_URL}/appointments/me`, {
-        headers: {
-        Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const appointments = appointmentsResponse.data;
-
-      // Remove duplicate patient_ids from appointments
-      const uniquePatientIds = Array.from(
-        new Set<string>(appointments.map((appointment: any) => appointment.patient_id))
-      ) as string[];
-
-      const patientPromises = uniquePatientIds.map(async (patientId: string) => {
-        const patientResponse = await axios.get(`${BACKEND_URL}/patients/${patientId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        const token = localStorage.getItem('accessToken');
+        
+        // Fetch appointments for the current doctor
+        const appointmentsResponse = await axios.get(`${BACKEND_URL}/appointments/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        return {
-        id: patientId,
-        name: patientResponse.data.full_name,
-        };
-      });
 
-      const patientsList = await Promise.all(patientPromises);
-      setPatients(patientsList);
+        const appointments = appointmentsResponse.data;
+        console.log('Fetched appointments:', appointments); // Debug log
+
+        if (appointments.length === 0) {
+          console.log('No appointments found for this doctor'); // Debug log
+          setPatients([]);
+          setFilteredPatients([]);
+          return;
+        }
+
+        // Remove duplicate patient_ids from appointments
+        const uniquePatientIds = Array.from(
+          new Set<string>(appointments.map((appointment: any) => appointment.patient_id.toString()))
+        ) as string[];
+
+        console.log('Unique patient IDs from appointments:', uniquePatientIds); // Debug log
+
+        // Fetch patient details for each unique patient_id
+        const patientPromises = uniquePatientIds.map(async (patientId: string) => {
+          try {
+            const patientResponse = await axios.get(`${BACKEND_URL}/patients/${patientId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            console.log(`Fetched patient ${patientId}:`, patientResponse.data); // Debug log
+            return {
+              id: patientId,
+              name: patientResponse.data.full_name,
+            };
+          } catch (err) {
+            console.error(`Failed to fetch patient ${patientId}:`, err);
+            return null;
+          }
+        });
+
+        const patientsList = (await Promise.all(patientPromises)).filter(patient => patient !== null);
+        console.log('Final patients list:', patientsList); // Debug log
+        setPatients(patientsList);
+        setFilteredPatients(patientsList);
       } catch (err) {
-      console.error('Failed to fetch patients:', err);
-      setError('Không thể tải danh sách bệnh nhân.');
+        console.error('Failed to fetch patients:', err);
+        setError('Không thể tải danh sách bệnh nhân.');
       }
     };
 
@@ -116,6 +139,18 @@ const CreateEMR: React.FC = () => {
     fetchPatients();
     fetchDoctorDetails();
   }, []);
+
+  // Filter patients based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredPatients(patients);
+    } else {
+      const filtered = patients.filter(patient =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredPatients(filtered);
+    }
+  }, [searchTerm, patients]);
 
   console.log()
 
@@ -254,23 +289,43 @@ const CreateEMR: React.FC = () => {
         <div className={styles.patientSelection}>
           <h2 className={styles.subtitle}>Chọn Bệnh nhân</h2>
 
+          {/* Search input */}
+          <div className={styles.formGroup}>
+            <label htmlFor="patientSearch" className={styles.label}>Tìm kiếm bệnh nhân:</label>
+            <input
+              type="text"
+              id="patientSearch"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Nhập tên bệnh nhân..."
+              className={styles.input}
+            />
+          </div>
+
           {patients.length === 0 && !error ? (
             <p className={styles.loading}>Đang tải...</p>
-            ) : patients.length > 0 ? (
-            <ul className={styles.patientList}>
-              {patients.map((patient) => (
-                <li key={patient.id}>
-                  <button
-                    className={styles.patientButton}
-                    onClick={() => handlePatientSelect(patient.id)}
-                  >
-                    {patient.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
+          ) : filteredPatients.length > 0 ? (
+            <>
+              <p className={styles.patientCount}>
+                Hiển thị {filteredPatients.length} / {patients.length} bệnh nhân
+              </p>
+              <ul className={styles.patientList}>
+                {filteredPatients.map((patient) => (
+                  <li key={patient.id}>
+                    <button
+                      className={styles.patientButton}
+                      onClick={() => handlePatientSelect(patient.id)}
+                    >
+                      {patient.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : searchTerm ? (
+            <p className={styles.noPatients}>Không tìm thấy bệnh nhân phù hợp với "{searchTerm}" trong danh sách cuộc hẹn của bạn.</p>
           ) : (
-            <p className={styles.noPatients}>Không có bệnh nhân nào.</p>
+            <p className={styles.noPatients}>Bạn chưa có cuộc hẹn nào với bệnh nhân. Hãy tạo cuộc hẹn trước khi tạo hồ sơ bệnh án.</p>
           )}
         </div>
       )}
