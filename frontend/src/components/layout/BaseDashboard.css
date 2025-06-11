@@ -1,4 +1,4 @@
-/* BaseDashboard.css - Updated with design system */
+/* BaseDashboard.css - Updated with design system and responsive layout fix */
 
 .layout {
   display: flex;
@@ -9,9 +9,12 @@
 
 .sidebar {
   width: 250px;
+  min-width: 250px;
+  max-width: 250px;
   background-color: var(--secondary-900);
   color: var(--white);
   padding: var(--spacing-5) var(--spacing-3);
+  flex-shrink: 0;
 }
 
 .main-content {
@@ -130,4 +133,40 @@
   overflow-y: auto;
   flex: 1;
   background-color: var(--secondary-50);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1023px) {
+  .layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    display: none; /* Hide desktop sidebar on mobile/tablet */
+  }
+  
+  .main-content {
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .content {
+    padding-bottom: calc(var(--spacing-5) + 80px); /* Add space for mobile nav */
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+  }
+  
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main-content {
+    width: calc(100% - 250px);
+    max-width: calc(100% - 250px);
+  }
 }

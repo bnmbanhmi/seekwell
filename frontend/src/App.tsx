@@ -38,12 +38,7 @@ const ChatbotContainer: React.FC = () => {
     setUserRole(role || null);
   }, [location]);
 
-  // Don't show chatbot on dashboard pages (they have their own chat functionality)
-  const isDashboardPage = location.pathname.startsWith('/dashboard');
-  
-  if (isDashboardPage) {
-    return null;
-  }
+  // Show chatbot globally on all pages for consistent user experience
 
   return (
     <ChatbotWidget

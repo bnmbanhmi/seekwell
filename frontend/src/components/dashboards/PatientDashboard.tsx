@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ChatbotWidget from '../Chatbot/ChatbotWidget';
 import styles from './PatientDashboard.module.css';
 import axios from 'axios';
 
@@ -21,18 +20,34 @@ type DashboardStats = {
   upcomingAppointments: number;
   completedAppointments: number;
   totalPrescriptions: number;
+  totalSkinAssessments: number;
+  pendingReviews: number;
+};
+
+type SkinLesionAssessment = {
+  image_id: number;
+  upload_timestamp: string;
+  body_region: string;
+  ai_prediction: string;
+  confidence_score: number;
+  risk_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  status: 'pending' | 'reviewed' | 'completed';
 };
 
 const PatientDashboard = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [recentAssessments, setRecentAssessments] = useState<SkinLesionAssessment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     todayAppointments: 0,
     upcomingAppointments: 0,
     completedAppointments: 0,
     totalPrescriptions: 0,
+    totalSkinAssessments: 0,
+    pendingReviews: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showSkinCapture, setShowSkinCapture] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,6 +108,8 @@ const PatientDashboard = () => {
           upcomingAppointments,
           completedAppointments,
           totalPrescriptions: 0, // We'll fetch this from prescriptions API later
+          totalSkinAssessments: 0, // Will be implemented in Phase 2
+          pendingReviews: 0, // Will be implemented in Phase 2
         });
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
@@ -230,24 +247,6 @@ const PatientDashboard = () => {
               ))}
             </div>
           )}
-        </div>
-
-        {/* AI Assistant */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>🤖 Trợ lý sức khỏe cá nhân của bạn</h3>
-          <div className={styles.chatCard}>
-            <p className={styles.chatDescription}>
-              Trò chuyện với trợ lý AI của chúng tôi để được hướng dẫn về sức khỏe cá nhân, trợ giúp về cuộc hẹn và các câu hỏi y tế.
-            </p>
-            <div className={styles.flexGrow}>
-              <ChatbotWidget
-                userRole="PATIENT"
-                isAuthenticated={true}
-                position="inline"
-                placeholder="Hỏi về sức khỏe, triệu chứng hoặc cuộc hẹn của bạn..."
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>
