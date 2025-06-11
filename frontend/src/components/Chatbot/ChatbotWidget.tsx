@@ -55,7 +55,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 
     const getWelcomeMessage = () => {
         if (!isAuthenticated) {
-            return `Xin chào! Tôi là trợ lý AI của phòng khám. 🏥
+            return `Xin chào! Tôi là trợ lý AI của phòng khám.
 
 Tôi có thể giúp bạn:
 - **Thông tin phòng khám** (giờ làm việc, dịch vụ, địa chỉ)
@@ -63,12 +63,12 @@ Tôi có thể giúp bạn:
 - **Tư vấn triệu chứng cơ bản**
 - **Câu hỏi thường gặp về sức khỏe**
 
-Bạn có thể hỏi tôi bất cứ điều gì! 😊`;
+Bạn có thể hỏi tôi bất cứ điều gì!`;
         }
 
         switch (userRole) {
             case 'PATIENT':
-                return `Xin chào! Tôi là trợ lý AI cá nhân của bạn tại Phòng khám. 👨‍⚕️
+                return `Xin chào! Tôi là trợ lý AI cá nhân của bạn tại Phòng khám.
 
 Tôi có thể giúp bạn:
 - **Tư vấn triệu chứng và sức khỏe**
@@ -81,7 +81,7 @@ Hãy đặt câu hỏi để tôi hỗ trợ bạn!`;
             case 'DOCTOR':
             case 'CLINIC_STAFF':
             case 'ADMIN':
-                return `Xin chào! Tôi là trợ lý AI cho nhân viên y tế. 🩺
+                return `Xin chào! Tôi là trợ lý AI cho nhân viên y tế.
 
 Tôi có thể hỗ trợ:
 - **Tư vấn chẩn đoán ban đầu**
@@ -192,7 +192,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                     onClick={toggleChat}
                     aria-label="Toggle Chat"
                 >
-                    {isOpen ? '✕' : '💬'}
+                    {isOpen ? '✕' : 'Chat'}
                 </button>
 
                 {/* Chat Window */}
@@ -200,7 +200,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                     <div className="chatbot-window">
                         <div className="chatbot-header">
                             <div className="chatbot-header-info">
-                                <span className="chatbot-avatar">🤖</span>
+                                <span className="chatbot-avatar">AI</span>
                                 <div>
                                     <h4>Trợ lý Phòng khám</h4>
                                     <span className="chatbot-status">Trực tuyến</span>
@@ -212,7 +212,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                                     className="chatbot-action-btn"
                                     title="Xóa lịch sử chat"
                                 >
-                                    🗑️
+                                    Clear
                                 </button>
                                 <button
                                     onClick={toggleChat}
@@ -278,7 +278,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                                 disabled={isLoading || !currentMessage.trim()}
                                 className="chatbot-send-btn"
                             >
-                                {isLoading ? '⏳' : '➤'}
+                                {isLoading ? 'Sending...' : 'Send'}
                             </button>
                         </div>
                     </div>
@@ -344,7 +344,7 @@ Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và
                     disabled={isLoading || !currentMessage.trim()}
                     className="chatbot-send-btn"
                 >
-                    {isLoading ? '⏳' : '➤'}
+                    {isLoading ? 'Sending...' : 'Send'}
                 </button>
             </div>
         </div>

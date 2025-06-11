@@ -1,0 +1,367 @@
+/* SeekWell Mobile Navigation - Mobile-First Design */
+
+.mobileNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-navigation);
+  
+  /* Base mobile layout */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  
+  /* Background & styling */
+  background: var(--surface-elevated);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-navigation);
+  
+  /* Safe area support */
+  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
+  
+  /* PWA support */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.navItem {
+  /* Touch-friendly sizing */
+  min-width: var(--touch-target-size);
+  min-height: var(--touch-target-size);
+  flex: 1;
+  max-width: 80px;
+  
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  
+  /* Reset button styles */
+  background: none;
+  border: none;
+  padding: var(--spacing-xs);
+  cursor: pointer;
+  
+  /* Visual styling */
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast) var(--easing-standard);
+  position: relative;
+  
+  /* Typography */
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  
+  /* Touch states */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navItem:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.navItem:active {
+  transform: translateY(0) scale(0.98);
+  background: var(--surface-pressed);
+}
+
+/* Active state */
+.navItem.active {
+  color: var(--primary-600);
+  background: var(--primary-50);
+}
+
+/* Featured item styling (Skin Check button) */
+.navItem.featured {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-featured);
+  transform: translateY(-4px);
+  margin: 0 var(--spacing-xs);
+  position: relative;
+  overflow: hidden;
+}
+
+.navItem.featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.navItem.featured:hover::before {
+  opacity: 1;
+}
+
+.navItem.featured:active {
+  transform: translateY(-2px) scale(0.95);
+  box-shadow: var(--shadow-lg);
+}
+
+.navItem.featured .navLabel {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Label styling */
+.navLabel {
+  font-size: var(--font-size-sm);
+  font-weight: inherit;
+  line-height: var(--line-height-tight);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Featured indicator */
+.featuredIndicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--status-success);
+  border-radius: 50%;
+  border: 2px solid white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Accessibility improvements */
+.navItem:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .navItem,
+  .navIcon,
+  .featuredIndicator {
+    animation: none;
+    transition: none;
+  }
+  
+  .navItem:hover {
+    transform: none;
+  }
+  
+  .navItem:active {
+    transform: scale(0.98);
+  }
+  
+  .navItem.featured {
+    transform: translateY(-2px);
+  }
+  
+  .navItem.featured:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .mobileNav {
+    background: var(--surface-elevated-dark, rgba(30, 30, 30, 0.95));
+    border-top-color: var(--border-subtle-dark, rgba(255, 255, 255, 0.1));
+  }
+  
+  .navItem {
+    color: var(--text-secondary-dark, rgba(255, 255, 255, 0.7));
+  }
+  
+  .navItem:hover {
+    background: var(--surface-hover-dark, rgba(255, 255, 255, 0.05));
+    color: var(--text-primary-dark, rgba(255, 255, 255, 0.9));
+  }
+  
+  .navItem.active {
+    color: var(--primary-400);
+    background: var(--primary-900, rgba(99, 102, 241, 0.1));
+  }
+  
+  .featuredIndicator {
+    border-color: var(--surface-elevated-dark, rgba(30, 30, 30, 0.95));
+  }
+}
+
+/* Tablet breakpoint */
+@media screen and (min-width: 768px) {
+  .mobileNav {
+    padding: var(--spacing-md) var(--spacing-lg);
+    gap: var(--spacing-sm);
+  }
+  
+  .navItem {
+    max-width: 100px;
+    padding: var(--spacing-sm);
+  }
+  
+  .navLabel {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* Desktop breakpoint - hide mobile nav and ensure no layout conflicts */
+@media screen and (min-width: 1024px) {
+  .mobileNav {
+    display: none !important;
+    position: static;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    z-index: -1;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .mobileNav {
+    border-top-width: 2px;
+    border-top-color: var(--border-high-contrast, #000);
+  }
+  
+  .navItem {
+    border: 1px solid transparent;
+  }
+  
+  .navItem.active {
+    border-color: var(--primary-600);
+    background: var(--primary-100);
+  }
+  
+  .navItem.featured {
+    border: 2px solid var(--primary-700);
+  }
+}
+
+/* iOS specific adjustments */
+@supports (-webkit-touch-callout: none) {
+  .mobileNav {
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+  
+  .navItem {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Android specific adjustments */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .mobileNav {
+    /* Ensure proper spacing on small Android devices */
+    min-height: calc(var(--touch-target-size) + var(--spacing-md));
+  }
+}
+
+/* Landscape mode adjustments */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .mobileNav {
+    padding: var(--spacing-xs) var(--spacing-md);
+    padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .navItem {
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs);
+  }
+  
+  .navLabel {
+    font-size: 10px;
+  }
+  
+  .navItem.featured {
+    transform: translateY(-2px);
+  }
+}
+
+/* Print styles */
+@media print {
+  .mobileNav {
+    display: none;
+  }
+}
+
+/* Loading state for items */
+.navItem.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Badge support for notifications */
+.navItem::after {
+  content: attr(data-badge);
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: var(--status-error);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.navItem[data-badge]:not([data-badge=""])::after {
+  display: flex;
+}
+
+/* Haptic feedback class integration */
+.navItem.haptic-light:active {
+  /* Visual feedback to simulate haptic */
+  background: var(--surface-pressed);
+}
