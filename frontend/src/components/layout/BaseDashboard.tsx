@@ -14,6 +14,7 @@ type Props = {
 
 const BaseDashboard: React.FC<Props> = ({ role, children }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -46,25 +47,43 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
     }, 1000);
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <div className="layout">
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
         <Sidebar role={role} />
       </aside>
+
+      {/* Overlay for mobile sidebar */}
+      {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>}
 
       {/* Main content */}
       <div className="main-content">
         {/* Header */}
         <header className="header">
           <div className="header-left">
+            {/* Hamburger menu button */}
+            <button
+              className={`hamburger-menu ${sidebarOpen ? 'hamburger-active' : ''}`}
+              onClick={toggleSidebar}
+              aria-label="Toggle menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            
             <img
               src="/logo192.png"
-              alt="Clinic Logo"
+              alt="SeekWell Logo"
               className="logo"
             />
             <h1 className="title">
-              Clinic Management System
+              SeekWell - AI Health Assistant
             </h1>
           </div>
 

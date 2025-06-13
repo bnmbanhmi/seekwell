@@ -25,7 +25,7 @@ interface Doctor {
   email: string;
 }
 
-interface ClinicSettings {
+interface SeekWellSettings {
   appointmentDuration: number; // in minutes
   bufferTime: number; // buffer between appointments in minutes
   advanceBookingDays: number; // how many days in advance can appointments be booked
@@ -38,7 +38,7 @@ const ScheduleSettings: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<number | null>(null);
   const [weeklySchedule, setWeeklySchedule] = useState<DaySettings[]>([]);
-  const [clinicSettings, setClinicSettings] = useState<ClinicSettings>({
+  const [seekwellSettings, setSeekwellSettings] = useState<SeekWellSettings>({
     appointmentDuration: 30,
     bufferTime: 5,
     advanceBookingDays: 30,
@@ -57,7 +57,7 @@ const ScheduleSettings: React.FC = () => {
 
   useEffect(() => {
     fetchDoctors();
-    loadClinicSettings();
+    loadSeekwellSettings();
     initializeWeeklySchedule();
   }, []);
 
@@ -82,12 +82,12 @@ const ScheduleSettings: React.FC = () => {
     }
   };
 
-  const loadClinicSettings = () => {
+  const loadSeekwellSettings = () => {
     // In a real application, this would load from the backend
     // For now, we'll use localStorage or default values
-    const savedSettings = localStorage.getItem('clinicSettings');
+    const savedSettings = localStorage.getItem('seekwellSettings');
     if (savedSettings) {
-      setClinicSettings(JSON.parse(savedSettings));
+      setSeekwellSettings(JSON.parse(savedSettings));
     }
   };
 
@@ -147,14 +147,14 @@ const ScheduleSettings: React.FC = () => {
     setWeeklySchedule(newSchedule);
   };
 
-  const updateClinicSettings = (updates: Partial<ClinicSettings>) => {
-    setClinicSettings(prev => ({ ...prev, ...updates }));
+  const updateSeekwellSettings = (updates: Partial<SeekWellSettings>) => {
+    setSeekwellSettings(prev => ({ ...prev, ...updates }));
   };
 
   const addHoliday = () => {
-    if (newHolidayDate && !clinicSettings.holidayDates.includes(newHolidayDate)) {
-      updateClinicSettings({
-        holidayDates: [...clinicSettings.holidayDates, newHolidayDate].sort()
+    if (newHolidayDate && !seekwellSettings.holidayDates.includes(newHolidayDate)) {
+      updateSeekwellSettings({
+        holidayDates: [...seekwellSettings.holidayDates, newHolidayDate].sort()
       });
       setNewHolidayDate('');
       toast.success('Đã thêm ngày nghỉ lễ');
@@ -162,8 +162,8 @@ const ScheduleSettings: React.FC = () => {
   };
 
   const removeHoliday = (dateToRemove: string) => {
-    updateClinicSettings({
-      holidayDates: clinicSettings.holidayDates.filter(date => date !== dateToRemove)
+    updateSeekwellSettings({
+      holidayDates: seekwellSettings.holidayDates.filter(date => date !== dateToRemove)
     });
     toast.success('Đã xóa ngày nghỉ lễ');
   };
@@ -173,7 +173,7 @@ const ScheduleSettings: React.FC = () => {
     try {
       // In a real application, this would save to the backend
       // For now, we'll save to localStorage
-      localStorage.setItem('clinicSettings', JSON.stringify(clinicSettings));
+      localStorage.setItem('seekwellSettings', JSON.stringify(seekwellSettings));
       localStorage.setItem('weeklySchedule', JSON.stringify(weeklySchedule));
       
       // If we have backend endpoints, we would save there:
@@ -181,7 +181,7 @@ const ScheduleSettings: React.FC = () => {
       // await axios.post(`${BACKEND_URL}/admin/schedule-settings`, {
       //   doctorId: selectedDoctor,
       //   weeklySchedule,
-      //   clinicSettings
+      //   seekwellSettings
       // }, {
       //   headers: { Authorization: `Bearer ${token}` }
       // });
@@ -198,7 +198,7 @@ const ScheduleSettings: React.FC = () => {
   const resetToDefault = () => {
     if (window.confirm('Bạn có chắc chắn muốn đặt lại tất cả cài đặt về giá trị mặc định không?')) {
       initializeWeeklySchedule();
-      setClinicSettings({
+      setSeekwellSettings({
         appointmentDuration: 30,
         bufferTime: 5,
         advanceBookingDays: 30,
@@ -330,9 +330,9 @@ const ScheduleSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* Clinic Settings */}
+      {/* SeekWell Settings */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Cài đặt Chung của Phòng khám</h3>
+        <h3 className={styles.sectionTitle}>Cài đặt Chung của SeekWell</h3>
         <div className={styles.settingsGrid}>
           <div className={styles.settingItem}>
             <label htmlFor="appointment-duration">Thời lượng Cuộc hẹn (phút):</label>
@@ -342,8 +342,8 @@ const ScheduleSettings: React.FC = () => {
               min="15"
               max="120"
               step="15"
-              value={clinicSettings.appointmentDuration}
-              onChange={(e) => updateClinicSettings({ appointmentDuration: Number(e.target.value) })}
+              value={seekwellSettings.appointmentDuration}
+              onChange={(e) => updateSeekwellSettings({ appointmentDuration: Number(e.target.value) })}
               className={styles.settingInput}
             />
           </div>
@@ -356,8 +356,8 @@ const ScheduleSettings: React.FC = () => {
               min="0"
               max="30"
               step="5"
-              value={clinicSettings.bufferTime}
-              onChange={(e) => updateClinicSettings({ bufferTime: Number(e.target.value) })}
+              value={seekwellSettings.bufferTime}
+              onChange={(e) => updateSeekwellSettings({ bufferTime: Number(e.target.value) })}
               className={styles.settingInput}
             />
           </div>
@@ -369,8 +369,8 @@ const ScheduleSettings: React.FC = () => {
               type="number"
               min="1"
               max="365"
-              value={clinicSettings.advanceBookingDays}
-              onChange={(e) => updateClinicSettings({ advanceBookingDays: Number(e.target.value) })}
+              value={seekwellSettings.advanceBookingDays}
+              onChange={(e) => updateSeekwellSettings({ advanceBookingDays: Number(e.target.value) })}
               className={styles.settingInput}
             />
           </div>
@@ -382,8 +382,8 @@ const ScheduleSettings: React.FC = () => {
               type="number"
               min="1"
               max="100"
-              value={clinicSettings.maxAppointmentsPerDay}
-              onChange={(e) => updateClinicSettings({ maxAppointmentsPerDay: Number(e.target.value) })}
+              value={seekwellSettings.maxAppointmentsPerDay}
+              onChange={(e) => updateSeekwellSettings({ maxAppointmentsPerDay: Number(e.target.value) })}
               className={styles.settingInput}
             />
           </div>
@@ -392,8 +392,8 @@ const ScheduleSettings: React.FC = () => {
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                checked={clinicSettings.allowWeekendAppointments}
-                onChange={(e) => updateClinicSettings({ allowWeekendAppointments: e.target.checked })}
+                checked={seekwellSettings.allowWeekendAppointments}
+                onChange={(e) => updateSeekwellSettings({ allowWeekendAppointments: e.target.checked })}
                 className={styles.settingCheckbox}
               />
               Cho phép Cuộc hẹn Cuối tuần
@@ -419,10 +419,10 @@ const ScheduleSettings: React.FC = () => {
           </div>
           
           <div className={styles.holidayList}>
-            {clinicSettings.holidayDates.length === 0 ? (
+            {seekwellSettings.holidayDates.length === 0 ? (
               <p className={styles.noHolidays}>Chưa cấu hình ngày nghỉ lễ nào</p>
             ) : (
-              clinicSettings.holidayDates.map(date => (
+              seekwellSettings.holidayDates.map(date => (
                 <div key={date} className={styles.holidayItem}>
                   <span className={styles.holidayDate}>
                     {new Date(date).toLocaleDateString('vi-VN')}

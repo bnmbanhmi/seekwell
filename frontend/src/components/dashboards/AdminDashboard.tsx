@@ -40,7 +40,7 @@ const AdminDashboard = () => {
         totalUsers: users.length,
         totalPatients: users.filter((user: any) => user.role === 'PATIENT').length,
         totalDoctors: users.filter((user: any) => user.role === 'DOCTOR').length,
-        totalStaff: users.filter((user: any) => user.role === 'CLINIC_STAFF').length,
+        totalStaff: users.filter((user: any) => user.role === 'LOCAL_CADRE').length,
       };
       
       setStats(stats);

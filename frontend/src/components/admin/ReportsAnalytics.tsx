@@ -76,13 +76,11 @@ const ReportsAnalytics: React.FC = () => {
       // Calculate statistics
       const today = new Date().toISOString().split('T')[0];
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-      const stats = {
+      const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];        const stats = {
         totalUsers: users.length,
         totalPatients: users.filter((user: any) => user.role === 'PATIENT').length,
         totalDoctors: users.filter((user: any) => user.role === 'DOCTOR').length,
-        totalStaff: users.filter((user: any) => user.role === 'CLINIC_STAFF').length,
+        totalStaff: users.filter((user: any) => user.role === 'LOCAL_CADRE').length,
         totalAppointments: appointments.length,
         todayAppointments: appointments.filter((apt: any) => apt.appointment_day === today).length,
         weeklyAppointments: appointments.filter((apt: any) => apt.appointment_day >= oneWeekAgo).length,

@@ -1,14 +1,21 @@
-# clinic-management
+# SeekWell - AI Health Assistant
 
-A comprehensive clinic management system designed to streamline operations for medical practices. It includes features for managing patient records, user authentication with role-based access control, and an administrative interface for system oversight.
+**AI-Powered Mobile Web App for Skin Lesion Classification**
 
-## Features
+SeekWell is a comprehensive mobile-first health platform designed to revolutionize skin cancer detection through AI-powered analysis while maintaining human oversight through local cadres and medical professionals. Built for the ASEAN Data Science Explorers Competition.
 
-*   **User Authentication**: Secure registration and login for different user roles (Admin, Doctor, Patient).
-*   **Role-Based Access Control**: Differentiated access to features based on user roles.
-*   **Patient Management**: Create, view, update, and delete patient profiles.
-*   **Admin Dashboard**: System administration capabilities.
-*   **API**: RESTful API for backend services.
+## 🎯 Mission
+
+Transform skin cancer detection in underserved communities by providing accessible AI-powered screening tools with professional medical oversight.
+
+## ✨ Key Features
+
+*   **AI-Powered Skin Analysis**: Advanced machine learning for skin lesion classification
+*   **Mobile-First Design**: Responsive web app optimized for smartphones and tablets
+*   **Role-Based Access Control**: Patient, Local Cadre, Doctor, and Admin roles
+*   **Remote Consultation**: Telemedicine capabilities for rural healthcare
+*   **Community Health Focus**: Local cadre involvement for sustainable healthcare delivery
+*   **Progressive Web App**: Offline capabilities and app-like experience
 *   **Chat Functionality**: Integrated chat for communication (details TBD based on `routers/chat.py`).
 
 ## Tech Stack

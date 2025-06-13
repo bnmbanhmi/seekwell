@@ -15,6 +15,27 @@
   color: var(--white);
   padding: var(--spacing-5) var(--spacing-3);
   flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100vh;
+  z-index: 1001;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.sidebar-open {
+  left: 0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .main-content {
@@ -22,6 +43,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  width: 100%;
 }
 
 .header {
@@ -29,23 +51,63 @@
   justify-content: space-between;
   align-items: center;
   background-color: var(--white);
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: var(--spacing-2) var(--spacing-4);  /* Reduced padding to make header smaller */
   box-shadow: var(--shadow-sm);
   z-index: 1000;
+  height: 50px;  /* Fixed height for smaller header */
 }
 
 .header-left {
   display: flex;
   align-items: center;
+  gap: var(--spacing-3);
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1002;
+}
+
+.hamburger-menu span {
+  width: 100%;
+  height: 2px;
+  background-color: var(--secondary-800);
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger-menu:hover span {
+  background-color: var(--primary-600);
+}
+
+/* Hamburger animation when sidebar is open */
+.hamburger-active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .logo {
-  height: 40px;
-  margin-right: var(--spacing-3);
+  height: 30px;  /* Reduced from 40px */
 }
 
 .title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-lg);  /* Reduced from 2xl */
   font-weight: var(--font-weight-semibold);
   color: var(--secondary-800);
   text-align: left;
@@ -61,8 +123,8 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-base);
+  padding: var(--spacing-1) var(--spacing-2);  /* Reduced padding */
+  font-size: var(--font-size-sm);  /* Reduced font size */
   color: var(--secondary-800);
   border-radius: var(--radius-md);
   transition: background-color var(--transition-fast);
@@ -76,23 +138,25 @@
   background-color: var(--primary-500);
   color: var(--white);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 24px;  /* Reduced from 30px */
+  height: 24px;  /* Reduced from 30px */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);  /* Smaller font */
   margin-right: var(--spacing-2);
 }
 
 .account-label {
   margin-right: var(--spacing-2);
   font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);  /* Smaller font */
 }
 
 .chevron {
-  width: 16px;
-  height: 16px;
+  width: 14px;  /* Reduced from 16px */
+  height: 14px;  /* Reduced from 16px */
   transition: transform var(--transition-fast);
 }
 
@@ -129,7 +193,7 @@
 }
 
 .content {
-  padding: var(--spacing-5);
+  padding: var(--spacing-4);  /* Reduced padding */
   overflow-y: auto;
   flex: 1;
   background-color: var(--secondary-50);
@@ -142,7 +206,12 @@
   }
   
   .sidebar {
-    display: none; /* Hide desktop sidebar on mobile/tablet */
+    position: fixed;
+    left: -250px; /* Hidden by default on mobile */
+  }
+  
+  .sidebar-open {
+    left: 0; /* Show when toggled */
   }
   
   .main-content {
@@ -153,6 +222,10 @@
   .content {
     padding-bottom: calc(var(--spacing-5) + 80px); /* Add space for mobile nav */
   }
+  
+  .hamburger-menu {
+    display: flex; /* Always show hamburger on mobile */
+  }
 }
 
 @media screen and (min-width: 1024px) {
@@ -161,12 +234,26 @@
   }
   
   .sidebar {
-    display: flex;
-    flex-direction: column;
+    position: static; /* Normal positioning on desktop */
+    left: auto;
+  }
+  
+  .sidebar-open,
+  .sidebar {
+    left: auto; /* Always visible on desktop */
+    position: static;
+  }
+  
+  .sidebar-overlay {
+    display: none; /* No overlay needed on desktop */
   }
   
   .main-content {
     width: calc(100% - 250px);
     max-width: calc(100% - 250px);
+  }
+  
+  .hamburger-menu {
+    display: none; /* Hide hamburger on desktop */
   }
 }

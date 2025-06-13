@@ -26,7 +26,7 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Hồ sơ bệnh án', path: '/dashboard/records' },
     { label: 'Tạo hồ sơ mới', path: '/dashboard/create_records' },
   ],
-  CLINIC_STAFF: [
+  LOCAL_CADRE: [
     { label: 'Bảng điều khiển', path: '/dashboard' },
     { label: 'Sắp xếp lịch hẹn', path: '/dashboard/appointments/schedule' },
     { label: 'Đăng ký / Thanh toán', path: '/dashboard/checkin' },
