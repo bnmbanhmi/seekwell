@@ -94,7 +94,7 @@ const Billing: React.FC = () => {
 
   const loadInvoices = () => {
     // Load from localStorage (in a real app, this would be from backend)
-    const stored = localStorage.getItem('clinicInvoices');
+    const stored = localStorage.getItem('seekwellInvoices');
     if (stored) {
       const invoicesData = JSON.parse(stored);
       // Enrich with patient data when available
@@ -103,7 +103,7 @@ const Billing: React.FC = () => {
   };
 
   const saveInvoices = (invoicesData: Invoice[]) => {
-    localStorage.setItem('clinicInvoices', JSON.stringify(invoicesData));
+    localStorage.setItem('seekwellInvoices', JSON.stringify(invoicesData));
     setInvoices(invoicesData);
   };
 
@@ -180,7 +180,7 @@ const Billing: React.FC = () => {
       notes: newInvoice.notes,
     };
 
-    const existingInvoices = JSON.parse(localStorage.getItem('clinicInvoices') || '[]');
+    const existingInvoices = JSON.parse(localStorage.getItem('seekwellInvoices') || '[]');
     saveInvoices([...existingInvoices, invoice]);
 
     // Reset form
@@ -227,8 +227,8 @@ const Billing: React.FC = () => {
     saveInvoices(updatedInvoices);
 
     // Save payment record
-    const existingPayments = JSON.parse(localStorage.getItem('clinicPayments') || '[]');
-    localStorage.setItem('clinicPayments', JSON.stringify([...existingPayments, payment]));
+    const existingPayments = JSON.parse(localStorage.getItem('seekwellPayments') || '[]');
+    localStorage.setItem('seekwellPayments', JSON.stringify([...existingPayments, payment]));
 
     setShowPaymentModal(false);
     setSelectedInvoice(null);

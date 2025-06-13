@@ -472,7 +472,7 @@ const PatientSearch: React.FC = () => {
                             >
                               Hồ Sơ Y Tế
                             </button>
-                            {(userRole === 'DOCTOR' || userRole === 'CLINIC_STAFF') && (
+                            {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
                               <button
                                 className="create-emr-btn"
                                 onClick={() => navigateToCreateEMR(patient.patient_id)}
@@ -579,7 +579,7 @@ const PatientSearch: React.FC = () => {
                   >
                     📋 Xem Hồ Sơ Y Tế
                   </button>
-                  {(userRole === 'DOCTOR' || userRole === 'CLINIC_STAFF') && (
+                  {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
                     <button
                       className="modal-create-emr-btn"
                       onClick={() => {

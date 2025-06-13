@@ -79,7 +79,7 @@ Tôi có thể giúp bạn:
 Hãy đặt câu hỏi để tôi hỗ trợ bạn!`;
 
             case 'DOCTOR':
-            case 'CLINIC_STAFF':
+            case 'LOCAL_CADRE':
             case 'ADMIN':
                 return `Xin chào! Tôi là trợ lý AI cho nhân viên y tế.
 

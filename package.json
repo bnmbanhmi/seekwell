@@ -1,4 +1,9 @@
 {
+  "name": "seekwell",
+  "version": "1.0.0",
+  "description": "SeekWell - AI-powered skin lesion assessment tool for early detection and remote healthcare",
+  "author": "SeekWell Team",
+  "license": "MIT",
   "dependencies": {
     "react-markdown": "^10.1.0"
   }

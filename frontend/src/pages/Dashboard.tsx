@@ -39,7 +39,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,
       PATIENT: <PatientDashboard />,
-      CLINIC_STAFF: <StaffDashboard />,
+      LOCAL_CADRE: <StaffDashboard />,
       ADMIN: <AdminDashboard />,
     };
 

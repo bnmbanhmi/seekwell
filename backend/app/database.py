@@ -18,7 +18,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserRole(str, enum.Enum):
     PATIENT = "PATIENT"
     DOCTOR = "DOCTOR"
-    CLINIC_STAFF = "CLINIC_STAFF"
+    LOCAL_CADRE = "LOCAL_CADRE"
     ADMIN = "ADMIN"
 
 class Gender(str, enum.Enum):

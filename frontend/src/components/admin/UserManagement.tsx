@@ -192,7 +192,7 @@ const UserManagement: React.FC = () => {
     switch (role) {
       case 'ADMIN': return styles.roleAdmin;
       case 'DOCTOR': return styles.roleDoctor;
-      case 'CLINIC_STAFF': return styles.roleStaff;
+      case 'LOCAL_CADRE': return styles.roleStaff;
       case 'PATIENT': return styles.rolePatient;
       default: return styles.roleDefault;
     }
@@ -242,7 +242,7 @@ const UserManagement: React.FC = () => {
             <option value="ALL">Tất cả vai trò</option>
             <option value="PATIENT">Bệnh nhân</option>
             <option value="DOCTOR">Bác sĩ</option>
-            <option value="CLINIC_STAFF">Nhân viên phòng khám</option>
+            <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
             <option value="ADMIN">Quản trị viên</option>
           </select>
         </div>
@@ -371,7 +371,7 @@ const UserManagement: React.FC = () => {
                 >
                   <option value="PATIENT">Bệnh nhân</option>
                   <option value="DOCTOR">Bác sĩ</option>
-                  <option value="CLINIC_STAFF">Nhân viên phòng khám</option>
+                  <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
                   <option value="ADMIN">Quản trị viên</option>
                 </select>
               </div>
@@ -445,7 +445,7 @@ const UserManagement: React.FC = () => {
                 >
                   <option value="PATIENT">Bệnh nhân</option>
                   <option value="DOCTOR">Bác sĩ</option>
-                  <option value="CLINIC_STAFF">Nhân viên phòng khám</option>
+                  <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
                   <option value="ADMIN">Quản trị viên</option>
                 </select>
               </div>
