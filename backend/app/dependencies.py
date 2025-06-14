@@ -123,5 +123,15 @@ async def get_current_patient_or_doctor_or_admin(
         )
     return current_user
 
+async def get_current_clinic_staff_or_admin(
+    current_user: models.User = Depends(get_current_active_user)
+):
+    """Allow clinic staff (doctors, local cadres) or admin access"""
+    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value, models.UserRole.LOCAL_CADRE.value]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Operation requires Admin, Doctor, or Local Cadre role."
+        )
+    return current_user
+
 # Ensure all UserRole members are imported if not already
-# from app.database import UserRole (already imported at top of file usually)
