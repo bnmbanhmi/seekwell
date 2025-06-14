@@ -48,4 +48,8 @@ typing-inspection==0.4.1
 typing_extensions==4.13.2
 uritemplate==4.1.1
 urllib3==2.4.0
+httpx==0.27.0
+aiohttp==3.10.11
+aiofiles==24.1.0
+pillow==10.4.0
 uvicorn==0.34.2
