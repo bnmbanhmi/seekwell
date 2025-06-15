@@ -4,8 +4,11 @@ services:
     env: python
     region: oregon
     plan: starter
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    branch: main
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -16,16 +19,21 @@ services:
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 30
       - key: ALLOWED_ORIGINS
-        value: '["https://seekwell-frontend.vercel.app", "https://seekwell.vercel.app", "http://localhost:3000"]'
+        value: '["https://seekwell.vercel.app", "https://seekwell-frontend.vercel.app", "http://localhost:3000"]'
       - key: HUGGINGFACE_API_KEY
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
     healthCheckPath: /health
 
 databases:
   - name: seekwell-postgres
     databaseName: seekwell
-    user: seekwell
+    user: seekwell_user
     region: oregon
     plan: starter
+    postgresMajorVersion: 15
