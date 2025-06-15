@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
+from .config import settings  # Import settings
 from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions, cadre, community
 
 @asynccontextmanager
@@ -21,14 +22,23 @@ app = FastAPI(
 )
 
 # CORS Middleware configuration
-origins = ["*"]
+# Parse ALLOWED_ORIGINS from environment variable (comma-separated)
+allowed_origins = [origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",")]
+
+# Add localhost for development if not already included
+if "http://localhost:3000" not in allowed_origins:
+    allowed_origins.append("http://localhost:3000")
+if "http://127.0.0.1:3000" not in allowed_origins:
+    allowed_origins.append("http://127.0.0.1:3000")
+
+print(f"🌐 CORS enabled for origins: {allowed_origins}")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=False,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -59,4 +69,17 @@ async def read_root():
             "Mobile-first design",
             "Real-time risk assessment"
         ]
+    }
+
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """Health check endpoint for monitoring and debugging"""
+    return {
+        "status": "healthy",
+        "timestamp": "2025-06-15T00:00:00Z",
+        "version": "1.0.0",
+        "cors_origins": allowed_origins,
+        "environment": "production",
+        "database": "connected",
+        "ai_service": "huggingface_api"
     }

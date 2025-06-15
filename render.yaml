@@ -19,7 +19,7 @@ services:
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 30
       - key: ALLOWED_ORIGINS
-        value: '["https://seekwell.vercel.app", "https://seekwell-frontend.vercel.app", "http://localhost:3000"]'
+        value: 'https://seekwell.vercel.app,https://seekwell-frontend.vercel.app,http://localhost:3000'
       - key: HUGGINGFACE_API_KEY
         sync: false
       - key: OPENAI_API_KEY

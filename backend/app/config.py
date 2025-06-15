@@ -20,6 +20,9 @@ MAIL_FROM = os.getenv("MAIL_FROM")
 # Frontend URL for constructing password reset links
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
+# CORS settings
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://seekwell.vercel.app,https://seekwell-frontend.vercel.app")
+
 class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
@@ -38,6 +41,9 @@ class Settings(BaseSettings):
 
     # Frontend URL for constructing password reset links
     FRONTEND_URL: str = FRONTEND_URL
+    
+    # CORS settings
+    ALLOWED_ORIGINS: str = ALLOWED_ORIGINS
 
     # For Pydantic V2
     model_config = SettingsConfigDict(env_file=".env", extra='ignore')
