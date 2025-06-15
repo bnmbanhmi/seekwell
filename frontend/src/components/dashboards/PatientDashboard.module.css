@@ -215,6 +215,7 @@
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fca5a5 100%);
   border-left: 4px solid var(--seekwell-accent) !important;
   box-shadow: 0 4px 20px rgba(231, 76, 60, 0.2);
+  margin-bottom: var(--mobile-spacing-lg);
 }
 
 .featuredAction:hover {
@@ -224,6 +225,80 @@
 
 .actionContent {
   text-align: left;
+}
+
+/* Featured AI Analysis Card */
+.aiAnalysisCard {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-radius: 16px;
+  padding: var(--mobile-spacing-lg);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.aiAnalysisCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.aiAnalysisCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(231, 76, 60, 0.4);
+}
+
+.aiAnalysisCard:hover::before {
+  opacity: 1;
+}
+
+.aiIcon {
+  font-size: 3rem;
+  animation: pulse 2s infinite;
+}
+
+.aiContent {
+  flex: 1;
+}
+
+.aiContent h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.aiContent p {
+  margin: 0 0 12px 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.aiStats {
+  display: flex;
+  gap: var(--mobile-spacing-md);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.aiCta {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
 }
 
 /* Quick Actions Grid */

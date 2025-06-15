@@ -127,7 +127,7 @@ const DoctorDashboard = () => {
         });
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
-        setError('Không thể tải dữ liệu dashboard.');
+        setError('Unable to load dashboard data.');
       } finally {
         setLoading(false);
       }
@@ -138,43 +138,43 @@ const DoctorDashboard = () => {
 
   const quickActions = [
     {
-      title: 'Xem lịch trình đầy đủ',
-      description: 'Quản lý lịch hẹn của bạn',
+      title: 'View Full Schedule',
+      description: 'Manage your appointments',
       icon: '📅',
       action: () => navigate('/dashboard/schedule'),
       color: '#3498db'
     },
     {
-      title: 'Tìm kiếm bệnh nhân',
-      description: 'Tìm và xem hồ sơ bệnh nhân',
+      title: 'Search Patients',
+      description: 'Find and view patient records',
       icon: '👥',
       action: () => navigate('/dashboard/patients'),
       color: '#27ae60'
     },
     {
-      title: 'Tạo hồ sơ y tế',
-      description: 'Ghi chép cuộc tư vấn bệnh nhân',
+      title: 'Create Medical Record',
+      description: 'Document patient consultation',
       icon: '📝',
       action: () => navigate('/dashboard/create_records'),
       color: '#e74c3c'
     },
     {
-      title: 'Báo cáo y tế',
-      description: 'Quản lý báo cáo y tế của bạn',
+      title: 'Medical Reports',
+      description: 'Manage your medical reports',
       icon: '📊',
       action: () => navigate('/dashboard/medical-reports'),
       color: '#f39c12'
     },
     {
-      title: 'Tiền sử bệnh án',
-      description: 'Xem tiền sử y tế của bệnh nhân',
+      title: 'Medical History',
+      description: 'View patient medical history',
       icon: '📋',
       action: () => navigate('/dashboard/medical-history'),
       color: '#9b59b6'
     },
     {
-      title: 'Đơn thuốc',
-      description: 'Quản lý đơn thuốc bệnh nhân',
+      title: 'Prescriptions',
+      description: 'Manage patient prescriptions',
       icon: '💊',
       action: () => navigate('/dashboard/prescriptions'),
       color: '#1abc9c'
@@ -184,7 +184,7 @@ const DoctorDashboard = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Đang tải dashboard...</div>
+        <div className={styles.loading}>Loading dashboard...</div>
       </div>
     );
   }
@@ -192,8 +192,8 @@ const DoctorDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Bảng điều khiển bác sĩ</h2>
-        <p className={styles.subtitle}>Quản lý bệnh nhân và hoạt động y tế của bạn</p>
+        <h2 className={styles.title}>Doctor Dashboard</h2>
+        <p className={styles.subtitle}>Manage your patients and medical activities</p>
       </div>
 
       {error && (
@@ -205,7 +205,7 @@ const DoctorDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📅</div>
           <div className={styles.statInfo}>
-            <h3>Lịch hẹn hôm nay</h3>
+            <h3>Today's Appointments</h3>
             <p className={styles.statNumber}>{stats.todayAppointments}</p>
           </div>
         </div>
@@ -213,7 +213,7 @@ const DoctorDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>👥</div>
           <div className={styles.statInfo}>
-            <h3>Tổng bệnh nhân</h3>
+            <h3>Total Patients</h3>
             <p className={styles.statNumber}>{stats.totalPatients}</p>
           </div>
         </div>
@@ -221,7 +221,7 @@ const DoctorDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⏰</div>
           <div className={styles.statInfo}>
-            <h3>Lịch hẹn sắp tới</h3>
+            <h3>Upcoming Appointments</h3>
             <p className={styles.statNumber}>{stats.upcomingAppointments}</p>
           </div>
         </div>
@@ -229,7 +229,7 @@ const DoctorDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>✅</div>
           <div className={styles.statInfo}>
-            <h3>Hoàn thành hôm nay</h3>
+            <h3>Completed Today</h3>
             <p className={styles.statNumber}>{stats.completedToday}</p>
           </div>
         </div>
@@ -237,7 +237,7 @@ const DoctorDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📊</div>
           <div className={styles.statInfo}>
-            <h3>Báo cáo y tế</h3>
+            <h3>Medical Reports</h3>
             <p className={styles.statNumber}>{stats.totalMedicalReports}</p>
           </div>
         </div>
@@ -245,7 +245,7 @@ const DoctorDashboard = () => {
 
       {/* Quick Actions */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Hành động nhanh</h3>
+        <h3 className={styles.sectionTitle}>Quick Actions</h3>
         <div className={styles.actionsGrid}>
           {quickActions.map((action, index) => (
             <div
@@ -266,18 +266,18 @@ const DoctorDashboard = () => {
 
       {/* Today's Schedule */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Lịch trình hôm nay</h3>
+        <h3 className={styles.sectionTitle}>Today's Schedule</h3>
         {appointments.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>Không có lịch hẹn nào được lên lịch cho hôm nay. Hãy tận hưởng thời gian rảnh!</p>
+            <p>No appointments scheduled for today. Enjoy your free time!</p>
           </div>
         ) : (
           <div className={styles.appointmentsTable}>
             <div className={styles.tableHeader}>
-              <div>Thời gian</div>
-              <div>Bệnh nhân</div>
-              <div>Lý do</div>
-              <div>Trạng thái</div>
+              <div>Time</div>
+              <div>Patient</div>
+              <div>Reason</div>
+              <div>Status</div>
             </div>
             {appointments.map((appointment) => {
               const currentTime = new Date();
@@ -295,7 +295,7 @@ const DoctorDashboard = () => {
                       isNow ? styles.statusCurrent :
                       isUpcoming ? styles.statusUpcoming : styles.statusCompleted
                     }>
-                      {isNow ? 'Hiện tại' : isUpcoming ? 'Sắp tới' : 'Hoàn thành'}
+                      {isNow ? 'Current' : isUpcoming ? 'Upcoming' : 'Completed'}
                     </span>
                   </div>
                 </div>

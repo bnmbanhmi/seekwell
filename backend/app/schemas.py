@@ -365,7 +365,7 @@ class AIAssessmentSchema(AIAssessmentBase):
 class CadreReviewBase(BaseModel):
     """Base schema for cadre review"""
     review_notes: str
-    agrees_with_ai: Optional[bool] = None
+    agrees_with_ai: bool
     escalate_to_doctor: bool = False
     local_recommendations: Optional[str] = None
 
@@ -373,8 +373,13 @@ class CadreReviewCreate(CadreReviewBase):
     """Schema for creating cadre review"""
     image_id: int
 
-class CadreReviewSchema(CadreReviewBase):
-    """Schema for cadre review response"""
+class CadreReviewResponse(BaseModel):
+    review_id: int
+    message: str
+    status: str
+    escalated: bool
+
+class CadreReview(CadreReviewBase):
     review_id: int
     image_id: int
     cadre_id: int
@@ -450,3 +455,12 @@ class AIServiceStatus(BaseModel):
     version: str
     model_info: Optional[Dict[str, Any]] = None
     last_health_check: Optional[datetime] = None
+
+# Community Health Stats Schema
+class CommunityStats(BaseModel):
+    totalPendingReviews: int
+    urgentCases: int
+    completedReviews: int
+    totalPatients: int
+    aiAnalysesToday: int
+    followUpsNeeded: int

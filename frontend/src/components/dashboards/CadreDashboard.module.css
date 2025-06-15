@@ -1,0 +1,452 @@
+/* CadreDashboard.module.css - Community Health Worker Interface */
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes urgentPulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.6);
+  }
+}
+
+/* Container */
+.container {
+  padding: var(--mobile-spacing-md);
+  max-width: 100vw;
+  margin: 0;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: var(--mobile-spacing-lg);
+  padding: var(--mobile-spacing-lg);
+  background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+  border-radius: 16px;
+  color: white;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+/* Statistics Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--mobile-spacing-md);
+  margin-bottom: var(--mobile-spacing-lg);
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  padding: var(--mobile-spacing-md);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-spacing-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.statIcon {
+  font-size: 2rem;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.statInfo h3 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.statNumber {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Urgent Alert */
+.urgentAlert {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-radius: 16px;
+  padding: var(--mobile-spacing-lg);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-spacing-md);
+  margin-bottom: var(--mobile-spacing-lg);
+  animation: urgentPulse 2s infinite;
+}
+
+.alertIcon {
+  font-size: 2.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+.alertContent {
+  flex: 1;
+}
+
+.alertContent h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.alertContent p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.alertButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.alertButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Sections */
+.section {
+  margin-bottom: var(--mobile-spacing-lg);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 var(--mobile-spacing-md) 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Actions Grid */
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--mobile-spacing-md);
+}
+
+.actionCard {
+  background: white;
+  border-radius: 12px;
+  padding: var(--mobile-spacing-md);
+  border-left: 4px solid transparent;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-spacing-md);
+  position: relative;
+}
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.actionUrgent {
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border-left-color: #e74c3c !important;
+}
+
+.actionIcon {
+  font-size: 2rem;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.actionContent {
+  flex: 1;
+}
+
+.actionContent h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.actionContent p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.urgentBadge {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+/* Grid Layout */
+.gridLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mobile-spacing-lg);
+}
+
+/* Reviews Table */
+.reviewsTable {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tableHeader {
+  background: #f8fafc;
+  padding: var(--mobile-spacing-md);
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1fr;
+  gap: var(--mobile-spacing-sm);
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.tableRow {
+  padding: var(--mobile-spacing-md);
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1fr;
+  gap: var(--mobile-spacing-sm);
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.tableRow:hover {
+  background: #f8fafc;
+}
+
+.patientCell strong {
+  display: block;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.patientCell small {
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.timeCell {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.predictionCell span {
+  display: block;
+  color: #1e293b;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.predictionCell small {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.riskCell {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.riskUrgent {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.riskHigh {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.riskMedium {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.riskLow {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.reviewButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reviewButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Community Insights */
+.insightsCard {
+  background: white;
+  border-radius: 12px;
+  padding: var(--mobile-spacing-lg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.insight {
+  margin-bottom: var(--mobile-spacing-md);
+  padding-bottom: var(--mobile-spacing-md);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.insight:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.insight h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.insight p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Loading and Error States */
+.loading {
+  text-align: center;
+  padding: var(--mobile-spacing-xl);
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: var(--mobile-spacing-md);
+  border-radius: 8px;
+  margin-bottom: var(--mobile-spacing-md);
+  text-align: center;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--mobile-spacing-xl);
+  color: #64748b;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .tableHeader {
+    display: none; /* Hide header on mobile */
+  }
+  
+  .tableRow {
+    background: white;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-bottom: none;
+    display: block;
+    padding: var(--mobile-spacing-md);
+  }
+  
+  .urgentAlert {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--mobile-spacing-sm);
+  }
+}

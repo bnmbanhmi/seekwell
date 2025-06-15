@@ -23,10 +23,10 @@ export const AISkinAnalysisPage: React.FC = () => {
 
         <Alert severity="info" sx={{ mb: 4 }}>
           <Typography variant="body2">
-            <strong>Phase 3 Frontend Integration Complete!</strong> This demo showcases the AI analysis 
-            components that integrate with your trained model from Phase 2. The components include:
-            image upload with validation, real-time AI analysis, risk assessment display, and 
-            comprehensive analysis history tracking.
+            <strong>🚀 Live HuggingFace Integration!</strong> This demo now connects directly to your 
+            HuggingFace Space: <strong>bnmbanhmi/seekwell-skin-cancer</strong>. Upload a skin lesion 
+            image to get real-time AI analysis from your trained model. The integration includes:
+            image upload, live AI prediction, risk assessment, and result history tracking.
           </Typography>
         </Alert>
 
@@ -36,26 +36,25 @@ export const AISkinAnalysisPage: React.FC = () => {
         {/* Integration Guide */}
         <Box sx={{ mt: 6, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
-            🛠️ Integration Guide
+            🛠️ HuggingFace Space Integration
           </Typography>
           <Typography variant="body2" paragraph>
-            <strong>To integrate these components in your app:</strong>
+            <strong>✅ Live API Integration:</strong>
           </Typography>
-          <Box component="pre" sx={{ fontSize: '0.875rem', overflow: 'auto' }}>
-{`import { AISkinAnalysisDashboard } from './components/ai';
+          <Box component="pre" sx={{ fontSize: '0.875rem', overflow: 'auto', bgcolor: 'black', color: 'lime', p: 2, borderRadius: 1 }}>
+{`🌐 HuggingFace Space: bnmbanhmi/seekwell-skin-cancer
+📡 API Endpoint: /api/predict
+🔗 Direct Integration: ✅ ACTIVE
 
-function PatientPage({ patientId }) {
-  return (
-    <AISkinAnalysisDashboard 
-      patientId={patientId} 
-    />
-  );
-}`}
+Components:
+├── ImageUpload: Connects to HF Space API
+├── AnalysisResults: Parses HF predictions
+├── AnalysisHistory: Stores results locally
+└── AISkinAnalysisDashboard: Orchestrates workflow`}
           </Box>
           <Typography variant="body2" sx={{ mt: 2 }}>
-            The dashboard handles all AI functionality including image upload, analysis, 
-            results display, and history tracking. It automatically connects to your 
-            backend API endpoints from Phase 2.
+            The frontend now connects directly to your deployed HuggingFace Space, 
+            providing real-time skin lesion analysis using your trained model!
           </Typography>
         </Box>
       </Box>

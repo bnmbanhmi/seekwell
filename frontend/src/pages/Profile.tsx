@@ -111,7 +111,7 @@ const Profile: React.FC = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUserData((prev) => ({ ...prev, ...payload }));
-            toast.success('Cập nhật hồ sơ thành công!');
+            toast.success('Profile updated successfully!');
             setEditMode(false);
         } catch (err) {
             let msg = 'An unexpected error occurred while updating the profile.';
@@ -135,11 +135,11 @@ const Profile: React.FC = () => {
             const doctorData = userData as any;
             return (
                 <>
-                    <p><strong>Tên:</strong> {safeDisplay(doctorData.doctor_name || doctorData.full_name)}</p>
-                    <p><strong>Tên đăng nhập:</strong> {safeDisplay(doctorData.username)}</p>
+                    <p><strong>Name:</strong> {safeDisplay(doctorData.doctor_name || doctorData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(doctorData.username)}</p>
                     <p><strong>Email:</strong> {safeDisplay(doctorData.email)}</p>
-                    <p><strong>Chuyên khoa:</strong> {safeDisplay(doctorData.major)}</p>
-                    <p><strong>ID bệnh viện:</strong> {safeDisplay(doctorData.hospital_id?.toString())}</p>
+                    <p><strong>Specialty:</strong> {safeDisplay(doctorData.major)}</p>
+                    <p><strong>Hospital ID:</strong> {safeDisplay(doctorData.hospital_id?.toString())}</p>
                 </>
             );
         } else if ('patient_id' in userData) {
@@ -147,29 +147,29 @@ const Profile: React.FC = () => {
             const patientData = userData as any;
             return (
                 <>
-                    <p><strong>Tên:</strong> {safeDisplay(patientData.full_name)}</p>
-                    <p><strong>Tên đăng nhập:</strong> {safeDisplay(patientData.username)}</p>
+                    <p><strong>Name:</strong> {safeDisplay(patientData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(patientData.username)}</p>
                     <p><strong>Email:</strong> {safeDisplay(patientData.email)}</p>
-                    <p><strong>Số điện thoại:</strong> {safeDisplay(patientData.phone_number)}</p>
-                    <p><strong>Địa chỉ:</strong> {safeDisplay(patientData.address)}</p>
-                    <p><strong>Ngày sinh:</strong> {safeDisplay(patientData.date_of_birth)}</p>
-                    <p><strong>Giới tính:</strong> {safeDisplay(patientData.gender)}</p>
-                    <p><strong>Dân tộc:</strong> {safeDisplay(patientData.ethnic_group)}</p>
-                    <p><strong>Số thẻ BHYT:</strong> {safeDisplay(patientData.health_insurance_card_no)}</p>
-                    <p><strong>CMND/CCCD:</strong> {safeDisplay(patientData.identification_id)}</p>
-                    <p><strong>Nghề nghiệp:</strong> {safeDisplay(patientData.job)}</p>
-                    <p><strong>Loại đối tượng:</strong> {safeDisplay(patientData.class_role)}</p>
+                    <p><strong>Phone Number:</strong> {safeDisplay(patientData.phone_number)}</p>
+                    <p><strong>Address:</strong> {safeDisplay(patientData.address)}</p>
+                    <p><strong>Date of Birth:</strong> {safeDisplay(patientData.date_of_birth)}</p>
+                    <p><strong>Gender:</strong> {safeDisplay(patientData.gender)}</p>
+                    <p><strong>Ethnic Group:</strong> {safeDisplay(patientData.ethnic_group)}</p>
+                    <p><strong>Health Insurance Card:</strong> {safeDisplay(patientData.health_insurance_card_no)}</p>
+                    <p><strong>ID Number:</strong> {safeDisplay(patientData.identification_id)}</p>
+                    <p><strong>Occupation:</strong> {safeDisplay(patientData.job)}</p>
+                    <p><strong>Patient Class:</strong> {safeDisplay(patientData.class_role)}</p>
                 </>
             );
         } else {
             // Generic user
             return (
                 <>
-                    <p><strong>Tên:</strong> {safeDisplay(userData.full_name)}</p>
-                    <p><strong>Tên đăng nhập:</strong> {safeDisplay(userData.username)}</p>
+                    <p><strong>Name:</strong> {safeDisplay(userData.full_name)}</p>
+                    <p><strong>Username:</strong> {safeDisplay(userData.username)}</p>
                     <p><strong>Email:</strong> {safeDisplay(userData.email)}</p>
-                    <p><strong>Số điện thoại:</strong> {safeDisplay(userData.phone)}</p>
-                    <p><strong>Địa chỉ:</strong> {safeDisplay(userData.address)}</p>
+                    <p><strong>Phone Number:</strong> {safeDisplay(userData.phone)}</p>
+                    <p><strong>Address:</strong> {safeDisplay(userData.address)}</p>
                 </>
             );
         }
@@ -181,11 +181,11 @@ const Profile: React.FC = () => {
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Tên:
+                        Name:
                         <input name="doctor_name" value={formData.doctor_name || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Tên đăng nhập:
+                        Username:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
@@ -193,11 +193,11 @@ const Profile: React.FC = () => {
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Chuyên khoa:
+                        Specialty:
                         <input name="major" value={formData.major || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        ID bệnh viện:
+                        Hospital ID:
                         <input name="hospital_id" value={formData.hospital_id || ''} onChange={handleChange} className={styles['profile-input']} type="number" disabled />
                     </label>
                     <label className={styles['profile-label']}>
@@ -321,7 +321,7 @@ const Profile: React.FC = () => {
     };
 
     if (loading) {
-        return <div className={styles['profile-container']}>Đang tải...</div>;
+        return <div className={styles['profile-container']}>Loading...</div>;
     }
 
     if (error) {
@@ -330,15 +330,15 @@ const Profile: React.FC = () => {
 
     return (
         <div className={styles['profile-container']}>
-            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Về trang chủ</button>
-            <h1 className={styles['profile-title']}>Hồ sơ người dùng</h1>
+            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Back to Dashboard</button>
+            <h1 className={styles['profile-title']}>User Profile</h1>
             {error && <div className={styles['profile-error']}>{error}</div>}
             {editMode ? (
                 renderEditForm()
             ) : (
                 <div className={styles['profile-details']}>
                     {renderProfileDetails()}
-                    <button onClick={handleEdit} className={styles['profile-button']}>Chỉnh sửa hồ sơ</button>
+                    <button onClick={handleEdit} className={styles['profile-button']}>Edit Profile</button>
                 </div>
             )}
         </div>

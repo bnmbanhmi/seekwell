@@ -113,7 +113,7 @@ const PatientDashboard = () => {
         });
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
-        setError('Không thể tải dữ liệu bảng điều khiển.');
+        setError('Unable to load dashboard data.');
       } finally {
         setLoading(false);
       }
@@ -124,32 +124,40 @@ const PatientDashboard = () => {
 
   const quickActions = [
     {
-      title: 'Đặt cuộc hẹn mới',
-      description: 'Lên lịch cuộc hẹn mới với bác sĩ của bạn',
+      title: 'AI Skin Analysis',
+      description: 'Get AI-powered skin lesion risk assessment',
+      icon: '🤖',
+      action: () => navigate('/dashboard/ai-analysis'),
+      color: '#e74c3c',
+      featured: true
+    },
+    {
+      title: 'Book New Appointment',
+      description: 'Schedule a new appointment with your doctor',
       icon: '📅',
       action: () => navigate('/dashboard/appointments/book'),
       color: '#3b82f6'
     },
     {
-      title: 'Xem tiền sử bệnh án',
-      description: 'Truy cập hồ sơ y tế đầy đủ của bạn',
+      title: 'View Medical History',
+      description: 'Access your complete medical records',
       icon: '📋',
       action: () => navigate('/dashboard/medical-history'),
       color: '#10b981'
     },
     {
-      title: 'Xem đơn thuốc',
-      description: 'Kiểm tra đơn thuốc hiện tại của bạn',
-      icon: '💊',
-      action: () => navigate('/dashboard/prescriptions'),
-      color: '#f59e0b'
+      title: 'Community Health Support',
+      description: 'Connect with local health cadres',
+      icon: '�',
+      action: () => navigate('/dashboard/community-health'),
+      color: '#f39c12'
     }
   ];
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Đang tải bảng điều khiển...</div>
+        <div className={styles.loading}>Loading dashboard...</div>
       </div>
     );
   }
@@ -157,8 +165,8 @@ const PatientDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Dashboard Bệnh nhân</h2>
-        <p className={styles.subtitle}>Quản lý cuộc hẹn và hồ sơ sức khỏe của bạn</p>
+        <h2 className={styles.title}>Patient Dashboard</h2>
+        <p className={styles.subtitle}>Manage your appointments and health records</p>
       </div>
 
       {error && (
@@ -170,7 +178,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📅</div>
           <div className={styles.statInfo}>
-            <h3>Cuộc hẹn hôm nay</h3>
+            <h3>Today's Appointments</h3>
             <p className={styles.statNumber}>{stats.todayAppointments}</p>
           </div>
         </div>
@@ -178,7 +186,7 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>⏰</div>
           <div className={styles.statInfo}>
-            <h3>Cuộc hẹn sắp tới</h3>
+            <h3>Upcoming Appointments</h3>
             <p className={styles.statNumber}>{stats.upcomingAppointments}</p>
           </div>
         </div>
@@ -186,23 +194,58 @@ const PatientDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>✅</div>
           <div className={styles.statInfo}>
-            <h3>Cuộc hẹn đã hoàn thành</h3>
+            <h3>Completed Appointments</h3>
             <p className={styles.statNumber}>{stats.completedAppointments}</p>
+          </div>
+        </div>
+        
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>🤖</div>
+          <div className={styles.statInfo}>
+            <h3>AI Skin Assessments</h3>
+            <p className={styles.statNumber}>{stats.totalSkinAssessments}</p>
+          </div>
+        </div>
+        
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>⚠️</div>
+          <div className={styles.statInfo}>
+            <h3>Pending Reviews</h3>
+            <p className={styles.statNumber}>{stats.pendingReviews}</p>
           </div>
         </div>
         
         <div className={styles.statCard}>
           <div className={styles.statIcon}>💊</div>
           <div className={styles.statInfo}>
-            <h3>Đơn thuốc đang hoạt động</h3>
+            <h3>Active Prescriptions</h3>
             <p className={styles.statNumber}>{stats.totalPrescriptions}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured: AI Skin Analysis */}
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>🩺 AI Skin Analysis - SeekWell</h3>
+        <div className={styles.featuredAction}>
+          <div className={styles.aiAnalysisCard} onClick={() => navigate('/dashboard/ai-analysis')}>
+            <div className={styles.aiIcon}>🤖</div>
+            <div className={styles.aiContent}>
+              <h4>AI Skin Lesion Screening</h4>
+              <p>Get instant AI-powered skin cancer risk assessment with professional review</p>
+              <div className={styles.aiStats}>
+                <span>📊 {stats.totalSkinAssessments} assessments</span>
+                <span>⚠️ {stats.pendingReviews} pending reviews</span>
+              </div>
+            </div>
+            <div className={styles.aiCta}>Start Analysis →</div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Hành động nhanh</h3>
+        <h3 className={styles.sectionTitle}>Quick Actions</h3>
         <div className={styles.actionsGrid}>
           {quickActions.map((action, index) => (
             <div
@@ -224,25 +267,25 @@ const PatientDashboard = () => {
       <div className={styles.gridLayout}>
         {/* Today's Appointments */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Lịch hẹn hôm nay</h3>
+          <h3 className={styles.sectionTitle}>Today's Appointments</h3>
           {appointments.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>Không có cuộc hẹn nào được lên lịch cho hôm nay</p>
+              <p>No appointments scheduled for today</p>
             </div>
           ) : (
             <div className={styles.appointmentsTable}>
               <div className={styles.tableHeader}>
-                <div>Thời gian</div>
-                <div>Bác sĩ</div>
-                <div>Lý do</div>
-                <div>Trạng thái</div>
+                <div>Time</div>
+                <div>Doctor</div>
+                <div>Reason</div>
+                <div>Status</div>
               </div>
               {appointments.map((appointment: any) => (
                 <div key={appointment.appointment_id} className={styles.tableRow}>
                   <div className={styles.timeCell}>{appointment.appointment_time}</div>
                   <div>{appointment.doctorName}</div>
                   <div className={styles.reasonCell}>{appointment.reason}</div>
-                  <div className={styles.statusUpcoming}>Đã lên lịch</div>
+                  <div className={styles.statusUpcoming}>Scheduled</div>
                 </div>
               ))}
             </div>

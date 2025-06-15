@@ -124,7 +124,7 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        toast.success('Ban đã đăng xuất thành công.');
+        toast.success('You have been logged out successfully.');
         setTimeout(() => {
             localStorage.removeItem('accessToken');
             window.location.href = '/login';
