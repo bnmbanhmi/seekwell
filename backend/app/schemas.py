@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict # Add ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import date, datetime, time # Added date
 from .database import UserRole # Ensure UserRole is available if needed for nested schemas
 
@@ -277,3 +277,176 @@ class MedicalReportSchema(MedicalReportBase):
     model_config = {
         "from_attributes": True
     }
+
+
+# AI-related schemas for skin lesion analysis
+class PredictionResult(BaseModel):
+    """Schema for individual AI prediction result"""
+    class_id: int
+    label: str
+    confidence: float
+    percentage: float
+
+class RiskAssessment(BaseModel):
+    """Schema for risk assessment results"""
+    risk_level: str  # LOW, MEDIUM, HIGH, URGENT, UNCERTAIN
+    confidence_level: str  # LOW, MEDIUM, HIGH, VERY_LOW
+    needs_professional_review: bool
+    needs_urgent_attention: bool
+    base_risk: str
+    confidence_score: float
+    predicted_class: str
+
+class SkinLesionAnalysisRequest(BaseModel):
+    """Schema for skin lesion analysis request"""
+    body_region: Optional[str] = None
+    notes: Optional[str] = None
+
+class SkinLesionAnalysisResponse(BaseModel):
+    """Schema for skin lesion analysis response"""
+    success: bool
+    error: Optional[str] = None
+    analysis_id: Optional[int] = None
+    predictions: List[PredictionResult] = []
+    risk_assessment: Optional[RiskAssessment] = None
+    recommendations: List[str] = []
+    needs_cadre_review: bool = False
+    needs_doctor_review: bool = False
+    timestamp: Optional[datetime] = None
+
+class SkinLesionImageBase(BaseModel):
+    """Base schema for skin lesion image"""
+    body_region: Optional[str] = None
+    ai_prediction: Optional[str] = None
+    confidence_score: Optional[float] = None
+    status: str = "pending"
+    notes: Optional[str] = None
+
+class SkinLesionImageCreate(SkinLesionImageBase):
+    """Schema for creating skin lesion image record"""
+    patient_id: int
+    image_path: str
+    image_data: Optional[str] = None  # Base64 encoded image
+
+class SkinLesionImageSchema(SkinLesionImageBase):
+    """Schema for skin lesion image response"""
+    image_id: int
+    patient_id: int
+    image_path: str
+    upload_timestamp: datetime
+    needs_professional_review: bool
+    reviewed_by_cadre: Optional[int] = None
+    reviewed_by_doctor: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AIAssessmentBase(BaseModel):
+    """Base schema for AI assessment"""
+    risk_level: str
+    confidence_level: str
+    predicted_class: str
+    all_predictions: Optional[str] = None  # JSON string
+    recommendations: Optional[str] = None  # JSON string
+    follow_up_needed: bool = False
+    follow_up_days: Optional[int] = None
+
+class AIAssessmentCreate(AIAssessmentBase):
+    """Schema for creating AI assessment"""
+    image_id: int
+
+class AIAssessmentSchema(AIAssessmentBase):
+    """Schema for AI assessment response"""
+    assessment_id: int
+    image_id: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CadreReviewBase(BaseModel):
+    """Base schema for cadre review"""
+    review_notes: str
+    agrees_with_ai: Optional[bool] = None
+    escalate_to_doctor: bool = False
+    local_recommendations: Optional[str] = None
+
+class CadreReviewCreate(CadreReviewBase):
+    """Schema for creating cadre review"""
+    image_id: int
+
+class CadreReviewSchema(CadreReviewBase):
+    """Schema for cadre review response"""
+    review_id: int
+    image_id: int
+    cadre_id: int
+    review_timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class DoctorConsultationBase(BaseModel):
+    """Base schema for doctor consultation"""
+    diagnosis: str
+    treatment_plan: Optional[str] = None
+    urgency_level: Optional[str] = None
+    requires_specialist: bool = False
+    specialist_type: Optional[str] = None
+    follow_up_days: Optional[int] = None
+    prescription: Optional[str] = None
+
+class DoctorConsultationCreate(DoctorConsultationBase):
+    """Schema for creating doctor consultation"""
+    image_id: int
+
+class DoctorConsultationSchema(DoctorConsultationBase):
+    """Schema for doctor consultation response"""
+    consultation_id: int
+    image_id: int
+    doctor_id: int
+    consultation_timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BodyRegionSchema(BaseModel):
+    """Schema for body region"""
+    region_id: int
+    region_name: str
+    region_description: Optional[str] = None
+    is_high_risk: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+class PatientLesionHistory(BaseModel):
+    """Schema for patient's lesion analysis history"""
+    patient_id: int
+    total_analyses: int
+    pending_reviews: int
+    high_risk_count: int
+    recent_analyses: List[SkinLesionImageSchema] = []
+
+class ReviewQueueItem(BaseModel):
+    """Schema for review queue item"""
+    image_id: int
+    patient_name: str
+    patient_id: int
+    upload_timestamp: datetime
+    body_region: Optional[str] = None
+    ai_prediction: Optional[str] = None
+    confidence_score: Optional[float] = None
+    risk_level: str
+    days_pending: int
+
+class ReviewQueue(BaseModel):
+    """Schema for review queue"""
+    total_pending: int
+    urgent_count: int
+    high_priority_count: int
+    medium_priority_count: int
+    low_priority_count: int
+    queue_items: List[ReviewQueueItem] = []
+
+class AIServiceStatus(BaseModel):
+    """Schema for AI service status"""
+    is_initialized: bool
+    service_name: str
+    version: str
+    model_info: Optional[Dict[str, Any]] = None
+    last_health_check: Optional[datetime] = None

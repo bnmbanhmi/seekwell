@@ -1,0 +1,10 @@
+title: SeekWell Skin Cancer Detection
+emoji: 🩺
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 3.50.2
+app_file: huggingface_space.py
+pinned: false
+license: mit
+short_description: AI-powered skin cancer detection for SeekWell healthcare platform

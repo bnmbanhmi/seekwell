@@ -134,4 +134,20 @@ async def get_current_clinic_staff_or_admin(
         )
     return current_user
 
+# Additional dependencies for AI module
+async def get_current_doctor(current_user: models.User = Depends(get_current_user)) -> models.Doctor:
+    """Get the current doctor from a user, ensuring they have the DOCTOR role."""
+    if current_user.role.value != models.UserRole.DOCTOR.value:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Operation requires DOCTOR role."
+        )
+    # Return the doctor profile associated with this user
+    if not current_user.doctor_profile:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Doctor profile not found for this user."
+        )
+    return current_user.doctor_profile
+
 # Ensure all UserRole members are imported if not already
