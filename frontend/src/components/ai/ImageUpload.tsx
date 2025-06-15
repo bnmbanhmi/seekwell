@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { BodyRegion, BODY_REGIONS, UploadProgress } from '../../types/AIAnalysisTypes';
-import AIAnalysisService from '../../services/AIAnalysisService';
+import HuggingFaceAIService from '../../services/HuggingFaceAIService';
 
 // Styled components
 const UploadBox = styled(Box)(({ theme, isDragActive }: { theme?: any; isDragActive: boolean }) => ({
@@ -179,13 +179,21 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
 
     try {
-      setUploadProgress({ progress: 0, status: 'uploading', message: 'Uploading image...' });
+      setUploadProgress({ progress: 0, status: 'uploading', message: 'Connecting to AI...' });
 
-      // Use the existing service method
-      const result = await AIAnalysisService.analyzeImageAI(
+      // Create HuggingFace AI service instance
+      const aiService = new HuggingFaceAIService();
+      
+      setUploadProgress({ progress: 30, status: 'analyzing', message: 'Analyzing with AI...' });
+
+      // Use HuggingFace Space API for analysis
+      const result = await aiService.analyzeImageAI(
         selectedFile,
         { body_region: bodyRegion, notes }
       );
+
+      // Save to local history
+      HuggingFaceAIService.saveAnalysisToHistory(result);
 
       setUploadProgress({ progress: 100, status: 'complete', message: 'Analysis complete!' });
       onAnalysisComplete(result);

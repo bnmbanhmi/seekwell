@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
-from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions
+from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions, cadre, community
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -14,9 +14,9 @@ async def lifespan(app: FastAPI):
     # Optional: Add any shutdown logic here
 
 app = FastAPI(
-    title="Clinic Management API",
-    description="API for Clinic Management, a healthcare access platform for rural communities.",
-    version="0.1.0",
+    title="SeekWell - AI Health Assistant API",
+    description="AI-powered skin cancer detection platform for community health workers and patients in underserved areas.",
+    version="1.0.0",
     lifespan=lifespan
 )
 
@@ -42,11 +42,21 @@ app.include_router(password.router, prefix="/password", tags=["Password"])
 app.include_router(reports.router, prefix="/medical_reports", tags=["Medical Reports"]) # Include the reports router
 app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"]) # Include the AI prediction router
 app.include_router(skin_lesions.router, prefix="/skin-lesions", tags=["Skin Lesion Analysis"]) # Include the new skin lesions router
+app.include_router(cadre.router, prefix="/cadre", tags=["Community Health Cadre"]) # SeekWell cadre workflow
+app.include_router(community.router, prefix="/community", tags=["Community Health"]) # SeekWell community metrics
 
 
 @app.get("/", tags=["Root"])
 async def read_root():
     return {
-        "message": "Welcome to Clinic Management API",
-        "version": "v0.6.0"
+        "message": "Welcome to SeekWell - AI Health Assistant API",
+        "description": "AI-powered skin cancer detection for community health workers",
+        "version": "1.0.0",
+        "features": [
+            "AI skin lesion analysis",
+            "Community health worker workflow", 
+            "Patient-cadre-doctor review system",
+            "Mobile-first design",
+            "Real-time risk assessment"
+        ]
     }

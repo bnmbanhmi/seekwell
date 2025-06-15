@@ -15,7 +15,7 @@ import { AIAnalysisResult } from '../../types/AIAnalysisTypes';
 import { ImageUpload } from './ImageUpload';
 import { AnalysisResults } from './AnalysisResults';
 import { AnalysisHistory } from './AnalysisHistory';
-import AIAnalysisService from '../../services/AIAnalysisService';
+import HuggingFaceAIService from '../../services/HuggingFaceAIService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,7 +55,7 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
   const loadAnalysisHistory = async () => {
     try {
       setLoading(true);
-      const history = await AIAnalysisService.getAnalysisHistory();
+      const history = await HuggingFaceAIService.getAnalysisHistory();
       setAnalysisHistory(history);
     } catch (error: any) {
       console.error('Failed to load analysis history:', error);
@@ -67,7 +67,8 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
 
   const checkServiceStatus = async () => {
     try {
-      const status = await AIAnalysisService.healthCheck();
+      const aiService = new HuggingFaceAIService();
+      const status = await aiService.healthCheck();
       setServiceStatus(status);
     } catch (error) {
       console.error('Service health check failed:', error);
@@ -194,7 +195,7 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
           <AnalysisHistory
             history={analysisHistory}
             loading={loading}
-            onSelectAnalysis={(result) => {
+            onSelectAnalysis={(result: AIAnalysisResult) => {
               setCurrentResult(result);
               setTabValue(1);
             }}

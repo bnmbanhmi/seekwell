@@ -34,7 +34,7 @@ type SkinLesionAssessment = {
   status: 'pending' | 'reviewed' | 'completed';
 };
 
-const PatientDashboard = () => {
+const PatientDashboardMobile = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [recentAssessments, setRecentAssessments] = useState<SkinLesionAssessment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -356,4 +356,4 @@ const PatientDashboard = () => {
   );
 };
 
-export default PatientDashboard;
+export default PatientDashboardMobile;
