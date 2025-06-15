@@ -55,8 +55,8 @@ pillow==10.4.0
 uvicorn==0.34.2
 
 # AI/ML Dependencies
-torch==2.1.0
-torchvision==0.16.0
-transformers==4.35.0
-numpy==1.24.3
-gradio==3.50.2
+torch>=2.5.0
+torchvision>=0.20.0
+transformers>=4.40.0
+numpy>=1.26.0
+gradio>=4.0.0
