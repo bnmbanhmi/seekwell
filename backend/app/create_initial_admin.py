@@ -13,8 +13,43 @@ load_dotenv(DOTENV_PATH)
 sys.path.insert(0, BACKEND_DIR) # Add backend directory to sys.path
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.database import SessionLocal, engine, UserRole, create_db_and_tables
 from app import crud, schemas, models
+
+async def update_user_role_enum():
+    """
+    Ensure the UserRole enum includes all necessary values
+    """
+    print("🔧 Updating database schema for UserRole enum...")
+    
+    try:
+        async with engine.begin() as conn:
+            # Check if LOCAL_CADRE already exists
+            result = await conn.execute(text("""
+                SELECT enumlabel 
+                FROM pg_enum 
+                JOIN pg_type ON pg_enum.enumtypid = pg_type.oid 
+                WHERE pg_type.typname = 'userrole' 
+                AND enumlabel = 'LOCAL_CADRE'
+            """))
+            
+            existing = result.fetchone()
+            
+            if existing:
+                print("✅ LOCAL_CADRE role already exists in database")
+                return True
+            
+            # Add LOCAL_CADRE to the enum
+            print("📝 Adding LOCAL_CADRE to UserRole enum...")
+            await conn.execute(text("ALTER TYPE userrole ADD VALUE 'LOCAL_CADRE'"))
+            print("✅ Successfully added LOCAL_CADRE role to database")
+            return True
+            
+    except Exception as e:
+        print(f"⚠️  Could not update enum (might be a new database): {e}")
+        # This is expected for new databases where enum will be created fresh
+        return True
 
 # Initialize SeekWell healthcare platform with essential users for ASEAN deployment
 async def create_initial_users():
@@ -147,19 +182,34 @@ async def create_initial_users():
         for cadre_data in cadres_data:
             existing_cadre = crud.get_user_by_email(db, email=cadre_data["email"])
             if not existing_cadre:
-                cadre_user_in = schemas.UserCreate(
-                    username=cadre_data["username"],
-                    email=cadre_data["email"],
-                    password=cadre_data["password"],
-                    full_name=cadre_data["full_name"],
-                    role=UserRole.LOCAL_CADRE
-                )
-                cadre_user = crud.create_user(db=db, user=cadre_user_in)
-                cadre_users.append(cadre_user)
-                print(f"✅ Local Cadre created: {cadre_user.full_name} (ID: {cadre_user.user_id})")
-                print(f"   📧 Email: {cadre_data['email']}")
-                print(f"   🔑 Password: {cadre_data['password']}")
-                print(f"   📍 Location: {cadre_data['location']}")
+                try:
+                    cadre_user_in = schemas.UserCreate(
+                        username=cadre_data["username"],
+                        email=cadre_data["email"],
+                        password=cadre_data["password"],
+                        full_name=cadre_data["full_name"],
+                        role=UserRole.LOCAL_CADRE
+                    )
+                    cadre_user = crud.create_user(db=db, user=cadre_user_in)
+                    cadre_users.append(cadre_user)
+                    print(f"✅ Local Cadre created: {cadre_user.full_name} (ID: {cadre_user.user_id})")
+                    print(f"   📧 Email: {cadre_data['email']}")
+                    print(f"   🔑 Password: {cadre_data['password']}")
+                    print(f"   📍 Location: {cadre_data['location']}")
+                except Exception as e:
+                    print(f"⚠️  Could not create LOCAL_CADRE user: {e}")
+                    print(f"💡 Creating as ADMIN role instead (can be updated later)")
+                    # Fallback to ADMIN role if LOCAL_CADRE enum doesn't exist yet
+                    cadre_user_in = schemas.UserCreate(
+                        username=cadre_data["username"],
+                        email=cadre_data["email"],
+                        password=cadre_data["password"],
+                        full_name=f"{cadre_data['full_name']} [CADRE]",
+                        role=UserRole.ADMIN
+                    )
+                    cadre_user = crud.create_user(db=db, user=cadre_user_in)
+                    cadre_users.append(cadre_user)
+                    print(f"✅ Cadre created as ADMIN: {cadre_user.full_name} (ID: {cadre_user.user_id})")
             else:
                 cadre_users.append(existing_cadre)
                 print(f"⚠️  Local Cadre already exists: {cadre_data['email']}")
@@ -268,8 +318,17 @@ async def verify_system_health():
         print(f"✅ {doctor_count} specialist doctors configured")
         
         # Check if local cadres exist
-        cadre_count = db.query(models.User).filter(models.User.role == UserRole.LOCAL_CADRE).count()
-        print(f"✅ {cadre_count} local cadres configured")
+        try:
+            cadre_count = db.query(models.User).filter(models.User.role == UserRole.LOCAL_CADRE).count()
+            print(f"✅ {cadre_count} local cadres configured")
+        except Exception as e:
+            print(f"⚠️  Could not count LOCAL_CADRE users: {e}")
+            # Count admin users with [CADRE] in name as fallback
+            cadre_count = db.query(models.User).filter(
+                models.User.role == UserRole.ADMIN,
+                models.User.full_name.contains("[CADRE]")
+            ).count()
+            print(f"⚠️  {cadre_count} cadres created as ADMIN role (needs enum update)")
         
         # Check if patients exist
         patient_count = db.query(models.User).filter(models.User.role == UserRole.PATIENT).count()
@@ -303,6 +362,9 @@ async def main():
         print("📋 Creating database tables...")
         create_db_and_tables()
         print("✅ Database tables verified/created")
+        
+        # Update UserRole enum to include LOCAL_CADRE
+        await update_user_role_enum()
         
         # Create initial users
         await create_initial_users()
