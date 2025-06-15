@@ -34,7 +34,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "build:production": "NODE_ENV=production react-scripts build",
+    "preview": "serve -s build",
+    "analyze": "npm run build && npx bundle-analyzer build/static/js/*.js"
   },
   "eslintConfig": {
     "extends": [
