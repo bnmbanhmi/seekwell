@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
-    GOOGLE_API_KEY: str
+    GOOGLE_API_KEY: Optional[str] = None
 
     # Email settings
     MAIL_SERVER: Optional[str] = MAIL_SERVER
