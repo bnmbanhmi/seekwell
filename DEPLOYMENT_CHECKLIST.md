@@ -16,143 +16,236 @@
 
 ---
 
-## Frontend Deployment (Vercel)
+## Frontend Deployment (Vercel) - Web Dashboard Setup
 
-### 🌐 **Vercel Account Setup**
-- [ ] Create Vercel account at [vercel.com](https://vercel.com)
-- [ ] Install Vercel CLI: `npm install -g vercel`
-- [ ] Login to Vercel: `vercel login`
+### 🌐 **Vercel Dashboard Setup**
+- [ ] Go to [vercel.com](https://vercel.com) and sign up/login
+- [ ] Click "New Project" button
+- [ ] Connect your GitHub account if not already connected
+- [ ] Import your SeekWell repository
 
-### 📁 **Project Configuration**
-- [ ] Navigate to frontend directory: `cd frontend`
-- [ ] Link project: `vercel link`
-- [ ] Import project from GitHub in Vercel dashboard
-- [ ] Set build command: `npm run build`
-- [ ] Set output directory: `build`
+### 📁 **Project Configuration in Vercel Dashboard**
+- [ ] **Framework Preset**: Select "Create React App"
+- [ ] **Root Directory**: Leave empty (will auto-detect frontend folder)
+- [ ] **Build Command**: `cd frontend && npm run build` 
+- [ ] **Output Directory**: `frontend/build`
+- [ ] **Install Command**: `cd frontend && npm ci`
+- [ ] **Development Command**: `cd frontend && npm start`
 
 ### ⚙️ **Environment Variables (Vercel Dashboard)**
-```env
-REACT_APP_BACKEND_URL=https://seekwell-backend.onrender.com
-REACT_APP_AI_CONFIDENCE_THRESHOLD=0.8
-REACT_APP_HUGGINGFACE_SPACE_URL=https://bnmbanhmi-seekwell-skin-cancer.hf.space
-REACT_APP_ENABLE_OFFLINE_MODE=true
-REACT_APP_ENABLE_PWA=true
-REACT_APP_ENVIRONMENT=production
+Go to Project Settings > Environment Variables and add:
+
+**Production Environment Variables:**
+```
+Name: REACT_APP_BACKEND_URL
+Value: https://seekwell-backend.onrender.com
+Environments: Production ✓
+
+Name: REACT_APP_AI_CONFIDENCE_THRESHOLD  
+Value: 0.8
+Environments: Production ✓
+
+Name: REACT_APP_HUGGINGFACE_SPACE_URL
+Value: https://bnmbanhmi-seekwell-skin-cancer.hf.space
+Environments: Production ✓
+
+Name: REACT_APP_ENABLE_OFFLINE_MODE
+Value: true
+Environments: Production ✓
+
+Name: REACT_APP_ENABLE_PWA
+Value: true
+Environments: Production ✓
+
+Name: REACT_APP_ENVIRONMENT
+Value: production
+Environments: Production ✓
 ```
 
-### 🚀 **Deployment Steps**
-- [ ] Deploy manually first: `vercel --prod`
-- [ ] Verify deployment at generated URL
-- [ ] Test all major user flows
-- [ ] Set up custom domain (seekwell.health)
-- [ ] Configure DNS records
-- [ ] Verify SSL certificate
+**Preview Environment Variables:**
+```
+Name: REACT_APP_BACKEND_URL
+Value: https://seekwell-backend.onrender.com
+Environments: Preview ✓
 
-### ✅ **Verification**
-- [ ] Frontend loads correctly
-- [ ] PWA installation works
-- [ ] API calls reach backend
-- [ ] Mobile responsive design works
-- [ ] All images and assets load
+Name: REACT_APP_ENVIRONMENT
+Value: staging
+Environments: Preview ✓
+
+(Copy other variables with same values)
+```
+
+### 🔄 **Auto-Deploy Configuration**
+- [ ] In Project Settings > Git, ensure:
+  - **Production Branch**: `main` ✓
+  - **Auto-deploy**: Enabled ✓
+  - **Deploy Hooks**: Can be set up for manual triggers if needed
+
+### 🌐 **Custom Domain Setup (Optional)**
+- [ ] Go to Project Settings > Domains
+- [ ] Add your custom domain: `seekwell.health`
+- [ ] Add www redirect: `www.seekwell.health` → `seekwell.health`
+- [ ] Configure DNS records as shown in Vercel dashboard
+
+### ✅ **Verification Steps**
+- [ ] Push a commit to main branch
+- [ ] Check Deployments tab for automatic deployment
+- [ ] Visit your deployment URL to verify it works
+- [ ] Test that environment variables are loaded correctly
 
 ---
 
-## Backend Deployment (Render)
+## Backend Deployment (Render) - Web Dashboard Setup
 
-### 🏗️ **Render Account Setup**
-- [ ] Create Render account at [render.com](https://render.com)
-- [ ] Connect GitHub account
-- [ ] Verify email and enable two-factor authentication
+### 🏗️ **Render Dashboard Setup**
+- [ ] Go to [render.com](https://render.com) and sign up/login
+- [ ] Connect your GitHub account in Account Settings
+- [ ] Verify email and enable 2FA for security
 
-### 🗄️ **Database Setup**
-- [ ] Create PostgreSQL database in Render
-- [ ] Note database internal URL
-- [ ] Configure database region (recommend Oregon)
-- [ ] Set database plan (Starter for development)
+### 🗄️ **Database Setup (First!)**
+- [ ] Click "New +" → "PostgreSQL"
+- [ ] **Name**: `seekwell-postgres`
+- [ ] **Database**: `seekwell`
+- [ ] **User**: `seekwell_user`
+- [ ] **Region**: Oregon (US West)
+- [ ] **Plan**: Starter ($7/month)
+- [ ] **PostgreSQL Version**: 15
+- [ ] Click "Create Database"
+- [ ] **Important**: Copy the "Internal Database URL" for later
 
-### 🐳 **Web Service Configuration**
-- [ ] Create new Web Service in Render
-- [ ] Connect to GitHub repository
-- [ ] Set root directory: `backend`
-- [ ] Configure build settings:
-  ```
-  Build Command: pip install -r requirements.txt
-  Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-  ```
+### 🐳 **Web Service Setup**
+- [ ] Click "New +" → "Web Service"
+- [ ] Connect your GitHub repository
+- [ ] **Name**: `seekwell-backend`
+- [ ] **Region**: Oregon (US West)
+- [ ] **Branch**: `main`
+- [ ] **Root Directory**: `backend`
+- [ ] **Runtime**: Python 3.11
+- [ ] **Build Command**: `pip install -r requirements.txt`
+- [ ] **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- [ ] **Plan**: Starter ($7/month)
 
 ### ⚙️ **Environment Variables (Render Dashboard)**
-```env
-DATABASE_URL=<internal_database_url_from_render>
-SECRET_KEY=<your_secure_secret_key_32_chars_minimum>
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-ALLOWED_ORIGINS=["https://seekwell.vercel.app","https://seekwell.health"]
-HUGGINGFACE_API_KEY=<your_huggingface_api_key>
-ENVIRONMENT=production
-PORT=$PORT
+In Web Service Settings > Environment, add these variables:
+
+**Required Variables:**
+```
+Key: DATABASE_URL
+Value: [Paste the Internal Database URL from your PostgreSQL service]
+
+Key: SECRET_KEY  
+Value: [Generate a secure 32+ character secret key]
+
+Key: ALGORITHM
+Value: HS256
+
+Key: ACCESS_TOKEN_EXPIRE_MINUTES
+Value: 30
+
+Key: ALLOWED_ORIGINS
+Value: ["https://seekwell.vercel.app", "https://seekwell-frontend.vercel.app", "http://localhost:3000"]
+
+Key: ENVIRONMENT
+Value: production
+
+Key: DEBUG
+Value: false
 ```
 
-### 🚀 **Deployment Steps**
-- [ ] Deploy web service
-- [ ] Wait for initial deployment (5-10 minutes)
-- [ ] Check deployment logs for errors
-- [ ] Run database initialization
-- [ ] Set up custom domain (api.seekwell.health)
+**Optional Variables:**
+```
+Key: HUGGINGFACE_API_KEY
+Value: [Your HuggingFace API key if you have one]
 
-### ✅ **Verification**
-- [ ] Backend API responds: `https://your-service.onrender.com/health`
-- [ ] API documentation accessible: `https://your-service.onrender.com/docs`
-- [ ] Database connection works
-- [ ] Authentication endpoints work
-- [ ] AI analysis endpoints work
+Key: OPENAI_API_KEY  
+Value: [Your OpenAI API key if using chat features]
+```
+
+### 🔄 **Auto-Deploy Configuration**
+- [ ] In Service Settings > Build & Deploy:
+  - **Auto-Deploy**: Yes ✓
+  - **Branch**: main ✓
+- [ ] In Service Settings > Health Check:
+  - **Health Check Path**: `/health` ✓
+
+### 🚀 **Initial Deployment**
+- [ ] Click "Manual Deploy" → "Deploy latest commit"
+- [ ] Wait for deployment (5-10 minutes)
+- [ ] Check logs for any errors
+- [ ] Once deployed, run database initialization
+
+### 🗄️ **Database Initialization**
+After successful deployment, initialize the database:
+- [ ] Go to your Web Service → Shell tab
+- [ ] Run: `python app/create_initial_admin.py`
+- [ ] Verify admin user was created successfully
+
+### 🌐 **Custom Domain Setup (Optional)**
+- [ ] In Service Settings > Custom Domains
+- [ ] Add: `api.seekwell.health`
+- [ ] Configure DNS: CNAME `api.seekwell.health` → `your-service.onrender.com`
+- [ ] Wait for SSL certificate provisioning
+
+### ✅ **Verification Steps**
+- [ ] Visit `https://your-service.onrender.com/health`
+- [ ] Should return: `{"status": "healthy", ...}`
+- [ ] Visit `https://your-service.onrender.com/docs`
+- [ ] API documentation should load
+- [ ] Test authentication endpoints work
 
 ---
 
-## CI/CD Pipeline Setup
+## Automatic Deployment Setup
 
-### 🔧 **GitHub Secrets**
-Add these secrets in GitHub repository settings:
+### � **How Auto-Deployment Works**
+Once configured, your deployment process will be completely automated:
 
 ```
-VERCEL_ORG_ID=<team_id_from_vercel>
-VERCEL_PROJECT_ID=<project_id_from_vercel>
-VERCEL_TOKEN=<vercel_api_token>
-RENDER_SERVICE_ID=<service_id_from_render>
-RENDER_API_KEY=<render_api_key>
+1. You commit changes to GitHub main branch
+2. Vercel automatically detects frontend changes and deploys
+3. Render automatically detects backend changes and deploys  
+4. Both services run health checks
+5. Your live application is updated automatically
 ```
 
-### 📝 **Getting Required IDs**
+### � **Testing Auto-Deployment**
 
-#### Vercel IDs:
-```bash
-# Install Vercel CLI and login
-npm install -g vercel
-vercel login
+#### **Test Frontend Auto-Deploy:**
+- [ ] Make a small change to any file in `frontend/` folder
+- [ ] Commit and push to GitHub:
+  ```bash
+  git add .
+  git commit -m "test: frontend auto-deploy"
+  git push origin main
+  ```
+- [ ] Go to Vercel dashboard → Your project → Deployments
+- [ ] Should see new deployment starting automatically
+- [ ] Wait for deployment to complete (~2-3 minutes)
+- [ ] Visit your site to see changes
 
-# Get Org ID and Project ID
-cd frontend
-vercel link
-# IDs will be saved in .vercel/project.json
+#### **Test Backend Auto-Deploy:**
+- [ ] Make a small change to any file in `backend/` folder  
+- [ ] Commit and push to GitHub:
+  ```bash
+  git add .
+  git commit -m "test: backend auto-deploy"
+  git push origin main
+  ```
+- [ ] Go to Render dashboard → Your service → Events
+- [ ] Should see new deployment starting automatically
+- [ ] Wait for deployment to complete (~5-8 minutes)
+- [ ] Check `/health` endpoint to verify changes
 
-# Create API token in Vercel dashboard:
-# Account Settings > Tokens > Create Token
-```
+### � **Deployment Monitoring**
+- [ ] **Vercel**: Monitor deployments at vercel.com → Your Project → Deployments
+- [ ] **Render**: Monitor deployments at render.com → Your Service → Events
+- [ ] Set up email notifications in both platforms
+- [ ] Bookmark health check URLs for quick status verification
 
-#### Render IDs:
-```bash
-# Service ID: Found in Render dashboard URL
-# https://dashboard.render.com/web/srv-xxxxxxxxxxxx
-# The srv-xxxxxxxxxxxx part is your SERVICE_ID
-
-# API Key: Account Settings > API Keys > Create Key
-```
-
-### 🔄 **Workflow Verification**
-- [ ] Push to main branch triggers deployments
-- [ ] Pull requests create preview deployments
-- [ ] Tests run before deployment
-- [ ] Deployment status updates in GitHub
-- [ ] Health checks pass after deployment
+### 🔔 **Notification Setup**
+- [ ] **Vercel**: Project Settings → Notifications → Deploy Hooks
+- [ ] **Render**: Service Settings → Notifications → Deploy notifications
+- [ ] Configure Slack/email notifications for deployment status
 
 ---
 
