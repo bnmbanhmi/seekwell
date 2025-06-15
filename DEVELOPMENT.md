@@ -717,7 +717,7 @@ docs(api): update endpoint documentation
 # Production backend .env
 DATABASE_URL=postgresql://prod_user:prod_pass@prod_host:5432/seekwell_prod
 SECRET_KEY=production-secret-key-very-secure
-ALLOWED_ORIGINS=["https://seekwell.app", "https://app.seekwell.health"]
+ALLOWED_ORIGINS=["https://seekwell.vercel.app","https://seekwell.health"]
 ENVIRONMENT=production
 
 # Security headers
@@ -922,4 +922,460 @@ if ('serviceWorker' in navigator) {
 
 ---
 
-*For questions or support, please refer to the main README.md or contact the development team.*
+## 🚀 Production Deployment & CI/CD
+
+### **Deployment Architecture**
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   GitHub Repo   │    │   Vercel CDN    │    │  Render Cloud   │
+│                 │    │                 │    │                 │
+│  Frontend Code  ├────┤  React App      │    │  FastAPI Server │
+│  Backend Code   │    │  Static Assets  │    │  PostgreSQL DB  │
+│  CI/CD Workflows│    │  PWA Features   │    │  File Storage   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌─────────────────┐              │
+         └──────────────┤   End Users     ├──────────────┘
+                        │                 │
+                        │  📱 Mobile PWA  │
+                        │  💻 Web App     │
+                        │  🏥 Healthcare  │
+                        └─────────────────┘
+```
+
+### **Frontend Deployment (Vercel)**
+
+#### **1. Vercel Setup**
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login to Vercel
+vercel login
+
+# Link your project
+cd frontend
+vercel link
+
+# Set environment variables
+vercel env add REACT_APP_BACKEND_URL production
+vercel env add REACT_APP_AI_CONFIDENCE_THRESHOLD production
+vercel env add REACT_APP_HUGGINGFACE_SPACE_URL production
+```
+
+#### **2. Environment Variables in Vercel Dashboard**
+```env
+REACT_APP_BACKEND_URL=https://seekwell-backend.onrender.com
+REACT_APP_AI_CONFIDENCE_THRESHOLD=0.8
+REACT_APP_HUGGINGFACE_SPACE_URL=https://bnmbanhmi-seekwell-skin-cancer.hf.space
+REACT_APP_ENABLE_OFFLINE_MODE=true
+REACT_APP_ENABLE_PWA=true
+REACT_APP_ENVIRONMENT=production
+```
+
+#### **3. Manual Deployment**
+```bash
+# Deploy to production
+cd frontend
+vercel --prod
+
+# Deploy preview
+vercel
+```
+
+#### **4. Custom Domain Setup**
+```bash
+# Add custom domain in Vercel dashboard
+# seekwell.health -> Production
+# staging.seekwell.health -> Preview
+
+# Configure DNS records
+# A record: 76.76.19.61
+# CNAME: cname.vercel-dns.com
+```
+
+### **Backend Deployment (Render)**
+
+#### **1. Render Setup**
+1. **Create Render Account**: Sign up at [render.com](https://render.com)
+2. **Connect GitHub**: Link your GitHub repository
+3. **Create Web Service**: Select your backend directory
+4. **Configure Build Settings**:
+   ```
+   Build Command: pip install -r requirements.txt
+   Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+   ```
+
+#### **2. Environment Variables in Render Dashboard**
+```env
+DATABASE_URL=postgresql://user:pass@host:port/db
+SECRET_KEY=your-super-secret-production-key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+ALLOWED_ORIGINS=["https://seekwell.vercel.app","https://seekwell.health"]
+HUGGINGFACE_API_KEY=your-huggingface-key
+ENVIRONMENT=production
+PORT=8000
+```
+
+#### **3. Database Setup**
+```bash
+# Create PostgreSQL database in Render
+# Copy internal database URL to DATABASE_URL env var
+
+# Run initial migration
+python app/create_initial_admin.py
+```
+
+#### **4. Custom Domain & SSL**
+```bash
+# Add custom domain in Render dashboard
+# api.seekwell.health -> Backend service
+# Automatic SSL certificate provisioning
+```
+
+### **Database Deployment (Render PostgreSQL)**
+
+#### **1. Database Creation**
+```yaml
+# render.yaml configuration
+databases:
+  - name: seekwell-postgres
+    databaseName: seekwell
+    user: seekwell_user
+    region: oregon
+    plan: starter  # $7/month
+```
+
+#### **2. Database Migration**
+```bash
+# Connect to production database
+export DATABASE_URL="postgresql://user:pass@host:port/db"
+
+# Run migrations
+cd backend
+python app/create_initial_admin.py
+
+# Verify connection
+python -c "
+import asyncio
+from app.database import engine
+from sqlalchemy import text
+
+async def test_connection():
+    async with engine.begin() as conn:
+        result = await conn.execute(text('SELECT version()'))
+        print(result.fetchone())
+
+asyncio.run(test_connection())
+"
+```
+
+### **CI/CD Pipeline Setup**
+
+#### **1. GitHub Secrets Configuration**
+```bash
+# Required secrets in GitHub repository settings
+VERCEL_ORG_ID=team_xxxxxxxxxxxx
+VERCEL_PROJECT_ID=prj_xxxxxxxxxxxx
+VERCEL_TOKEN=xxxxxxxxxxxxxxxxxx
+RENDER_SERVICE_ID=srv-xxxxxxxxxxxx
+RENDER_API_KEY=rnd_xxxxxxxxxxxx
+```
+
+#### **2. Automatic Deployment Triggers**
+```yaml
+# Frontend triggers (.github/workflows/deploy-frontend.yml)
+on:
+  push:
+    branches: [main]
+    paths: ['frontend/**']
+  pull_request:
+    branches: [main]
+    paths: ['frontend/**']
+
+# Backend triggers (.github/workflows/deploy-backend.yml)
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', 'requirements.txt']
+  pull_request:
+    branches: [main]
+    paths: ['backend/**']
+```
+
+#### **3. Deployment Workflow Overview**
+```
+1. Code Push to GitHub
+   ├── Frontend changes → Vercel deployment
+   ├── Backend changes → Render deployment
+   └── Both changes → Full stack deployment
+
+2. Pull Request
+   ├── Run tests and linting
+   ├── Deploy preview environments
+   └── Generate deployment URLs
+
+3. Merge to Main
+   ├── Deploy to production
+   ├── Run health checks
+   └── Notify team of deployment status
+```
+
+### **Monitoring & Health Checks**
+
+#### **1. Application Health Endpoints**
+```python
+# Backend health check (app/routers/health.py)
+@router.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow(),
+        "version": "1.0.0",
+        "services": {
+            "database": await check_database_health(),
+            "ai_model": await check_huggingface_health(),
+            "storage": await check_storage_health()
+        }
+    }
+
+# Database health check
+async def check_database_health():
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text("SELECT 1"))
+        return {"status": "healthy", "response_time": "< 50ms"}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}
+```
+
+#### **2. Uptime Monitoring**
+```bash
+# Add uptime monitoring services
+# UptimeRobot, Pingdom, or StatusPage
+
+# Monitor these endpoints:
+# https://seekwell.health (Frontend)
+# https://api.seekwell.health/health (Backend)
+# https://api.seekwell.health/docs (API Documentation)
+```
+
+#### **3. Error Tracking & Logging**
+```javascript
+// Frontend error tracking (Sentry)
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+  environment: process.env.REACT_APP_ENVIRONMENT,
+});
+
+// Backend logging (Python logging)
+import logging
+from app.config import settings
+
+logging.basicConfig(
+    level=logging.INFO if settings.environment == "production" else logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+```
+
+### **Performance Optimization**
+
+#### **1. Frontend Optimization**
+```json
+// Build optimization
+{
+  "scripts": {
+    "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
+    "build:prod": "GENERATE_SOURCEMAP=false npm run build"
+  }
+}
+```
+
+#### **2. Backend Optimization**
+```python
+# Production optimizations
+from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title="SeekWell API",
+    docs_url="/docs" if settings.environment != "production" else None,
+    redoc_url="/redoc" if settings.environment != "production" else None,
+)
+
+# Add compression
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Configure CORS for production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+```
+
+### **Security Configuration**
+
+#### **1. Environment Security**
+```env
+# Production security checklist
+SSL_REDIRECT=true
+SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
+SECURE_SSL_REDIRECT=true
+SESSION_COOKIE_SECURE=true
+CSRF_COOKIE_SECURE=true
+
+# API security
+CORS_ORIGINS=["https://seekwell.health"]
+JWT_SECRET_KEY=minimum-32-character-secret-key
+PASSWORD_SALT_ROUNDS=12
+```
+
+#### **2. Database Security**
+```python
+# Connection security
+DATABASE_URL=postgresql://user:password@host:5432/db?sslmode=require
+
+# Query security (SQLAlchemy with parameterized queries)
+from sqlalchemy import text
+
+# Safe query
+result = await session.execute(
+    text("SELECT * FROM patients WHERE id = :patient_id"),
+    {"patient_id": patient_id}
+)
+```
+
+### **Backup & Recovery**
+
+#### **1. Database Backups**
+```bash
+# Automated daily backups (Render PostgreSQL)
+# Manual backup
+pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
+
+# Restore from backup
+psql $DATABASE_URL < backup_20250615.sql
+```
+
+#### **2. File Storage Backup**
+```python
+# Image backup strategy
+import boto3
+from app.config import settings
+
+# Backup uploaded images to S3
+s3_client = boto3.client('s3')
+
+async def backup_image(file_path: str):
+    s3_client.upload_file(
+        file_path,
+        settings.s3_backup_bucket,
+        f"backups/{datetime.now().isoformat()}/{file_path}"
+    )
+```
+
+### **Scaling Considerations**
+
+#### **1. Frontend Scaling**
+```bash
+# Vercel automatically handles:
+# - Global CDN distribution
+# - Automatic scaling
+# - Edge function deployment
+# - Image optimization
+
+# No additional configuration needed for frontend scaling
+```
+
+#### **2. Backend Scaling**
+```yaml
+# Render scaling configuration
+services:
+  - type: web
+    name: seekwell-backend
+    plan: starter  # Can upgrade to standard/pro
+    scaling:
+      minInstances: 1
+      maxInstances: 10
+    
+    # Health check for auto-scaling
+    healthCheckPath: /health
+```
+
+#### **3. Database Scaling**
+```sql
+-- Database optimization for scaling
+CREATE INDEX idx_skin_lesion_patient_id ON skin_lesion_images(patient_id);
+CREATE INDEX idx_skin_lesion_timestamp ON skin_lesion_images(upload_timestamp);
+CREATE INDEX idx_ai_assessment_risk_level ON ai_assessments(risk_level);
+
+-- Connection pooling
+SET max_connections = 100;
+SET shared_buffers = '256MB';
+```
+
+### **Cost Optimization**
+
+#### **1. Service Costs**
+```
+Monthly Costs (Estimated):
+┌─────────────────┬──────────────┬─────────────────┐
+│ Service         │ Plan         │ Monthly Cost    │
+├─────────────────┼──────────────┼─────────────────┤
+│ Vercel          │ Pro          │ $20 (team)      │
+│ Render Web      │ Starter      │ $7              │
+│ Render DB       │ Starter      │ $7              │
+│ Domain          │ Annual       │ $1/month        │
+│ Monitoring      │ Free tier    │ $0              │
+├─────────────────┼──────────────┼─────────────────┤
+│ Total           │              │ ~$35/month      │
+└─────────────────┴──────────────┴─────────────────┘
+```
+
+#### **2. Cost Optimization Strategies**
+```bash
+# Frontend optimization
+- Use Vercel free tier for development
+- Implement efficient image compression
+- Minimize bundle size with tree shaking
+
+# Backend optimization
+- Use connection pooling
+- Implement efficient database queries
+- Cache frequently accessed data
+- Use free tier for development/staging
+```
+
+### **Disaster Recovery**
+
+#### **1. Recovery Plan**
+```bash
+# Full system recovery procedure
+1. Restore database from latest backup
+2. Redeploy backend service on Render
+3. Redeploy frontend on Vercel
+4. Verify all health checks pass
+5. Test critical user workflows
+
+# Recovery time objective (RTO): < 2 hours
+# Recovery point objective (RPO): < 24 hours
+```
+
+#### **2. Backup Schedule**
+```
+Daily: Database backups
+Weekly: Full system configuration backup
+Monthly: Disaster recovery testing
+```
+
+---
+
+*Complete deployment documentation for production-ready SeekWell application.*
