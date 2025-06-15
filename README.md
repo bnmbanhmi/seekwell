@@ -10,27 +10,65 @@ Transform skin cancer detection in underserved communities by providing accessib
 
 ## ✨ Key Features
 
-*   **AI-Powered Skin Analysis**: Advanced machine learning for skin lesion classification
-*   **Mobile-First Design**: Responsive web app optimized for smartphones and tablets
+### 🧠 **AI-Powered Analysis**
+*   **Advanced Skin Lesion Classification**: Deep learning model for skin cancer detection
+*   **Risk Assessment Engine**: Automated evaluation with confidence scoring
+*   **Multi-Modal Processing**: Support for various image formats and qualities
+*   **Real-Time Predictions**: Fast inference for immediate feedback
+
+### 🏥 **Healthcare Workflow**
+*   **Three-Tier Review System**: Patient → Local Cadre → Doctor consultation
 *   **Role-Based Access Control**: Patient, Local Cadre, Doctor, and Admin roles
-*   **Remote Consultation**: Telemedicine capabilities for rural healthcare
-*   **Community Health Focus**: Local cadre involvement for sustainable healthcare delivery
+*   **Priority Queue Management**: Urgent cases automatically escalated
+*   **Professional Oversight**: Human validation of AI predictions
+
+### 📱 **Mobile-First Platform**
+*   **Responsive Web App**: Optimized for smartphones and tablets
 *   **Progressive Web App**: Offline capabilities and app-like experience
-*   **Chat Functionality**: Integrated chat for communication (details TBD based on `routers/chat.py`).
+*   **Camera Integration**: Direct image capture from mobile devices
+*   **Touch-Optimized Interface**: Designed for mobile interactions
 
-## Tech Stack
+### 🌐 **Telemedicine & Communication**
+*   **Remote Consultation**: Video/text consultation capabilities
+*   **Chat Functionality**: Integrated communication system
+*   **Community Health Focus**: Local cadre involvement for sustainable healthcare
+*   **Multi-Language Support**: Accessible to diverse communities
 
-*   **Backend**:
-    *   Python 3.11+
-    *   FastAPI
-    *   SQLAlchemy
-    *   PostgreSQL
-    *   Pydantic
-    *   Uvicorn (ASGI server)
-*   **Frontend**:
-    *   React
-    *   TypeScript
-    *   Node.js / npm
+### 🔒 **Security & Compliance**
+*   **Medical Data Protection**: Encrypted storage and transmission
+*   **HIPAA-Ready Architecture**: Privacy-compliant design
+*   **Audit Logging**: Complete tracking of medical decisions
+*   **Role-Based Permissions**: Granular access control
+
+## 🛠️ Tech Stack
+
+### **Backend**
+*   **Core Framework**: Python 3.11+ with FastAPI
+*   **Database**: PostgreSQL with SQLAlchemy ORM
+*   **AI/ML Stack**: PyTorch, Transformers, NumPy
+*   **API Documentation**: Automatic OpenAPI/Swagger generation
+*   **Authentication**: JWT tokens with role-based access
+*   **Server**: Uvicorn ASGI server
+
+### **AI & Machine Learning**
+*   **Deep Learning**: PyTorch for model development and inference
+*   **Computer Vision**: Torchvision for image processing
+*   **Model Serving**: HuggingFace Transformers for model deployment
+*   **Image Processing**: PIL/Pillow for image manipulation
+*   **Deployment**: Gradio for interactive AI interfaces
+
+### **Frontend**
+*   **Framework**: React 18+ with TypeScript
+*   **Build Tool**: Create React App with modern tooling
+*   **Styling**: Material-UI and Tailwind CSS
+*   **State Management**: React Context and Hooks
+*   **PWA Features**: Service workers and offline capabilities
+
+### **Infrastructure**
+*   **Database**: PostgreSQL with comprehensive migrations
+*   **File Storage**: Local/cloud storage for medical images
+*   **Monitoring**: Health checks and performance tracking
+*   **Deployment**: Docker-ready containerization
 
 ## Git Branching Strategy
 

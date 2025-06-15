@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
-from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction
+from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,6 +41,7 @@ app.include_router(hospitals.router, prefix="/hospitals", tags=["Hospitals"])
 app.include_router(password.router, prefix="/password", tags=["Password"])
 app.include_router(reports.router, prefix="/medical_reports", tags=["Medical Reports"]) # Include the reports router
 app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"]) # Include the AI prediction router
+app.include_router(skin_lesions.router, prefix="/skin-lesions", tags=["Skin Lesion Analysis"]) # Include the new skin lesions router
 
 
 @app.get("/", tags=["Root"])

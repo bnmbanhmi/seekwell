@@ -24,6 +24,7 @@ import MedicalHistory from '../components/medical/MedicalHistory';
 import MedicalReportsManagement from '../components/medical/MedicalReportsManagement';
 import Prescriptions from '../components/medical/Prescriptions';
 import CheckInOut from '../components/staff/CheckInOut';
+import AISkinAnalysisPage from './AISkinAnalysisPage';
 
 type Props = {
   role: UserRole;
@@ -70,6 +71,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="logs" element={<SystemLogs />} />
         <Route path="schedule-settings" element={<ScheduleSettings />} />
         <Route path="checkin" element={<CheckInOut />} />
+        <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
       </Routes>
     </BaseDashboard>
   );

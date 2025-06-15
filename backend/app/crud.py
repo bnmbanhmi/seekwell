@@ -762,3 +762,214 @@ def search_medical_reports(db: Session, patient_id: Optional[int], doctor_id: Op
 #         db.commit()
 #         db.refresh(db_message)
 #     return db_message
+
+
+# ============================================================================
+# AI SKIN LESION ANALYSIS CRUD OPERATIONS
+# ============================================================================
+
+def create_skin_lesion_image(db: Session, lesion_data: schemas.SkinLesionImageCreate) -> models.SkinLesionImage:
+    """Create a new skin lesion image record."""
+    db_lesion = models.SkinLesionImage(
+        patient_id=lesion_data.patient_id,
+        image_path=lesion_data.image_path,
+        image_data=lesion_data.image_data,
+        body_region=lesion_data.body_region,
+        ai_prediction=lesion_data.ai_prediction,
+        confidence_score=lesion_data.confidence_score,
+        status=lesion_data.status,
+        notes=lesion_data.notes
+    )
+    db.add(db_lesion)
+    db.commit()
+    db.refresh(db_lesion)
+    return db_lesion
+
+
+def get_skin_lesion_image(db: Session, image_id: int) -> Optional[models.SkinLesionImage]:
+    """Retrieve a skin lesion image by ID."""
+    return db.query(models.SkinLesionImage).filter(models.SkinLesionImage.image_id == image_id).first()
+
+
+def get_patient_skin_lesions(db: Session, patient_id: int, skip: int = 0, limit: int = 100) -> List[models.SkinLesionImage]:
+    """Retrieve all skin lesion images for a patient."""
+    return db.query(models.SkinLesionImage).filter(
+        models.SkinLesionImage.patient_id == patient_id
+    ).offset(skip).limit(limit).all()
+
+
+def get_pending_reviews(db: Session, risk_levels: Optional[List[str]] = None, skip: int = 0, limit: int = 100) -> List[models.SkinLesionImage]:
+    """Get skin lesions pending review by cadres."""
+    query = db.query(models.SkinLesionImage).filter(
+        models.SkinLesionImage.needs_professional_review == True,
+        models.SkinLesionImage.reviewed_by_cadre.is_(None)
+    )
+    
+    if risk_levels:
+        # Join with AI assessment to filter by risk level
+        query = query.join(models.AIAssessment).filter(
+            models.AIAssessment.risk_level.in_(risk_levels)
+        )
+    
+    return query.offset(skip).limit(limit).all()
+
+
+def update_skin_lesion_status(db: Session, image_id: int, status: str, reviewed_by: Optional[int] = None) -> Optional[models.SkinLesionImage]:
+    """Update the status of a skin lesion image."""
+    db_lesion = get_skin_lesion_image(db, image_id)
+    if db_lesion:
+        db_lesion.status = status
+        if reviewed_by and status in ["reviewed", "completed"]:
+            db_lesion.reviewed_by_cadre = reviewed_by
+        db.commit()
+        db.refresh(db_lesion)
+    return db_lesion
+
+
+def create_ai_assessment(db: Session, assessment_data: schemas.AIAssessmentCreate) -> models.AIAssessment:
+    """Create a new AI assessment record."""
+    db_assessment = models.AIAssessment(
+        image_id=assessment_data.image_id,
+        risk_level=assessment_data.risk_level,
+        confidence_level=assessment_data.confidence_level,
+        predicted_class=assessment_data.predicted_class,
+        all_predictions=assessment_data.all_predictions,
+        recommendations=assessment_data.recommendations,
+        follow_up_needed=assessment_data.follow_up_needed,
+        follow_up_days=assessment_data.follow_up_days
+    )
+    db.add(db_assessment)
+    db.commit()
+    db.refresh(db_assessment)
+    return db_assessment
+
+
+def get_ai_assessment_by_image(db: Session, image_id: int) -> Optional[models.AIAssessment]:
+    """Get AI assessment for a specific image."""
+    return db.query(models.AIAssessment).filter(models.AIAssessment.image_id == image_id).first()
+
+
+def create_cadre_review(db: Session, review_data: schemas.CadreReviewCreate, cadre_id: int) -> models.CadreReview:
+    """Create a new cadre review."""
+    db_review = models.CadreReview(
+        image_id=review_data.image_id,
+        cadre_id=cadre_id,
+        review_notes=review_data.review_notes,
+        agrees_with_ai=review_data.agrees_with_ai,
+        escalate_to_doctor=review_data.escalate_to_doctor,
+        local_recommendations=review_data.local_recommendations
+    )
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
+    
+    # Update the lesion image to mark as reviewed by cadre
+    update_skin_lesion_status(db, review_data.image_id, "reviewed", cadre_id)
+    
+    return db_review
+
+
+def get_cadre_reviews_by_image(db: Session, image_id: int) -> List[models.CadreReview]:
+    """Get all cadre reviews for a specific image."""
+    return db.query(models.CadreReview).filter(models.CadreReview.image_id == image_id).all()
+
+
+def create_doctor_consultation(db: Session, consultation_data: schemas.DoctorConsultationCreate, doctor_id: int) -> models.DoctorConsultation:
+    """Create a new doctor consultation."""
+    db_consultation = models.DoctorConsultation(
+        image_id=consultation_data.image_id,
+        doctor_id=doctor_id,
+        diagnosis=consultation_data.diagnosis,
+        treatment_plan=consultation_data.treatment_plan,
+        urgency_level=consultation_data.urgency_level,
+        requires_specialist=consultation_data.requires_specialist,
+        specialist_type=consultation_data.specialist_type,
+        follow_up_days=consultation_data.follow_up_days,
+        prescription=consultation_data.prescription
+    )
+    db.add(db_consultation)
+    db.commit()
+    db.refresh(db_consultation)
+    
+    # Update the lesion image to mark as completed
+    lesion = get_skin_lesion_image(db, consultation_data.image_id)
+    if lesion:
+        lesion.reviewed_by_doctor = doctor_id
+        lesion.status = "completed"
+        db.commit()
+    
+    return db_consultation
+
+
+def get_doctor_consultations_by_image(db: Session, image_id: int) -> List[models.DoctorConsultation]:
+    """Get all doctor consultations for a specific image."""
+    return db.query(models.DoctorConsultation).filter(models.DoctorConsultation.image_id == image_id).all()
+
+
+def get_body_regions(db: Session) -> List[models.BodyRegion]:
+    """Get all available body regions."""
+    return db.query(models.BodyRegion).all()
+
+
+def get_patient_lesion_history(db: Session, patient_id: int) -> Dict[str, Any]:
+    """Get comprehensive lesion history for a patient."""
+    all_lesions = get_patient_skin_lesions(db, patient_id)
+    
+    # Count by status and risk level
+    total_analyses = len(all_lesions)
+    pending_reviews = len([l for l in all_lesions if l.status == "pending"])
+    
+    # Count high-risk lesions by joining with AI assessments
+    high_risk_count = db.query(models.SkinLesionImage).join(models.AIAssessment).filter(
+        models.SkinLesionImage.patient_id == patient_id,
+        models.AIAssessment.risk_level.in_(["HIGH", "URGENT"])
+    ).count()
+    
+    # Get recent analyses (last 10)
+    recent_analyses = db.query(models.SkinLesionImage).filter(
+        models.SkinLesionImage.patient_id == patient_id
+    ).order_by(models.SkinLesionImage.upload_timestamp.desc()).limit(10).all()
+    
+    return {
+        "patient_id": patient_id,
+        "total_analyses": total_analyses,
+        "pending_reviews": pending_reviews,
+        "high_risk_count": high_risk_count,
+        "recent_analyses": recent_analyses
+    }
+
+
+def get_review_queue_stats(db: Session) -> Dict[str, int]:
+    """Get statistics for the review queue."""
+    # Count pending reviews by risk level
+    pending_query = db.query(models.SkinLesionImage).filter(
+        models.SkinLesionImage.needs_professional_review == True,
+        models.SkinLesionImage.reviewed_by_cadre.is_(None)
+    )
+    
+    total_pending = pending_query.count()
+    
+    # Count by risk level
+    urgent_count = pending_query.join(models.AIAssessment).filter(
+        models.AIAssessment.risk_level == "URGENT"
+    ).count()
+    
+    high_priority_count = pending_query.join(models.AIAssessment).filter(
+        models.AIAssessment.risk_level == "HIGH"
+    ).count()
+    
+    medium_priority_count = pending_query.join(models.AIAssessment).filter(
+        models.AIAssessment.risk_level == "MEDIUM"
+    ).count()
+    
+    low_priority_count = pending_query.join(models.AIAssessment).filter(
+        models.AIAssessment.risk_level == "LOW"
+    ).count()
+    
+    return {
+        "total_pending": total_pending,
+        "urgent_count": urgent_count,
+        "high_priority_count": high_priority_count,
+        "medium_priority_count": medium_priority_count,
+        "low_priority_count": low_priority_count
+    }
