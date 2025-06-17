@@ -13,15 +13,26 @@ const HuggingFaceAPITest: React.FC = () => {
     try {
       const aiService = new HuggingFaceAIService();
       
-      // Test basic connection
+      console.log('Testing space status...');
+      const spaceStatus = await aiService.checkSpaceStatus();
+      
       console.log('Testing connection...');
       const connectionTest = await aiService.testConnection();
+      
+      console.log('Getting space info...');
+      const spaceInfo = await aiService.getSpaceInfo();
+      
+      console.log('Discovering endpoints...');
+      const discoveredEndpoint = await aiService.discoverEndpoint();
       
       console.log('Testing health check...');
       const healthCheck = await aiService.healthCheck();
       
       setResults({
+        spaceStatus,
         connection: connectionTest,
+        spaceInfo,
+        discoveredEndpoint,
         health: healthCheck,
         timestamp: new Date().toISOString()
       });
@@ -75,6 +86,28 @@ const HuggingFaceAPITest: React.FC = () => {
     }
   };
 
+  const wakeUpSpace = async () => {
+    setTesting(true);
+    
+    try {
+      const aiService = new HuggingFaceAIService();
+      const success = await aiService.wakeUpSpace();
+      
+      setResults({
+        wakeUp: { success, message: success ? 'Space woken up successfully' : 'Failed to wake up space' },
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      setResults({
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    } finally {
+      setTesting(false);
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
@@ -95,8 +128,27 @@ const HuggingFaceAPITest: React.FC = () => {
           variant="outlined" 
           onClick={testWithSampleImage}
           disabled={testing}
+          sx={{ mr: 2 }}
         >
           {testing ? <CircularProgress size={20} /> : 'Test with Sample Image'}
+        </Button>
+        
+        <Button 
+          variant="outlined" 
+          color="warning"
+          onClick={wakeUpSpace}
+          disabled={testing}
+        >
+          {testing ? <CircularProgress size={20} /> : 'Wake Up Space'}
+        </Button>
+
+        <Button 
+          variant="outlined" 
+          onClick={wakeUpSpace}
+          disabled={testing}
+          sx={{ ml: 2 }}
+        >
+          {testing ? <CircularProgress size={20} /> : 'Wake Up Space'}
         </Button>
       </Box>
 
