@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './LoginPageMobile.module.css';
 import { toast } from 'react-toastify';
-
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
+import { API_CONFIG } from '../config/api';
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -24,7 +23,7 @@ const LoginPage: React.FC = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await axios.post(BACKEND_URL + '/auth/token', formData, {
+            const response = await axios.post(API_CONFIG.BACKEND_URL + '/auth/token', formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
