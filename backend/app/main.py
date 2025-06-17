@@ -23,13 +23,35 @@ app = FastAPI(
 
 # CORS Middleware configuration
 # Parse ALLOWED_ORIGINS from environment variable (comma-separated)
-allowed_origins = [origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",")]
+allowed_origins_str = getattr(settings, 'ALLOWED_ORIGINS', 'https://seekwell.vercel.app,http://localhost:3000')
 
-# Add localhost for development if not already included
-if "http://localhost:3000" not in allowed_origins:
-    allowed_origins.append("http://localhost:3000")
-if "http://127.0.0.1:3000" not in allowed_origins:
-    allowed_origins.append("http://127.0.0.1:3000")
+# Handle different formats (comma-separated or JSON array)
+if allowed_origins_str.startswith("[") and allowed_origins_str.endswith("]"):
+    # JSON array format - parse it
+    import json
+    try:
+        allowed_origins = json.loads(allowed_origins_str)
+    except json.JSONDecodeError:
+        # Fallback to default if JSON parsing fails
+        allowed_origins = ["https://seekwell.vercel.app", "http://localhost:3000"]
+else:
+    # Comma-separated format
+    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+
+# Add essential origins if not already included
+essential_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000", 
+    "https://seekwell.vercel.app",
+    "https://seekwell-frontend.vercel.app"
+]
+
+for origin in essential_origins:
+    if origin not in allowed_origins:
+        allowed_origins.append(origin)
+
+# Remove empty strings
+allowed_origins = [origin for origin in allowed_origins if origin.strip()]
 
 print(f"🌐 CORS enabled for origins: {allowed_origins}")
 
@@ -37,8 +59,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -83,3 +106,8 @@ async def health_check():
         "database": "connected",
         "ai_service": "huggingface_api"
     }
+
+@app.options("/{path:path}")
+async def options_handler(path: str):
+    """Handle CORS preflight requests"""
+    return {"message": "OK"}
