@@ -30,13 +30,20 @@ class HuggingFaceAIService {
         await new Promise(resolve => setTimeout(resolve, 3000));
       }
       
+      // Try to extract endpoints from HTML
+      const extractedEndpoints = await this.extractEndpointsFromHTML();
+      
       // Try to discover the correct endpoint
       const discoveredEndpoint = await this.discoverEndpoint();
       
-      // Try discovered endpoint first, then fallbacks
-      const endpoints = discoveredEndpoint 
-        ? [discoveredEndpoint, '/run/predict', '/queue/join', '/api/predict']
-        : ['/run/predict', '/queue/join', '/api/predict', '/call/predict', '/predict'];
+      // Combine all possible endpoints
+      let endpoints = [];
+      if (discoveredEndpoint) endpoints.push(discoveredEndpoint);
+      if (extractedEndpoints.length > 0) endpoints.push(...extractedEndpoints);
+      endpoints.push(...['/run/predict', '/queue/join', '/api/predict', '/call/predict', '/predict']);
+      
+      // Remove duplicates
+      endpoints = Array.from(new Set(endpoints));
       
       let lastError: Error | null = null;
       
@@ -88,6 +95,13 @@ class HuggingFaceAIService {
       }
       
       // If all endpoints failed, try alternative approaches
+      console.log('🔄 Trying modern Gradio API...');
+      try {
+        return await this.tryModernGradioAPI(file, analysisData);
+      } catch (modernError) {
+        console.warn('Modern Gradio API failed:', modernError);
+      }
+      
       console.log('🔄 Trying Gradio client approach...');
       try {
         return await this.tryGradioClientApproach(file, analysisData);
@@ -744,6 +758,100 @@ class HuggingFaceAIService {
   }
 
   /**
+   * Try the newer Gradio 4.x API format which uses different endpoints
+   */
+  async tryModernGradioAPI(file: File, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
+    try {
+      console.log('🔄 Trying modern Gradio 4.x API format...');
+      
+      // Convert file to data URL
+      const dataUrl = await this.fileToDataUrl(file);
+      
+      // Try modern Gradio API format
+      const sessionHash = this.generateSessionHash();
+      
+      // First, try to join the queue (newer Gradio pattern)
+      const joinPayload = {
+        fn_index: 0,
+        session_hash: sessionHash
+      };
+      
+      let queueResponse;
+      try {
+        queueResponse = await fetch(`${this.baseUrl}/queue/join`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(joinPayload)
+        });
+      } catch (error) {
+        console.log('Queue join not available, trying direct approach...');
+      }
+      
+      // Try different modern endpoint patterns
+      const modernEndpoints = [
+        '/call/predict',
+        '/api/predict', 
+        '/gradio_api/call/predict',
+        '/app/predict',
+        '/api/v1/predict'
+      ];
+      
+      for (const endpoint of modernEndpoints) {
+        try {
+          console.log(`Trying modern endpoint: ${endpoint}`);
+          
+          // Try different payload formats for modern Gradio
+          const payloads = [
+            // Format 1: Simple data array
+            { data: [dataUrl] },
+            // Format 2: With function index
+            { data: [dataUrl], fn_index: 0 },
+            // Format 3: With session hash
+            { data: [dataUrl], fn_index: 0, session_hash: sessionHash },
+            // Format 4: File object format
+            { 
+              data: [{
+                name: file.name,
+                data: dataUrl,
+                is_file: true,
+                size: file.size
+              }],
+              fn_index: 0 
+            }
+          ];
+          
+          for (const payload of payloads) {
+            try {
+              const response = await fetch(`${this.baseUrl}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              
+              if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Modern Gradio API success:', result);
+                return this.parseGradioResponse(result, analysisData);
+              }
+            } catch (error) {
+              // Continue to next payload format
+              continue;
+            }
+          }
+        } catch (error) {
+          continue;
+        }
+      }
+      
+      throw new Error('All modern Gradio API attempts failed');
+      
+    } catch (error: any) {
+      console.error('Modern Gradio API failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Convert file to data URL
    */
   private async fileToDataUrl(file: File): Promise<string> {
@@ -843,6 +951,69 @@ class HuggingFaceAIService {
         hasGradioInterface: false,
         error: error.message
       };
+    }
+  }
+
+  /**
+   * Extract API endpoints from the Gradio interface HTML
+   */
+  async extractEndpointsFromHTML(): Promise<string[]> {
+    try {
+      console.log('🔍 Extracting endpoints from Gradio HTML...');
+      
+      const response = await fetch(this.baseUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/html',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch HTML: ${response.status}`);
+      }
+      
+      const html = await response.text();
+      console.log('📄 HTML length:', html.length);
+      
+      // Look for common Gradio patterns in the HTML
+      const endpoints = [];
+      
+      // Check for script tags that might contain endpoint definitions
+      const scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+      if (scriptMatches) {
+        for (const script of scriptMatches) {
+          // Look for API endpoint patterns
+          const apiMatches = script.match(/["']\/[a-zA-Z_\/]+["']/g);
+          if (apiMatches) {
+            for (const match of apiMatches) {
+              const endpoint = match.replace(/["']/g, '');
+              if (endpoint.includes('api') || endpoint.includes('predict') || 
+                  endpoint.includes('run') || endpoint.includes('call')) {
+                endpoints.push(endpoint);
+              }
+            }
+          }
+        }
+      }
+      
+      // Look for data attributes or gradio-specific patterns
+      const gradioMatches = html.match(/data-gradio[^=]*="[^"]*"/g) || [];
+      console.log('🎯 Found gradio attributes:', gradioMatches);
+      
+      // Check for app.js or main.js files that might contain endpoint info
+      const jsFileMatches = html.match(/src="([^"]*\.js[^"]*)"/g);
+      if (jsFileMatches) {
+        console.log('📱 Found JS files:', jsFileMatches);
+      }
+      
+      const uniqueEndpoints = Array.from(new Set(endpoints));
+      console.log('🔍 Extracted endpoints:', uniqueEndpoints);
+      
+      return uniqueEndpoints;
+      
+    } catch (error) {
+      console.error('Failed to extract endpoints from HTML:', error);
+      return [];
     }
   }
 }

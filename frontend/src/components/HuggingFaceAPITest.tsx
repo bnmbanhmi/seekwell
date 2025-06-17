@@ -108,6 +108,33 @@ const HuggingFaceAPITest: React.FC = () => {
     }
   };
 
+  const inspectSpace = async () => {
+    setTesting(true);
+    
+    try {
+      const aiService = new HuggingFaceAIService();
+      
+      console.log('Inspecting HuggingFace Space...');
+      const extractedEndpoints = await aiService.extractEndpointsFromHTML();
+      
+      setResults({
+        inspection: {
+          extractedEndpoints,
+          message: 'HTML inspection completed'
+        },
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      setResults({
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    } finally {
+      setTesting(false);
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
@@ -138,8 +165,18 @@ const HuggingFaceAPITest: React.FC = () => {
           color="warning"
           onClick={wakeUpSpace}
           disabled={testing}
+          sx={{ mr: 2 }}
         >
           {testing ? <CircularProgress size={20} /> : 'Wake Up Space'}
+        </Button>
+        
+        <Button 
+          variant="outlined" 
+          color="info"
+          onClick={inspectSpace}
+          disabled={testing}
+        >
+          {testing ? <CircularProgress size={20} /> : 'Inspect Space'}
         </Button>
 
         <Button 
@@ -149,6 +186,15 @@ const HuggingFaceAPITest: React.FC = () => {
           sx={{ ml: 2 }}
         >
           {testing ? <CircularProgress size={20} /> : 'Wake Up Space'}
+        </Button>
+
+        <Button 
+          variant="outlined" 
+          onClick={inspectSpace}
+          disabled={testing}
+          sx={{ ml: 2 }}
+        >
+          {testing ? <CircularProgress size={20} /> : 'Inspect Space'}
         </Button>
       </Box>
 
