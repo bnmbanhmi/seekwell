@@ -126,7 +126,8 @@ SeekWell is a revolutionary mobile-first web platform that combines cutting-edge
 - **Training Data**: HAM10000 + DermNet + Custom ASEAN skin type data
 - **Performance**: 89.2% overall accuracy, 91.5% melanoma detection sensitivity
 - **Speed**: Sub-2-second analysis on mobile devices
-- **Live Integration**: Deployed on HuggingFace Spaces for real-time access
+- **Live Integration**: Deployed on HuggingFace Spaces with RESTful API
+- **API Endpoint**: `https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict`
 
 ### **Detected Conditions**
 | Condition | Risk Level | Description |
@@ -214,6 +215,40 @@ SeekWell works as a Progressive Web App (PWA) - no app store download needed!
 4. **App-Like Experience**: Full-screen interface with native feel
 
 ### **🔧 For Developers & Organizations**
+
+#### **AI API Integration**
+```python
+# Python Integration
+from gradio_client import Client, handle_file
+
+client = Client("bnmbanhmi/seekwell-skin-cancer")
+result = client.predict(
+    image=handle_file('path/to/image.jpg'),
+    api_name="/predict"
+)
+print(result)
+```
+
+```javascript
+// JavaScript/TypeScript Integration
+const formData = new FormData();
+formData.append('data', JSON.stringify([{
+  path: null,
+  url: null,
+  size: file.size,
+  orig_name: file.name,
+  mime_type: file.type,
+  is_stream: false,
+  meta: {}
+}]));
+formData.append('file', imageFile);
+
+const response = await fetch(
+  'https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict',
+  { method: 'POST', body: formData }
+);
+const result = await response.json();
+```
 
 #### **Quick Setup**
 ```bash
