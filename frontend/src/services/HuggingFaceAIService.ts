@@ -8,8 +8,8 @@ import { AIAnalysisResult, SkinLesionAnalysisRequest } from '../types/AIAnalysis
  * 
  * API Documentation Reference:
  * - Space: https://huggingface.co/spaces/bnmbanhmi/seekwell-skin-cancer
- * - Endpoint: /api/predict
- * - Input: Image file (PIL format expected)
+ * - API Name: /predict  
+ * - Input: Image file with proper metadata
  * - Output: String with classification results
  * 
  * Python Equivalent:
@@ -22,11 +22,20 @@ import { AIAnalysisResult, SkinLesionAnalysisRequest } from '../types/AIAnalysis
  *     api_name="/predict"
  * )
  * ```
+ * 
+ * Note: Direct HTTP API endpoints may vary. This implementation tries multiple
+ * approaches to ensure compatibility with different Gradio configurations.
  */
 
 // HuggingFace Space API configuration
 const HUGGINGFACE_SPACE_URL = 'https://bnmbanhmi-seekwell-skin-cancer.hf.space';
-const API_ENDPOINT = '/api/predict'; // Correct endpoint based on official Gradio API documentation
+// Correct Gradio API endpoints based on config analysis
+const API_ENDPOINTS = [
+  '/gradio_api/call/predict',     // Primary: Gradio API with correct prefix
+  '/gradio_api/run/predict',      // Alternative: Run endpoint with prefix
+  '/call/predict',                // Fallback: Direct call without prefix
+  '/api/predict'                  // Legacy: Standard API endpoint
+];
 
 class HuggingFaceAIService {
   private baseUrl: string;
@@ -37,7 +46,7 @@ class HuggingFaceAIService {
 
   /**
    * Analyze skin lesion using HuggingFace Space API
-   * Using the correct /api/predict endpoint as per official Gradio API documentation
+   * Using multiple endpoint attempts for better compatibility
    */
   async analyzeImageAI(
     file: File,
@@ -46,54 +55,31 @@ class HuggingFaceAIService {
     try {
       console.log('🚀 Starting AI Analysis...');
       
-      // Prepare FormData following Gradio's API specification
-      // According to the official docs, for image inputs we need to handle the file properly
-      const formData = new FormData();
-      
-      // Gradio expects files in a specific format
-      // The predict function in app.py expects a PIL Image, so we structure accordingly
-      formData.append('data', JSON.stringify([{
-        "path": null,
-        "url": null,
-        "size": file.size,
-        "orig_name": file.name,
-        "mime_type": file.type,
-        "is_stream": false,
-        "meta": {}
-      }]));
-      
-      // Add the actual file
-      formData.append('file', file);
+      // Try different API approaches in order of preference
+      const attempts = [
+        () => this.tryGradioCallAPI(file, analysisData),
+        () => this.tryFormDataAPI(file, analysisData),
+        () => this.tryBase64API(file, analysisData)
+      ];
 
-      console.log('📤 Sending request to:', `${this.baseUrl}${API_ENDPOINT}`);
-
-      // Make request to HuggingFace Space using the correct /api/predict endpoint
-      const response = await fetch(`${this.baseUrl}${API_ENDPOINT}`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      for (let i = 0; i < attempts.length; i++) {
+        try {
+          console.log(`🔄 Attempting method ${i + 1}...`);
+          const result = await attempts[i]();
+          console.log('✅ Analysis successful!');
+          return result;
+        } catch (error) {
+          console.warn(`❌ Method ${i + 1} failed:`, error);
+          if (i === attempts.length - 1) {
+            throw error;
+          }
+        }
       }
-
-      const result = await response.json();
-      console.log('✅ AI Response:', result);
       
-      // Parse the response according to Gradio's response format
-      return this.parseAPIResponse(result, analysisData);
+      throw new Error('All API methods failed');
       
     } catch (error: any) {
       console.error('❌ AI Analysis Error:', error);
-      
-      // If it's a network error, try alternative approach
-      if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
-        console.log('🔄 Trying alternative API approach...');
-        return await this.analyzeImageFallback(file, analysisData);
-      }
-      
       throw new Error(
         error.message || 'Failed to analyze image with AI service'
       );
@@ -101,47 +87,173 @@ class HuggingFaceAIService {
   }
 
   /**
-   * Fallback method using direct base64 approach
+   * Try Gradio call API (most likely to work)
    */
-  private async analyzeImageFallback(
+  private async tryGradioCallAPI(
     file: File,
     analysisData: SkinLesionAnalysisRequest
   ): Promise<AIAnalysisResult> {
-    try {
-      // Convert file to base64
-      const base64 = await this.fileToBase64(file);
-      
-      // Try with JSON payload as alternative
-      const payload = {
-        data: [{
-          path: null,
-          url: `data:${file.type};base64,${base64}`,
-          size: file.size,
-          orig_name: file.name,
-          mime_type: file.type,
-          is_stream: false,
-          meta: {}
-        }]
-      };
+    const endpoint = '/gradio_api/call/predict';  // Correct Gradio API endpoint
+    console.log('📤 Trying Gradio call API:', `${this.baseUrl}${endpoint}`);
+    
+    // Convert file to base64 for Gradio format
+    const base64 = await this.fileToBase64(file);
+    
+    const payload = {
+      data: [{
+        path: null,
+        url: `data:${file.type};base64,${base64}`,
+        size: file.size,
+        orig_name: file.name,
+        mime_type: file.type,
+        is_stream: false,
+        meta: { _type: "gradio.FileData" }
+      }],
+      fn_index: 2,  // Based on config, predict function has id 2
+      session_hash: this.generateSessionHash()
+    };
 
-      const response = await fetch(`${this.baseUrl}${API_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
 
-      if (!response.ok) {
-        throw new Error(`Fallback API request failed: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return this.parseAPIResponse(result, analysisData);
-      
-    } catch (error: any) {
-      throw new Error(`Fallback method failed: ${error.message}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gradio call API failed: ${response.status} - ${errorText}`);
     }
+
+    const result = await response.json();
+    
+    // Handle Gradio's potential event_id response (queuing enabled)
+    if (result.event_id) {
+      return await this.pollForResults(result.event_id, analysisData);
+    }
+    
+    return this.parseAPIResponse(result, analysisData);
+  }
+
+  /**
+   * Try FormData API approach
+   */
+  private async tryFormDataAPI(
+    file: File,
+    analysisData: SkinLesionAnalysisRequest
+  ): Promise<AIAnalysisResult> {
+    const endpoint = '/gradio_api/run/predict';  // Alternative Gradio endpoint
+    console.log('📤 Trying FormData API:', `${this.baseUrl}${endpoint}`);
+    
+    const formData = new FormData();
+    formData.append('data', JSON.stringify([{
+      path: null,
+      url: null,
+      size: file.size,
+      orig_name: file.name,
+      mime_type: file.type,
+      is_stream: false,
+      meta: { _type: "gradio.FileData" }
+    }]));
+    formData.append('file', file);
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`FormData API failed: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return this.parseAPIResponse(result, analysisData);
+  }
+
+  /**
+   * Try direct base64 JSON API
+   */
+  private async tryBase64API(
+    file: File,
+    analysisData: SkinLesionAnalysisRequest
+  ): Promise<AIAnalysisResult> {
+    const endpoint = '/call/predict';  // Legacy endpoint as fallback
+    console.log('📤 Trying base64 JSON API:', `${this.baseUrl}${endpoint}`);
+    
+    const base64 = await this.fileToBase64(file);
+    
+    const payload = {
+      image: {
+        path: null,
+        url: `data:${file.type};base64,${base64}`,
+        size: file.size,
+        orig_name: file.name,
+        mime_type: file.type,
+        is_stream: false,
+        meta: { _type: "gradio.FileData" }
+      }
+    };
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Base64 API failed: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return this.parseAPIResponse(result, analysisData);
+  }
+
+  /**
+   * Generate a session hash for Gradio API
+   */
+  private generateSessionHash(): string {
+    return Math.random().toString(36).substring(2, 15) + 
+           Math.random().toString(36).substring(2, 15);
+  }
+
+  /**
+   * Poll for results when Gradio returns an event_id (queued processing)
+   */
+  private async pollForResults(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
+    const maxAttempts = 30; // Poll for up to 30 seconds
+    const pollInterval = 1000; // 1 second between polls
+    
+    console.log('📋 Polling for results, event_id:', eventId);
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        // Use correct Gradio API prefix for polling
+        const response = await fetch(`${this.baseUrl}/gradio_api/queue/data?session_hash=${this.generateSessionHash()}`);
+        
+        if (response.ok) {
+          const result = await response.json();
+          
+          // Check if processing is complete
+          if (result.data) {
+            console.log('✅ Polling successful, got results');
+            return this.parseAPIResponse(result, analysisData);
+          }
+        }
+        
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        
+      } catch (error) {
+        console.warn(`Polling attempt ${attempt + 1} failed:`, error);
+      }
+    }
+    
+    throw new Error('Analysis timed out - please try again');
   }
 
   /**
@@ -483,7 +595,8 @@ class HuggingFaceAIService {
     return {
       space_id: 'bnmbanhmi/seekwell-skin-cancer',
       url: this.baseUrl,
-      api_endpoint: API_ENDPOINT
+      api_endpoints: API_ENDPOINTS,
+      primary_endpoint: API_ENDPOINTS[0]
     };
   }
 
@@ -492,10 +605,10 @@ class HuggingFaceAIService {
    */
   async discoverEndpoint(): Promise<any> {
     return {
-      discovered_endpoint: API_ENDPOINT,
+      discovered_endpoints: API_ENDPOINTS,
       base_url: this.baseUrl,
-      full_url: `${this.baseUrl}${API_ENDPOINT}`,
-      api_documentation: 'Uses official Gradio API format: /api/predict'
+      primary_endpoint: `${this.baseUrl}${API_ENDPOINTS[0]}`,
+      api_documentation: 'Uses official Gradio API format with multiple endpoint fallbacks'
     };
   }
 
@@ -516,8 +629,8 @@ class HuggingFaceAIService {
    */
   async extractEndpointsFromHTML(): Promise<any> {
     return {
-      endpoints: [API_ENDPOINT],
-      method: 'Using official Gradio API documentation endpoint'
+      endpoints: API_ENDPOINTS,
+      method: 'Using official Gradio API documentation with multiple endpoint fallbacks'
     };
   }
 
