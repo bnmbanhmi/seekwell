@@ -1,7 +1,18 @@
 import { AIAnalysisResult, SkinLesionAnalysisRequest } from '../types/AIAnalysisTypes';
 
 /**
- * HuggingFace AI Service for Skin Cancer Detection
+ * HuggingFace AI  private async joinQueue(imageData: any): Promise<any> {
+    console.log('🔄 Joining processing queue...');
+    
+    const sessionHash = this.generateSessionHash();
+    
+    const queueData = {
+      data: [imageData], // Pass ImageData object, not string path
+      event_data: null,
+      fn_index: 2, // Based on config analysis
+      trigger_id: 11, // Submit button trigger ID from config
+      session_hash: sessionHash
+    }; Skin Cancer Detection
  * 
  * This service integrates with the official HuggingFace Spaces API
  * for the bnmbanhmi/seekwell-skin-cancer model.
@@ -35,7 +46,7 @@ class HuggingFaceAIService {
 
   /**
    * Analyze skin lesion using HuggingFace Space API
-   * Using the correct Gradio queue-based SSE approach
+   * FIXED: Handles ImageData validation and SSE parsing correctly
    */
   async analyzeImageAI(
     file: File,
@@ -44,16 +55,27 @@ class HuggingFaceAIService {
     try {
       console.log('🚀 Starting AI Analysis with Gradio Queue System...');
       
-      // Step 1: Upload the file first
-      const uploadedFile = await this.uploadFile(file);
-      console.log('📤 File uploaded:', uploadedFile);
+      // Step 1: Upload the file first 
+      const uploadedFiles = await this.uploadFile(file);
+      console.log('📤 File uploaded:', uploadedFiles[0]);
       
-      // Step 2: Join the queue for processing
-      const queueData = await this.joinQueue(uploadedFile);
+      // Step 2: Create proper ImageData object to fix validation error
+      const imageData = {
+        path: uploadedFiles[0],
+        url: null,
+        size: file.size,
+        orig_name: file.name,
+        mime_type: file.type,
+        is_stream: false,
+        meta: { _type: "gradio.FileData" }
+      };
+      
+      // Step 3: Join the queue for processing with proper ImageData
+      const queueData = await this.joinQueue(imageData);
       console.log('📋 Joined queue:', queueData);
       
-      // Step 3: Wait for results via SSE
-      const result = await this.waitForQueueResults(queueData.event_id);
+      // Step 4: Wait for results via SSE with same session
+      const result = await this.waitForQueueResults(queueData.event_id, queueData.session_hash);
       console.log('✅ Got results from queue');
       
       return this.parseAPIResponse(result, analysisData);
@@ -69,7 +91,7 @@ class HuggingFaceAIService {
   /**
    * Upload file to Gradio space
    */
-  private async uploadFile(file: File): Promise<any> {
+  private async uploadFile(file: File): Promise<string[]> {
     console.log('� Uploading file to Gradio space...');
     
     const formData = new FormData();
@@ -91,7 +113,7 @@ class HuggingFaceAIService {
       throw new Error('Invalid upload response format');
     }
 
-    return result[0]; // Return the first uploaded file info
+    return result; // Return array of uploaded file paths
   }
 
   /**
@@ -136,13 +158,12 @@ class HuggingFaceAIService {
   }
 
   /**
-   * Wait for results from the queue using SSE
+   * Wait for results from the queue using SSE - FIXED for session management and SSE parsing
    */
-  private async waitForQueueResults(eventId: string): Promise<any> {
+  private async waitForQueueResults(eventId: string, sessionHash: string): Promise<any> {
     console.log('⏳ Waiting for queue results...');
     
     return new Promise((resolve, reject) => {
-      const sessionHash = this.generateSessionHash();
       const sseUrl = `${this.baseUrl}${QUEUE_DATA_ENDPOINT}?session_hash=${sessionHash}`;
       
       const eventSource = new EventSource(sseUrl);
@@ -153,7 +174,15 @@ class HuggingFaceAIService {
 
       eventSource.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
+          console.log('📨 SSE message received:', event.data);
+          
+          // Fix SSE parsing - handle "data: " prefix causing JSON parse errors
+          let eventData = event.data;
+          if (eventData.startsWith('data: ')) {
+            eventData = eventData.substring(6);
+          }
+          
+          const data = JSON.parse(eventData);
           
           if (data.msg === 'process_completed') {
             clearTimeout(timeout);
@@ -163,16 +192,26 @@ class HuggingFaceAIService {
             console.log('🔄 AI processing started...');
           } else if (data.msg === 'estimation') {
             console.log('⏱️ Estimated wait time:', data.rank, 'in queue');
+          } else if (data.msg === 'process_generating') {
+            console.log('🧠 AI processing in progress...');
+          } else {
+            console.log('📋 Queue status:', data.msg);
           }
         } catch (parseError) {
-          console.warn('Failed to parse SSE message:', event.data);
+          console.warn('Failed to parse SSE message:', event.data, parseError);
+          // Don't reject, keep waiting for valid messages
         }
       };
 
       eventSource.onerror = (error) => {
+        console.error('SSE connection error:', error);
         clearTimeout(timeout);
         eventSource.close();
-        reject(new Error('SSE connection error: ' + error));
+        reject(new Error('SSE connection failed - check network and CORS'));
+      };
+
+      eventSource.onopen = () => {
+        console.log('✅ SSE connection established');
       };
     });
   }
