@@ -8,7 +8,7 @@ This is the HuggingFace Space for SeekWell's AI-powered skin cancer detection sy
 - **Architecture**: Vision Transformer (ViT)
 - **Classes**: 6 skin lesion types
 - **Accuracy**: 69%
-- **Training Dataset**: ISIC skin cancer dataset
+- **Training Dataset**: PAD-UFES-20 skin cancer dataset
 
 ## API Documentation
 

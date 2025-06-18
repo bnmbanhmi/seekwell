@@ -102,7 +102,7 @@ MODEL_METADATA = {
     "accuracy": 0.69,
     "training_date": "2024",
     "description": "Fine-tuned Vision Transformer for skin cancer classification",
-    "dataset": "ISIC skin cancer dataset",
+    "dataset": "PAD-UFES-20 skin cancer dataset",
     "architecture": "Vision Transformer (ViT)",
     "total_classes": 6
 }
