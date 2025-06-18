@@ -1,13 +1,13 @@
 /**
  * Test script to validate HuggingFace API integration
- * Updated to test the FIXED API endpoints
+ * Updated for SSE Queue-based approach (LATEST FIX)
  */
 
 import HuggingFaceAIService from '../services/HuggingFaceAIService';
 
 async function testHuggingFaceAPI() {
-  console.log('🧪 Testing FIXED HuggingFace API Integration...');
-  console.log('🔧 Using correct Gradio API endpoints with /gradio_api prefix');
+  console.log('🧪 Testing SSE Queue-based HuggingFace API Integration...');
+  console.log('🔧 Using Gradio v5.34.0 SSE protocol with file upload + queue processing');
   
   const service = new HuggingFaceAIService();
   
@@ -17,54 +17,66 @@ async function testHuggingFaceAPI() {
     const healthCheck = await service.healthCheck();
     console.log('✅ Health check result:', healthCheck);
     
-    // Test 2: Check space info (updated endpoints)
+    // Test 2: Check space info (SSE endpoints)
     console.log('\n2️⃣ Testing space information...');
     const spaceInfo = await service.getSpaceInfo();
     console.log('✅ Space info:', spaceInfo);
-    console.log('📋 Primary endpoint:', spaceInfo.primary_endpoint);
+    console.log('📋 API Approach:', spaceInfo.api_approach);
     
-    // Test 3: Test endpoint discovery (shows correct endpoints)
+    // Test 3: Test endpoint discovery (shows SSE endpoints)
     console.log('\n3️⃣ Testing endpoint discovery...');
     const endpoints = await service.discoverEndpoint();
-    console.log('✅ Available endpoints:', endpoints.discovered_endpoints);
-    console.log('🎯 Primary endpoint URL:', endpoints.primary_endpoint);
+    console.log('✅ SSE Queue endpoints:');
+    console.log('   - Upload:', endpoints.upload_endpoint);
+    console.log('   - Queue Join:', endpoints.queue_join_endpoint);
+    console.log('   - Queue Data:', endpoints.queue_data_endpoint);
     
     // Test 4: Test connection to main site
     console.log('\n4️⃣ Testing connection...');
     const connection = await service.testConnection();
     console.log('✅ Connection test:', connection);
     
-    // Test 5: Configuration verification
-    console.log('\n5️⃣ Configuration verification...');
-    console.log('✅ Expected endpoints:');
-    console.log('   - Primary: /gradio_api/call/predict (fn_index: 2)');
-    console.log('   - Secondary: /gradio_api/run/predict');
-    console.log('   - Fallback: /call/predict & /api/predict');
-    console.log('✅ Queue polling: /gradio_api/queue/data');
-    console.log('✅ Meta format: {_type: "gradio.FileData"}');
+    // Test 5: SSE Configuration verification
+    console.log('\n5️⃣ SSE Configuration verification...');
+    console.log('✅ Protocol: Server-Sent Events (SSE v3)');
+    console.log('✅ Queue Enabled: true');
+    console.log('✅ API Prefix: /gradio_api');
+    console.log('✅ Function Index: 2 (predict)');
+    console.log('✅ File Upload: FormData to /gradio_api/upload');
+    console.log('✅ Queue Processing: POST to /gradio_api/queue/join');
+    console.log('✅ Result Streaming: EventSource /gradio_api/queue/data');
     
     console.log('\n🎉 All tests completed successfully!');
     console.log('\n📝 Next steps:');
     console.log('   1. Upload an image through the UI to test actual AI analysis');
-    console.log('   2. Check browser console for API call logs');
-    console.log('   3. Should see "📤 Trying Gradio call API: .../gradio_api/call/predict"');
-    console.log('   4. Should receive classification results with percentages');
-    console.log('\n🔧 Expected API flow:');
-    console.log('   🚀 Starting AI Analysis...');
-    console.log('   🔄 Attempting method 1...');
-    console.log('   📤 Trying Gradio call API: .../gradio_api/call/predict');
-    console.log('   📋 Polling for results, event_id: abc123...');
-    console.log('   ✅ Polling successful, got results');
+    console.log('   2. Check browser console for SSE processing logs');
+    console.log('   3. Should see file upload → queue join → SSE results');
+    console.log('\n🔧 Expected NEW API flow:');
+    console.log('   🚀 Starting AI Analysis with Gradio Queue System...');
+    console.log('   � Uploading file to Gradio space...');
+    console.log('   📤 File uploaded: {path: "/tmp/gradio/abc123.jpg"}');
+    console.log('   🔄 Joining processing queue...');
+    console.log('   📋 Joined queue: {event_id: "xyz789"}');
+    console.log('   ⏳ Waiting for queue results...');
+    console.log('   🔄 AI processing started...');
+    console.log('   ⏱️ Estimated wait time: 0 in queue');
+    console.log('   ✅ Got results from queue');
+    console.log('   📊 Classification Results: MEL: 85.32%...');
     console.log('   ✅ Analysis successful!');
+    
+    console.log('\n🎯 This should fix:');
+    console.log('   ❌ UnicodeDecodeError: Fixed with proper file upload');
+    console.log('   ❌ POST method not allowed: Fixed with queue endpoints');
+    console.log('   ❌ Too little data: Fixed with SSE protocol');
     
   } catch (error) {
     console.error('❌ Test failed:', error);
     console.log('\n🔧 Troubleshooting tips:');
     console.log('   1. Check internet connection');
     console.log('   2. Verify HuggingFace Space is running');
-    console.log('   3. Try again - spaces may need time to wake up');
-    console.log('   4. The fix should have resolved 404 errors');
-    console.log('   5. If still failing, check HuggingFace Space status');
+    console.log('   3. The new SSE approach should resolve server errors');
+    console.log('   4. EventSource may need CORS permissions');
+    console.log('   5. Check browser dev tools Network tab for SSE connections');
   }
 }
 

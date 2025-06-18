@@ -6,36 +6,25 @@ import { AIAnalysisResult, SkinLesionAnalysisRequest } from '../types/AIAnalysis
  * This service integrates with the official HuggingFace Spaces API
  * for the bnmbanhmi/seekwell-skin-cancer model.
  * 
- * API Documentation Reference:
- * - Space: https://huggingface.co/spaces/bnmbanhmi/seekwell-skin-cancer
- * - API Name: /predict  
- * - Input: Image file with proper metadata
- * - Output: String with classification results
+ * CRITICAL: Based on error analysis, this Gradio space uses SSE (Server-Sent Events)
+ * and requires a specific queue-based approach, not direct HTTP calls.
  * 
- * Python Equivalent:
- * ```python
- * from gradio_client import Client, handle_file
+ * The space configuration shows:
+ * - "protocol":"sse_v3" - Uses Server-Sent Events
+ * - "enable_queue":true - Requires queue-based processing
+ * - "api_prefix":"/gradio_api" - Correct API prefix
  * 
- * client = Client("bnmbanhmi/seekwell-skin-cancer")
- * result = client.predict(
- *     image=handle_file('path/to/image.jpg'),
- *     api_name="/predict"
- * )
- * ```
- * 
- * Note: Direct HTTP API endpoints may vary. This implementation tries multiple
- * approaches to ensure compatibility with different Gradio configurations.
+ * Updated approach: Use Gradio's queue system with proper file upload handling
  */
 
 // HuggingFace Space API configuration
 const HUGGINGFACE_SPACE_URL = 'https://bnmbanhmi-seekwell-skin-cancer.hf.space';
-// Correct Gradio API endpoints based on config analysis
-const API_ENDPOINTS = [
-  '/gradio_api/call/predict',     // Primary: Gradio API with correct prefix
-  '/gradio_api/run/predict',      // Alternative: Run endpoint with prefix
-  '/call/predict',                // Fallback: Direct call without prefix
-  '/api/predict'                  // Legacy: Standard API endpoint
-];
+
+// Correct Gradio queue-based endpoints (based on SSE protocol)
+const GRADIO_API_PREFIX = '/gradio_api';
+const QUEUE_JOIN_ENDPOINT = `${GRADIO_API_PREFIX}/queue/join`;
+const QUEUE_DATA_ENDPOINT = `${GRADIO_API_PREFIX}/queue/data`;
+const UPLOAD_ENDPOINT = `${GRADIO_API_PREFIX}/upload`;
 
 class HuggingFaceAIService {
   private baseUrl: string;
@@ -46,37 +35,28 @@ class HuggingFaceAIService {
 
   /**
    * Analyze skin lesion using HuggingFace Space API
-   * Using multiple endpoint attempts for better compatibility
+   * Using the correct Gradio queue-based SSE approach
    */
   async analyzeImageAI(
     file: File,
     analysisData: SkinLesionAnalysisRequest
   ): Promise<AIAnalysisResult> {
     try {
-      console.log('🚀 Starting AI Analysis...');
+      console.log('🚀 Starting AI Analysis with Gradio Queue System...');
       
-      // Try different API approaches in order of preference
-      const attempts = [
-        () => this.tryGradioCallAPI(file, analysisData),
-        () => this.tryFormDataAPI(file, analysisData),
-        () => this.tryBase64API(file, analysisData)
-      ];
-
-      for (let i = 0; i < attempts.length; i++) {
-        try {
-          console.log(`🔄 Attempting method ${i + 1}...`);
-          const result = await attempts[i]();
-          console.log('✅ Analysis successful!');
-          return result;
-        } catch (error) {
-          console.warn(`❌ Method ${i + 1} failed:`, error);
-          if (i === attempts.length - 1) {
-            throw error;
-          }
-        }
-      }
+      // Step 1: Upload the file first
+      const uploadedFile = await this.uploadFile(file);
+      console.log('📤 File uploaded:', uploadedFile);
       
-      throw new Error('All API methods failed');
+      // Step 2: Join the queue for processing
+      const queueData = await this.joinQueue(uploadedFile);
+      console.log('📋 Joined queue:', queueData);
+      
+      // Step 3: Wait for results via SSE
+      const result = await this.waitForQueueResults(queueData.event_id);
+      console.log('✅ Got results from queue');
+      
+      return this.parseAPIResponse(result, analysisData);
       
     } catch (error: any) {
       console.error('❌ AI Analysis Error:', error);
@@ -87,130 +67,114 @@ class HuggingFaceAIService {
   }
 
   /**
-   * Try Gradio call API (most likely to work)
+   * Upload file to Gradio space
    */
-  private async tryGradioCallAPI(
-    file: File,
-    analysisData: SkinLesionAnalysisRequest
-  ): Promise<AIAnalysisResult> {
-    const endpoint = '/gradio_api/call/predict';  // Correct Gradio API endpoint
-    console.log('📤 Trying Gradio call API:', `${this.baseUrl}${endpoint}`);
-    
-    // Convert file to base64 for Gradio format
-    const base64 = await this.fileToBase64(file);
-    
-    const payload = {
-      data: [{
-        path: null,
-        url: `data:${file.type};base64,${base64}`,
-        size: file.size,
-        orig_name: file.name,
-        mime_type: file.type,
-        is_stream: false,
-        meta: { _type: "gradio.FileData" }
-      }],
-      fn_index: 2,  // Based on config, predict function has id 2
-      session_hash: this.generateSessionHash()
-    };
-
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Gradio call API failed: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    
-    // Handle Gradio's potential event_id response (queuing enabled)
-    if (result.event_id) {
-      return await this.pollForResults(result.event_id, analysisData);
-    }
-    
-    return this.parseAPIResponse(result, analysisData);
-  }
-
-  /**
-   * Try FormData API approach
-   */
-  private async tryFormDataAPI(
-    file: File,
-    analysisData: SkinLesionAnalysisRequest
-  ): Promise<AIAnalysisResult> {
-    const endpoint = '/gradio_api/run/predict';  // Alternative Gradio endpoint
-    console.log('📤 Trying FormData API:', `${this.baseUrl}${endpoint}`);
+  private async uploadFile(file: File): Promise<any> {
+    console.log('� Uploading file to Gradio space...');
     
     const formData = new FormData();
-    formData.append('data', JSON.stringify([{
-      path: null,
-      url: null,
-      size: file.size,
-      orig_name: file.name,
-      mime_type: file.type,
-      is_stream: false,
-      meta: { _type: "gradio.FileData" }
-    }]));
-    formData.append('file', file);
+    formData.append('files', file);
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${UPLOAD_ENDPOINT}`, {
       method: 'POST',
       body: formData
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`FormData API failed: ${response.status} - ${errorText}`);
+      throw new Error(`File upload failed: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
-    return this.parseAPIResponse(result, analysisData);
+    
+    if (!result || !Array.isArray(result) || result.length === 0) {
+      throw new Error('Invalid upload response format');
+    }
+
+    return result[0]; // Return the first uploaded file info
   }
 
   /**
-   * Try direct base64 JSON API
+   * Join the processing queue
    */
-  private async tryBase64API(
-    file: File,
-    analysisData: SkinLesionAnalysisRequest
-  ): Promise<AIAnalysisResult> {
-    const endpoint = '/call/predict';  // Legacy endpoint as fallback
-    console.log('📤 Trying base64 JSON API:', `${this.baseUrl}${endpoint}`);
+  private async joinQueue(uploadedFile: any): Promise<any> {
+    console.log('� Joining processing queue...');
     
-    const base64 = await this.fileToBase64(file);
+    const sessionHash = this.generateSessionHash();
     
-    const payload = {
-      image: {
-        path: null,
-        url: `data:${file.type};base64,${base64}`,
-        size: file.size,
-        orig_name: file.name,
-        mime_type: file.type,
-        is_stream: false,
-        meta: { _type: "gradio.FileData" }
-      }
+    const queueData = {
+      data: [uploadedFile],
+      event_data: null,
+      fn_index: 2, // Based on config analysis
+      trigger_id: null,
+      session_hash: sessionHash
     };
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${QUEUE_JOIN_ENDPOINT}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(queueData)
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Base64 API failed: ${response.status} - ${errorText}`);
+      throw new Error(`Queue join failed: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
-    return this.parseAPIResponse(result, analysisData);
+    
+    if (!result.event_id) {
+      throw new Error('No event_id received from queue join');
+    }
+
+    return {
+      event_id: result.event_id,
+      session_hash: sessionHash
+    };
+  }
+
+  /**
+   * Wait for results from the queue using SSE
+   */
+  private async waitForQueueResults(eventId: string): Promise<any> {
+    console.log('⏳ Waiting for queue results...');
+    
+    return new Promise((resolve, reject) => {
+      const sessionHash = this.generateSessionHash();
+      const sseUrl = `${this.baseUrl}${QUEUE_DATA_ENDPOINT}?session_hash=${sessionHash}`;
+      
+      const eventSource = new EventSource(sseUrl);
+      const timeout = setTimeout(() => {
+        eventSource.close();
+        reject(new Error('Timeout waiting for AI analysis results'));
+      }, 60000); // 60 second timeout
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.msg === 'process_completed') {
+            clearTimeout(timeout);
+            eventSource.close();
+            resolve(data.output);
+          } else if (data.msg === 'process_starts') {
+            console.log('🔄 AI processing started...');
+          } else if (data.msg === 'estimation') {
+            console.log('⏱️ Estimated wait time:', data.rank, 'in queue');
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse SSE message:', event.data);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        clearTimeout(timeout);
+        eventSource.close();
+        reject(new Error('SSE connection error: ' + error));
+      };
+    });
   }
 
   /**
@@ -219,58 +183,6 @@ class HuggingFaceAIService {
   private generateSessionHash(): string {
     return Math.random().toString(36).substring(2, 15) + 
            Math.random().toString(36).substring(2, 15);
-  }
-
-  /**
-   * Poll for results when Gradio returns an event_id (queued processing)
-   */
-  private async pollForResults(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
-    const maxAttempts = 30; // Poll for up to 30 seconds
-    const pollInterval = 1000; // 1 second between polls
-    
-    console.log('📋 Polling for results, event_id:', eventId);
-    
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        // Use correct Gradio API prefix for polling
-        const response = await fetch(`${this.baseUrl}/gradio_api/queue/data?session_hash=${this.generateSessionHash()}`);
-        
-        if (response.ok) {
-          const result = await response.json();
-          
-          // Check if processing is complete
-          if (result.data) {
-            console.log('✅ Polling successful, got results');
-            return this.parseAPIResponse(result, analysisData);
-          }
-        }
-        
-        // Wait before next poll
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-        
-      } catch (error) {
-        console.warn(`Polling attempt ${attempt + 1} failed:`, error);
-      }
-    }
-    
-    throw new Error('Analysis timed out - please try again');
-  }
-
-  /**
-   * Convert file to base64 string
-   */
-  private fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-        const base64 = result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = error => reject(error);
-    });
   }
 
   /**
@@ -595,8 +507,10 @@ class HuggingFaceAIService {
     return {
       space_id: 'bnmbanhmi/seekwell-skin-cancer',
       url: this.baseUrl,
-      api_endpoints: API_ENDPOINTS,
-      primary_endpoint: API_ENDPOINTS[0]
+      api_approach: 'SSE Queue-based (Gradio v5.34.0)',
+      upload_endpoint: `${this.baseUrl}${UPLOAD_ENDPOINT}`,
+      queue_join_endpoint: `${this.baseUrl}${QUEUE_JOIN_ENDPOINT}`,
+      queue_data_endpoint: `${this.baseUrl}${QUEUE_DATA_ENDPOINT}`
     };
   }
 
@@ -605,10 +519,12 @@ class HuggingFaceAIService {
    */
   async discoverEndpoint(): Promise<any> {
     return {
-      discovered_endpoints: API_ENDPOINTS,
+      approach: 'SSE Queue-based Processing',
       base_url: this.baseUrl,
-      primary_endpoint: `${this.baseUrl}${API_ENDPOINTS[0]}`,
-      api_documentation: 'Uses official Gradio API format with multiple endpoint fallbacks'
+      upload_endpoint: `${this.baseUrl}${UPLOAD_ENDPOINT}`,
+      queue_join_endpoint: `${this.baseUrl}${QUEUE_JOIN_ENDPOINT}`,
+      queue_data_endpoint: `${this.baseUrl}${QUEUE_DATA_ENDPOINT}`,
+      api_documentation: 'Uses Gradio SSE protocol with file upload + queue processing'
     };
   }
 
@@ -629,8 +545,8 @@ class HuggingFaceAIService {
    */
   async extractEndpointsFromHTML(): Promise<any> {
     return {
-      endpoints: API_ENDPOINTS,
-      method: 'Using official Gradio API documentation with multiple endpoint fallbacks'
+      endpoints: [UPLOAD_ENDPOINT, QUEUE_JOIN_ENDPOINT, QUEUE_DATA_ENDPOINT],
+      method: 'Using Gradio SSE queue-based approach with file upload'
     };
   }
 
