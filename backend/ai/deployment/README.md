@@ -12,7 +12,14 @@ This is the HuggingFace Space for SeekWell's AI-powered skin cancer detection sy
 
 ## API Documentation
 
-### Using Python Gradio Client
+### Official HuggingFace Gradio API
+
+According to the official HuggingFace API documentation:
+
+**API Name**: `/predict`  
+**Space URL**: `bnmbanhmi/seekwell-skin-cancer`
+
+### Using Python Gradio Client (Recommended)
 
 1. Install the python client:
 ```bash
@@ -31,12 +38,28 @@ result = client.predict(
 print(result)
 ```
 
-### API Endpoint Details
+### API Input/Output Specification
 
-- **API Name**: `/predict`
-- **Input**: Image file (dict format with path/url, size, mime_type, etc.)
-- **Output**: String containing classification results
-- **Method**: POST to `https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict`
+**Input Parameter:**
+- `image` - dict with the following structure:
+  - `path`: str | None (Path to a local file)
+  - `url`: str | None (Publicly available url or base64 encoded image)  
+  - `size`: int | None (Size of image in bytes)
+  - `orig_name`: str | None (Original filename)
+  - `mime_type`: str | None (mime type of image)
+  - `is_stream`: bool (Can always be set to False)
+  - `meta`: dict(str, Any)
+
+**Output:**
+- `str` - Classification results as plain text
+
+### HTTP API Access
+
+For direct HTTP access (alternative to gradio_client):
+```javascript
+// Note: Exact endpoint may vary - use gradio_client for production
+// Check HuggingFace Space interface for current HTTP endpoints
+```
 
 ## Supported Classes
 
@@ -77,34 +100,18 @@ print(result)
 - **Framework**: PyTorch + Transformers
 - **Processor**: Google ViT Base Patch16-224
 - **Interface**: Gradio
-- **API Format**: RESTful HTTP API with JSON payloads
+- **API Access**: Via gradio_client or HuggingFace Inference API
 - **Response Format**: Plain text string with classification results
 - **Developer**: SeekWell Team
 
-## API Integration Examples
+## Important Notes
 
-### JavaScript/TypeScript Frontend
-```javascript
-// Using fetch API
-const formData = new FormData();
-formData.append('data', JSON.stringify([imageFile]));
+⚠️ **API Access**: The `/api/predict` endpoint may not be available on all Gradio spaces. Use the `gradio_client` library for guaranteed compatibility.
 
-const response = await fetch(
-  'https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict',
-  {
-    method: 'POST',
-    body: formData
-  }
-);
-const result = await response.json();
-```
-
-### cURL Example
-```bash
-curl -X POST \
-  -F "data=@image.jpg" \
-  https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict
-```
+For web applications, consider:
+1. Using gradio_client on the backend
+2. Using HuggingFace Inference API
+3. Checking the actual available endpoints via the HuggingFace Space interface
 
 ## Integration
 

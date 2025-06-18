@@ -100,21 +100,84 @@ Patient N:M Doctors (through appointments)
 ## 🤖 AI Model Integration
 
 ### **HuggingFace Space Integration**
+
+**Official API Documentation Format:**
+```python
+# Python - Recommended approach
+from gradio_client import Client, handle_file
+
+client = Client("bnmbanhmi/seekwell-skin-cancer")
+result = client.predict(
+    image=handle_file('path/to/image.jpg'),
+    api_name="/predict"
+)
+print(result)
+```
+
+**JavaScript/TypeScript Implementation:**
 ```typescript
-// Direct API Integration
+// Multiple endpoint fallback strategy
 const HUGGINGFACE_SPACE_URL = 'https://bnmbanhmi-seekwell-skin-cancer.hf.space';
-const API_ENDPOINT = '/api/predict';
+const API_ENDPOINTS = [
+  '/call/predict',     // Gradio call endpoint (primary)
+  '/api/predict',      // Standard API endpoint  
+  '/run/predict',      // Alternative run endpoint
+  '/predict'           // Direct predict endpoint
+];
+
+// Robust implementation with fallbacks
+class HuggingFaceAIService {
+  async analyzeImageAI(file, analysisData) {
+    const attempts = [
+      () => this.tryGradioCallAPI(file, analysisData),
+      () => this.tryFormDataAPI(file, analysisData), 
+      () => this.tryBase64API(file, analysisData)
+    ];
+    
+    for (const attempt of attempts) {
+      try {
+        return await attempt();
+      } catch (error) {
+        console.warn('API attempt failed:', error);
+      }
+    }
+    throw new Error('All API methods failed');
+  }
+}
+```
+
+**API Input/Output Specification:**
+```typescript
+// Input format (following official Gradio API documentation)
+interface GradioImageInput {
+  path: string | null;           // Path to local file
+  url: string | null;            // Public URL or base64 encoded image  
+  size: number | null;           // Size in bytes
+  orig_name: string | null;      // Original filename
+  mime_type: string | null;      // MIME type (e.g., 'image/jpeg')
+  is_stream: boolean;            // Always false for static images
+  meta: object;                  // Additional metadata
+}
+
+// Output format  
+type GradioOutput = string;      // Plain text classification results
 
 // Supported Classes
 const SKIN_LESION_CLASSES = {
   'ACK': 'Actinic keratoses',
-  'BCC': 'Basal cell carcinoma',
+  'BCC': 'Basal cell carcinoma', 
   'MEL': 'Melanoma',
   'NEV': 'Nevus/Mole',
   'SCC': 'Squamous cell carcinoma',
   'SEK': 'Seborrheic keratosis'
 };
 ```
+
+**Common API Issues & Solutions:**
+- ❌ **404 Error on `/api/predict`**: Try `/call/predict` endpoint instead
+- ❌ **CORS Issues**: Use gradio_client library or proxy through backend
+- ❌ **Timeout Errors**: Implement polling for queued Gradio responses
+- ✅ **Best Practice**: Use multiple endpoint fallbacks for reliability
 
 ### **Risk Assessment Algorithm**
 ```python
@@ -1375,7 +1438,3 @@ Daily: Database backups
 Weekly: Full system configuration backup
 Monthly: Disaster recovery testing
 ```
-
----
-
-*Complete deployment documentation for production-ready SeekWell application.*
