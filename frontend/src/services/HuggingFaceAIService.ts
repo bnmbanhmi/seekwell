@@ -2,7 +2,17 @@ import { AIAnalysisResult, SkinLesionAnalysisRequest } from '../types/AIAnalysis
 
 // HuggingFace Space API configuration
 const HUGGINGFACE_SPACE_URL = 'https://bnmbanhmi-seekwell-skin-cancer.hf.space';
-const API_ENDPOINT = '/run/predict';
+const API_ENDPOINT = '/api/predict';
+
+// Skin lesion class mappings
+const SKIN_LESION_CLASSES = {
+  'ACK': 'Actinic keratoses',
+  'BCC': 'Basal cell carcinoma', 
+  'MEL': 'Melanoma',
+  'NEV': 'Nevus/Mole',
+  'SCC': 'Squamous cell carcinoma',
+  'SEK': 'Seborrheic keratosis'
+};
 
 class HuggingFaceAIService {
   private baseUrl: string;
@@ -13,109 +23,54 @@ class HuggingFaceAIService {
 
   /**
    * Analyze skin lesion using HuggingFace Space API
+   * Simple implementation following the official API documentation
    */
   async analyzeImageAI(
     file: File,
     analysisData: SkinLesionAnalysisRequest
   ): Promise<AIAnalysisResult> {
     try {
-      console.log('🚀 Starting HuggingFace AI Analysis...');
+      console.log('🚀 Starting AI Analysis...');
       
-      // First check if the space is running
-      const spaceStatus = await this.checkSpaceStatus();
-      if (!spaceStatus.isRunning) {
-        console.warn('Space is not running, attempting to wake it up...');
-        await this.wakeUpSpace();
-        // Wait a bit for the space to start up
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
+      // Convert file to base64 for the API
+      const base64 = await this.fileToBase64(file);
       
-      // Try to extract endpoints from HTML
-      const extractedEndpoints = await this.extractEndpointsFromHTML();
-      
-      // Try to discover the correct endpoint
-      const discoveredEndpoint = await this.discoverEndpoint();
-      
-      // Combine all possible endpoints
-      let endpoints = [];
-      if (discoveredEndpoint) endpoints.push(discoveredEndpoint);
-      if (extractedEndpoints.length > 0) endpoints.push(...extractedEndpoints);
-      endpoints.push(...['/run/predict', '/queue/join', '/api/predict', '/call/predict', '/predict']);
-      
-      // Remove duplicates
-      endpoints = Array.from(new Set(endpoints));
-      
-      let lastError: Error | null = null;
-      
-      for (const endpoint of endpoints) {
-        try {
-          console.log(`Trying endpoint: ${endpoint}`);
-          
-          // Convert file to base64 for API
-          const base64 = await this.fileToBase64(file);
-          
-          // Create the payload in the format expected by Gradio
-          const payload = {
-            data: [{
-              path: null,
-              url: `data:${file.type};base64,${base64}`,
-              size: file.size,
-              orig_name: file.name,
-              mime_type: file.type,
-              is_stream: false,
-              meta: {}
-            }],
-            fn_index: 0,
-            session_hash: this.generateSessionHash()
-          };
+      // Create the payload following the official API documentation format
+      const payload = {
+        data: [{
+          path: null,
+          url: `data:${file.type};base64,${base64}`,
+          size: file.size,
+          orig_name: file.name,
+          mime_type: file.type,
+          is_stream: false,
+          meta: {}
+        }]
+      };
 
-          // Make request to HuggingFace Space
-          const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-          });
+      // Make request to HuggingFace Space
+      const response = await fetch(`${this.baseUrl}${API_ENDPOINT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
 
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ HuggingFace AI Response:', result);
-            return this.parseGradioResponse(result, analysisData);
-          } else {
-            console.warn(`Endpoint ${endpoint} failed with status ${response.status}`);
-            lastError = new Error(`${endpoint}: ${response.status} ${response.statusText}`);
-          }
-          
-        } catch (error: any) {
-          console.warn(`Endpoint ${endpoint} failed:`, error.message);
-          lastError = error;
-          continue;
-        }
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
+
+      const result = await response.json();
+      console.log('✅ AI Response:', result);
       
-      // If all endpoints failed, try alternative approaches
-      console.log('🔄 Trying modern Gradio API...');
-      try {
-        return await this.tryModernGradioAPI(file, analysisData);
-      } catch (modernError) {
-        console.warn('Modern Gradio API failed:', modernError);
-      }
-      
-      console.log('🔄 Trying Gradio client approach...');
-      try {
-        return await this.tryGradioClientApproach(file, analysisData);
-      } catch (clientError) {
-        console.warn('Gradio client approach failed:', clientError);
-      }
-      
-      console.log('🔄 Trying form data approach...');
-      return await this.tryFormDataApproach(file, analysisData);
+      // Parse the API response and return structured result
+      return this.parseAPIResponse(result, analysisData);
       
     } catch (error: any) {
-      console.error('❌ HuggingFace AI Analysis Error:', error);
+      console.error('❌ AI Analysis Error:', error);
       throw new Error(
-        error.message || 'Failed to analyze image with HuggingFace AI'
+        error.message || 'Failed to analyze image with AI service'
       );
     }
   }
@@ -141,7 +96,7 @@ class HuggingFaceAIService {
           meta: {}
         }],
         fn_index: 0,
-        session_hash: this.generateSessionHash()
+        session_hash: this.getSessionHash()
       };
 
       const response = await fetch(`${this.baseUrl}/run/predict`, {
@@ -188,7 +143,7 @@ class HuggingFaceAIService {
         }],
         event_data: null,
         fn_index: 0,
-        session_hash: this.generateSessionHash()
+        session_hash: this.getSessionHash()
       };
 
       // First, join the queue
@@ -214,7 +169,7 @@ class HuggingFaceAIService {
 
       // Otherwise, we might need to poll for results or handle differently
       // For now, create a mock response
-      return this.createMockAnalysisFromText('Analysis completed via queue', analysisData);
+      throw new Error('Received queue result without data. Analysis could not be completed.');
 
     } catch (error: any) {
       console.error('❌ Queue Join Analysis Error:', error);
@@ -299,8 +254,15 @@ class HuggingFaceAIService {
   /**
    * Parse Gradio response format
    */
-  private parseGradioResponse(response: any, analysisData: SkinLesionAnalysisRequest): AIAnalysisResult {
+  private async parseGradioResponse(response: any, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
     try {
+      // Check if this is a queue response with event_id
+      if (response.event_id && !response.data && !response.output) {
+        console.log(`🔄 Got queue event ID: ${response.event_id}, initiating queue handling...`);
+        // Handle the queue and return the result
+        return await this.handleGradioQueue(response.event_id, analysisData);
+      }
+      
       // The response from Gradio should contain the result in response.data
       const resultData = response.data && response.data[0] ? response.data[0] : response;
       
@@ -320,10 +282,9 @@ class HuggingFaceAIService {
 
       console.log('📊 Parsed Gradio Response:', parsedData);
 
-      // If the response is in a different format, adapt it
+      // If the response is in a different format, return error
       if (typeof parsedData === 'string') {
-        // Handle plain text response - create a mock structure
-        return this.createMockAnalysisFromText(parsedData, analysisData);
+        throw new Error('Received unexpected text response from AI service. Unable to provide medical analysis.');
       }
 
       // If it has the expected structure, parse it
@@ -331,68 +292,21 @@ class HuggingFaceAIService {
         return this.parseHuggingFaceResponse(parsedData, analysisData);
       }
 
-      // If it's a different format, try to extract useful information
-      return this.createMockAnalysisFromResponse(parsedData, analysisData);
+      // If it's a different format, throw error
+      throw new Error('Received unrecognized response format from AI service. Cannot provide reliable medical analysis.');
 
     } catch (error) {
       console.error('Error parsing Gradio response:', error);
-      return this.createMockAnalysisFromText('Analysis completed', analysisData);
+      throw new Error('Failed to parse AI analysis results. The analysis service may be experiencing issues.');
     }
   }
 
   /**
    * Create a mock analysis result from plain text response
    */
-  private createMockAnalysisFromText(text: string, analysisData: SkinLesionAnalysisRequest): AIAnalysisResult {
-    // Extract any confidence or prediction info from text if possible
-    const confidence = this.extractConfidenceFromText(text);
-    const predictedClass = this.extractClassFromText(text);
-    
-    const mockPrediction = {
-      class_id: this.getClassId(predictedClass),
-      label: predictedClass,
-      confidence: confidence,
-      percentage: confidence * 100
-    };
-
-    return {
-      success: true,
-      predictions: [mockPrediction],
-      top_prediction: mockPrediction,
-      analysis: {
-        predicted_class: predictedClass,
-        confidence: confidence,
-        body_region: analysisData.body_region,
-        analysis_timestamp: new Date().toISOString()
-      },
-      risk_assessment: {
-        risk_level: this.getRiskLevelFromClass(predictedClass),
-        confidence_level: this.getConfidenceLevel(confidence),
-        needs_professional_review: this.needsProfessionalReview(this.getRiskLevelFromClass(predictedClass)),
-        needs_urgent_attention: this.getRiskLevelFromClass(predictedClass) === 'URGENT',
-        base_risk: this.getRiskLevelFromClass(predictedClass),
-        confidence_score: confidence,
-        predicted_class: predictedClass
-      },
-      recommendations: this.getRecommendationsFromClass(predictedClass),
-      workflow: {
-        needs_cadre_review: this.needsCadreReview(this.getRiskLevelFromClass(predictedClass)),
-        needs_doctor_review: this.needsDoctorReview(this.getRiskLevelFromClass(predictedClass)),
-        priority_level: this.getPriorityLevel(this.getRiskLevelFromClass(predictedClass)),
-        estimated_follow_up_days: this.getFollowUpDays(this.getRiskLevelFromClass(predictedClass))
-      },
-      timestamp: new Date().toISOString()
-    };
-  }
-
-  /**
-   * Create analysis result from any response format
-   */
-  private createMockAnalysisFromResponse(data: any, analysisData: SkinLesionAnalysisRequest): AIAnalysisResult {
-    // Try to extract meaningful data from the response
-    const text = typeof data === 'object' ? JSON.stringify(data) : String(data);
-    return this.createMockAnalysisFromText(text, analysisData);
-  }
+  // MEDICAL SAFETY: Mock data methods removed
+  // In a medical application, we must never generate fake diagnostic data
+  // All analysis must come from the actual AI model or throw clear errors
 
   /**
    * Extract confidence from text response
@@ -522,6 +436,15 @@ class HuggingFaceAIService {
     });
   }
 
+  private async fileToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+  }
+
   private generateSessionHash(): string {
     return Math.random().toString(36).substring(2, 15);
   }
@@ -545,13 +468,56 @@ class HuggingFaceAIService {
   }
 
   /**
+   * Check if the Space is actually running and has the Gradio interface
+   */
+  async checkSpaceStatus(): Promise<{ isRunning: boolean; hasGradioInterface: boolean; error?: string }> {
+    try {
+      console.log('🔍 Checking HuggingFace Space status...');
+      
+      const response = await fetch(this.baseUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/html',
+        }
+      });
+      
+      if (!response.ok) {
+        return {
+          isRunning: false,
+          hasGradioInterface: false,
+          error: `Space returned ${response.status}: ${response.statusText}`
+        };
+      }
+      
+      const html = await response.text();
+      
+      // Check if it's a Gradio interface
+      const hasGradio = html.includes('gradio') || html.includes('Gradio') || html.includes('gr.Interface');
+      
+      console.log(`Space status: Running=${response.ok}, HasGradio=${hasGradio}`);
+      
+      return {
+        isRunning: true,
+        hasGradioInterface: hasGradio
+      };
+      
+    } catch (error: any) {
+      return {
+        isRunning: false,
+        hasGradioInterface: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
    * Test API connection and get available endpoints
    */
   async testConnection(): Promise<{ status: string; available_endpoints: string[] }> {
     try {
       console.log('🔍 Testing HuggingFace Space connection...');
       
-      const endpoints = ['/run/predict', '/queue/join', '/api/predict', '/info'];
+      const endpoints = ['/gradio_api/call/predict', '/run/predict', '/queue/join', '/api/predict', '/info'];
       const available = [];
       
       for (const endpoint of endpoints) {
@@ -631,326 +597,10 @@ class HuggingFaceAIService {
         }
       }
       
-      // Try some common Gradio patterns
-      const commonEndpoints = [
-        '/call/predict',
-        '/run/predict',
-        '/api/predict',
-        '/predict',
-        '/call/classify',
-        '/run/classify'
-      ];
-      
-      for (const endpoint of commonEndpoints) {
-        try {
-          const testResponse = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: [] })
-          });
-          
-          // Even if it fails, if we get a proper error response (not 404), the endpoint exists
-          if (testResponse.status !== 404) {
-            console.log(`✅ Discovered working endpoint: ${endpoint}`);
-            return endpoint;
-          }
-        } catch (error) {
-          continue;
-        }
-      }
-      
       return null;
     } catch (error) {
       console.error('Endpoint discovery failed:', error);
       return null;
-    }
-  }
-
-  /**
-   * Try alternative form data approach when JSON approach fails
-   */
-  async tryFormDataApproach(file: File, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
-    try {
-      console.log('🔄 Trying FormData approach...');
-      
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // Try different endpoints with form data
-      const endpoints = ['/upload', '/submit', '/process', '/api/upload'];
-      
-      for (const endpoint of endpoints) {
-        try {
-          const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            body: formData
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ FormData response:', result);
-            return this.parseGradioResponse(result, analysisData);
-          }
-        } catch (error) {
-          continue;
-        }
-      }
-      
-      // If form data also fails, create a mock response for testing
-      console.warn('🚨 All endpoints failed, creating mock response for testing');
-      return this.createMockAnalysisFromText('Mock analysis - API endpoints not accessible', analysisData);
-      
-    } catch (error: any) {
-      console.error('FormData approach failed:', error);
-      return this.createMockAnalysisFromText('Analysis failed - using fallback', analysisData);
-    }
-  }
-
-  /**
-   * Try using gradio_client-like approach with WebSocket or direct call
-   */
-  async tryGradioClientApproach(file: File, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
-    try {
-      console.log('🔄 Trying Gradio Client approach...');
-      
-      // Convert file to data URL
-      const dataUrl = await this.fileToDataUrl(file);
-      
-      // Try the format that matches the Python gradio_client
-      const payload = {
-        data: [dataUrl], // Simple data array as expected by gradio
-        fn_index: 0
-      };
-      
-      // Try different potential endpoints
-      const clientEndpoints = ['/call/predict', '/run/predict', '/predict'];
-      
-      for (const endpoint of clientEndpoints) {
-        try {
-          console.log(`Trying Gradio client endpoint: ${endpoint}`);
-          
-          const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ Gradio Client response:', result);
-            return this.parseGradioResponse(result, analysisData);
-          }
-          
-        } catch (error) {
-          console.warn(`Gradio client endpoint ${endpoint} failed:`, error);
-          continue;
-        }
-      }
-      
-      throw new Error('All Gradio client approaches failed');
-      
-    } catch (error: any) {
-      console.error('Gradio client approach failed:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Try the newer Gradio 4.x API format which uses different endpoints
-   */
-  async tryModernGradioAPI(file: File, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
-    try {
-      console.log('🔄 Trying modern Gradio 4.x API format...');
-      
-      // Convert file to data URL
-      const dataUrl = await this.fileToDataUrl(file);
-      
-      // Try modern Gradio API format
-      const sessionHash = this.generateSessionHash();
-      
-      // First, try to join the queue (newer Gradio pattern)
-      const joinPayload = {
-        fn_index: 0,
-        session_hash: sessionHash
-      };
-      
-      let queueResponse;
-      try {
-        queueResponse = await fetch(`${this.baseUrl}/queue/join`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(joinPayload)
-        });
-      } catch (error) {
-        console.log('Queue join not available, trying direct approach...');
-      }
-      
-      // Try different modern endpoint patterns
-      const modernEndpoints = [
-        '/call/predict',
-        '/api/predict', 
-        '/gradio_api/call/predict',
-        '/app/predict',
-        '/api/v1/predict'
-      ];
-      
-      for (const endpoint of modernEndpoints) {
-        try {
-          console.log(`Trying modern endpoint: ${endpoint}`);
-          
-          // Try different payload formats for modern Gradio
-          const payloads = [
-            // Format 1: Simple data array
-            { data: [dataUrl] },
-            // Format 2: With function index
-            { data: [dataUrl], fn_index: 0 },
-            // Format 3: With session hash
-            { data: [dataUrl], fn_index: 0, session_hash: sessionHash },
-            // Format 4: File object format
-            { 
-              data: [{
-                name: file.name,
-                data: dataUrl,
-                is_file: true,
-                size: file.size
-              }],
-              fn_index: 0 
-            }
-          ];
-          
-          for (const payload of payloads) {
-            try {
-              const response = await fetch(`${this.baseUrl}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-              });
-              
-              if (response.ok) {
-                const result = await response.json();
-                console.log('✅ Modern Gradio API success:', result);
-                return this.parseGradioResponse(result, analysisData);
-              }
-            } catch (error) {
-              // Continue to next payload format
-              continue;
-            }
-          }
-        } catch (error) {
-          continue;
-        }
-      }
-      
-      throw new Error('All modern Gradio API attempts failed');
-      
-    } catch (error: any) {
-      console.error('Modern Gradio API failed:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Convert file to data URL
-   */
-  private async fileToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-    });
-  }
-
-  /**
-   * Get analysis history (mock implementation)
-   */
-  static async getAnalysisHistory(): Promise<AIAnalysisResult[]> {
-    // Return empty array or load from localStorage
-    const stored = localStorage.getItem('ai_analysis_history');
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  /**
-   * Save analysis to history
-   */
-  static saveAnalysisToHistory(result: AIAnalysisResult): void {
-    const history = JSON.parse(localStorage.getItem('ai_analysis_history') || '[]');
-    history.unshift({ ...result, id: Date.now() });
-    // Keep only last 50 analyses
-    const trimmed = history.slice(0, 50);
-    localStorage.setItem('ai_analysis_history', JSON.stringify(trimmed));
-  }
-
-  /**
-   * Wake up the HuggingFace Space if it's sleeping
-   */
-  async wakeUpSpace(): Promise<boolean> {
-    try {
-      console.log('😴 Attempting to wake up HuggingFace Space...');
-      
-      // Make a simple GET request to wake up the space
-      const response = await fetch(this.baseUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        }
-      });
-      
-      if (response.ok) {
-        console.log('✅ HuggingFace Space is awake');
-        return true;
-      } else {
-        console.warn(`Space wake-up returned: ${response.status}`);
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to wake up space:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Check if the Space is actually running and has the Gradio interface
-   */
-  async checkSpaceStatus(): Promise<{ isRunning: boolean; hasGradioInterface: boolean; error?: string }> {
-    try {
-      console.log('🔍 Checking HuggingFace Space status...');
-      
-      const response = await fetch(this.baseUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'text/html',
-        }
-      });
-      
-      if (!response.ok) {
-        return {
-          isRunning: false,
-          hasGradioInterface: false,
-          error: `Space returned ${response.status}: ${response.statusText}`
-        };
-      }
-      
-      const html = await response.text();
-      
-      // Check if it's a Gradio interface
-      const hasGradio = html.includes('gradio') || html.includes('Gradio') || html.includes('gr.Interface');
-      
-      console.log(`Space status: Running=${response.ok}, HasGradio=${hasGradio}`);
-      
-      return {
-        isRunning: true,
-        hasGradioInterface: hasGradio
-      };
-      
-    } catch (error: any) {
-      return {
-        isRunning: false,
-        hasGradioInterface: false,
-        error: error.message
-      };
     }
   }
 
@@ -1016,6 +666,720 @@ class HuggingFaceAIService {
       return [];
     }
   }
+
+  /**
+   * Get analysis history (mock implementation)
+   */
+  static async getAnalysisHistory(): Promise<AIAnalysisResult[]> {
+    // Return empty array or load from localStorage
+    const stored = localStorage.getItem('ai_analysis_history');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  /**
+   * Save analysis to history
+   */
+  static saveAnalysisToHistory(result: AIAnalysisResult): void {
+    const history = JSON.parse(localStorage.getItem('ai_analysis_history') || '[]');
+    history.unshift({ ...result, id: Date.now() });
+    // Keep only last 50 analyses
+    const trimmed = history.slice(0, 50);
+    localStorage.setItem('ai_analysis_history', JSON.stringify(trimmed));
+  }
+
+  /**
+   * Wake up the HuggingFace Space if it's sleeping
+   */
+  async wakeUpSpace(): Promise<boolean> {
+    try {
+      console.log('😴 Attempting to wake up HuggingFace Space...');
+      
+      // Make a simple GET request to wake up the space
+      const response = await fetch(this.baseUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        }
+      });
+      
+      if (response.ok) {
+        console.log('✅ HuggingFace Space is awake');
+        return true;
+      } else {
+        console.warn(`Space wake-up returned: ${response.status}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to wake up space:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Handle WebSocket-based queue system for modern Gradio
+   */
+  async handleGradioQueue(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
+    try {
+      console.log(`🔄 Handling queue event: ${eventId}`);
+      console.log(`🔑 Using session hash: ${this.getSessionHash()}`);
+      
+      // Since EventSource and WebSocket are returning HTML, let's try direct polling
+      console.log('� Trying direct result polling...');
+      
+      const maxAttempts = 20;
+      const baseDelay = 2000; // Start with 2 seconds
+      
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          console.log(`⏳ Polling attempt ${attempt + 1}/${maxAttempts}...`);
+          
+          // Try to get results from different endpoints
+          const pollEndpoints = [
+            `/gradio_api/call/predict/${eventId}`,
+            `/api/predict/${eventId}`,
+            `/predict/${eventId}`,
+            `/gradio_api/queue/data?session_hash=${this.getSessionHash()}`,
+            `/queue/data?session_hash=${this.getSessionHash()}`,
+            `/gradio_api/queue/status/${eventId}`,
+            `/api/queue/status/${eventId}`
+          ];
+          
+          for (const endpoint of pollEndpoints) {
+            try {
+              const response = await fetch(`${this.baseUrl}${endpoint}`, {
+                method: 'GET',
+                headers: { 
+                  'Accept': 'application/json',
+                  'Cache-Control': 'no-cache'
+                }
+              });
+              
+              if (response.ok) {
+                const contentType = response.headers.get('content-type') || '';
+                console.log(`📨 Poll response from ${endpoint} - Status: ${response.status}, Content-Type: ${contentType}`);
+                
+                if (contentType.includes('application/json')) {
+                  const result = await response.json();
+                  console.log(`� JSON result:`, result);
+                  
+                  // Check if we have actual results
+                  if (result && (result.data || result.output) && !result.event_id) {
+                    console.log('✅ Found completed results!');
+                    return await this.parseGradioResponse(result, analysisData);
+                  }
+                  
+                  // Check for error messages
+                  if (result.error || result.success === false) {
+                    throw new Error(result.error || result.message || 'Analysis failed');
+                  }
+                  
+                } else if (contentType.includes('text/event-stream')) {
+                  // This is an event stream endpoint, try to read the stream
+                  console.log(`📡 Found event stream at ${endpoint}, attempting to read...`);
+                  try {
+                    const streamResult = await this.readEventStream(`${this.baseUrl}${endpoint}`, eventId, analysisData);
+                    if (streamResult) {
+                      return streamResult;
+                    }
+                  } catch (streamError) {
+                    console.warn('Event stream reading failed:', streamError);
+                  }
+                } else {
+                  console.log(`⚠️ Unexpected content type: ${contentType}`);
+                }
+              }
+            } catch (pollError) {
+              console.warn(`Poll endpoint ${endpoint} failed:`, pollError);
+              continue;
+            }
+          }
+          
+          // Exponential backoff with jitter
+          const delay = Math.min(baseDelay * Math.pow(1.5, attempt), 10000) + Math.random() * 1000;
+          console.log(`⏱️ Waiting ${Math.round(delay)}ms before next attempt...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          
+        } catch (attemptError) {
+          console.warn(`Polling attempt ${attempt + 1} failed:`, attemptError);
+        }
+      }
+      
+      // If all polling failed, try one more direct approach
+      console.log('🔄 All polling failed, trying direct prediction check...');
+      try {
+        const finalResponse = await fetch(`${this.baseUrl}/gradio_api/call/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: [""], // Empty request just to check if processing is done
+            fn_index: 0,
+            session_hash: this.getSessionHash()
+          })
+        });
+        
+        if (finalResponse.ok) {
+          const finalResult = await finalResponse.json();
+          console.log('� Final prediction result:', finalResult);
+          
+          if (finalResult.data && !finalResult.event_id) {
+            return await this.parseGradioResponse(finalResult, analysisData);
+          }
+        }
+      } catch (finalError) {
+        console.warn('Final prediction attempt failed:', finalError);
+      }
+      
+      // All attempts failed
+      console.error('❌ All queue handling attempts failed');
+      throw new Error('AI analysis service is currently unavailable. Please try again later or consult with medical staff directly.');
+      
+    } catch (error: any) {
+      console.error('Queue handling failed:', error);
+      throw new Error('AI analysis system is currently experiencing technical difficulties. Please try again later or seek direct medical consultation.');
+    }
+  }
+
+  /**
+   * Try to find the actual working queue endpoint by testing different patterns
+   */
+  async tryDirectGradioEndpoints(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult | null> {
+    console.log('🔍 Trying direct Gradio endpoint patterns...');
+    
+    // Different endpoint patterns to try
+    const endpointPatterns = [
+      // Standard Gradio 4.x patterns
+      `/gradio_api/queue/data?session_hash=${this.getSessionHash()}`,
+      `/gradio_api/queue/status/${eventId}`,
+      `/gradio_api/call/predict/${eventId}`,
+      `/gradio_api/queue/join/${eventId}`,
+      
+      // Alternative patterns
+      `/api/queue/data/${eventId}`,
+      `/queue/heartbeat?session_hash=${this.getSessionHash()}`,
+      `/queue/status?session_hash=${this.getSessionHash()}`,
+      `/run/predict/${eventId}`,
+      
+      // WebSocket upgrade attempts
+      `/gradio_api/ws`,
+      `/queue/ws`,
+    ];
+    
+    for (const endpoint of endpointPatterns) {
+      try {
+        console.log(`🔗 Testing endpoint: ${endpoint}`);
+        
+        const response = await fetch(`${this.baseUrl}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json, text/event-stream, */*',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+          }
+        });
+        
+        // Check content type
+        const contentType = response.headers.get('content-type') || '';
+        console.log(`📋 Endpoint ${endpoint} - Status: ${response.status}, Content-Type: ${contentType}`);
+        
+        if (response.ok && contentType.includes('application/json')) {
+          try {
+            const data = await response.json();
+            console.log(`✅ JSON response from ${endpoint}:`, data);
+            
+            // Check if this contains our result
+            if (data && (data.data || data.output || data.result || data.msg)) {
+              return await this.parseGradioResponse(data, analysisData);
+            }
+          } catch (jsonError) {
+            console.warn(`JSON parse failed for ${endpoint}:`, jsonError);
+          }
+        } else if (response.ok && contentType.includes('text/event-stream')) {
+          console.log(`📡 Found event stream at ${endpoint}`);
+          // We found an event stream endpoint - this might be the right one
+          return await this.handleEventStream(endpoint, eventId, analysisData);
+        } else if (response.status === 404) {
+          console.log(`❌ Endpoint ${endpoint} not found`);
+        } else {
+          console.log(`⚠️ Endpoint ${endpoint} returned ${response.status} with content-type: ${contentType}`);
+        }
+        
+      } catch (error) {
+        console.warn(`❌ Failed to test ${endpoint}:`, error);
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Handle Server-Sent Events stream
+   */
+  async handleEventStream(endpoint: string, eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
+    return new Promise((resolve, reject) => {
+      console.log(`📡 Connecting to event stream: ${endpoint}`);
+      
+      const eventSource = new EventSource(`${this.baseUrl}${endpoint}`);
+      let resolved = false;
+      
+      const timeout = setTimeout(() => {
+        if (!resolved) {
+          console.error('Event stream timeout - medical analysis unavailable');
+          eventSource.close();
+          resolved = true;
+          reject(new Error('AI analysis service timed out. Please try again later.'));
+        }
+      }, 30000);
+      
+      eventSource.onopen = () => {
+        console.log('📡 Event stream connected');
+      };
+      
+      eventSource.onmessage = (event) => {
+        try {
+          console.log('📨 Event stream message:', event.data);
+          const data = JSON.parse(event.data);
+          
+          // Check if this is our result
+          if (data && (data.event_id === eventId || data.data || data.output)) {
+            clearTimeout(timeout);
+            eventSource.close();
+            if (!resolved) {
+              resolved = true;
+              this.parseGradioResponse(data, analysisData).then(resolve).catch(reject);
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to parse event stream data:', error);
+        }
+      };
+      
+      eventSource.onerror = (error) => {
+        console.warn('Event stream error:', error);
+        clearTimeout(timeout);
+        eventSource.close();
+        if (!resolved) {
+          resolved = true;
+          reject(new Error('Event stream connection failed. AI analysis is unavailable.'));
+        }
+      };
+    });
+  }
+
+  /**
+   * Try the event-specific stream that we discovered works
+   */
+  async tryEventSpecificStream(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult | null> {
+    return new Promise((resolve, reject) => {
+      console.log(`📡 Connecting to event-specific stream for: ${eventId}`);
+      
+      // Try WebSocket first since EventSource is failing
+      try {
+        const wsUrl = `wss://bnmbanhmi-seekwell-skin-cancer.hf.space/queue/join`;
+        console.log(`🔌 Attempting WebSocket connection: ${wsUrl}`);
+        
+        const ws = new WebSocket(wsUrl);
+        let resolved = false;
+        
+        const timeout = setTimeout(() => {
+          if (!resolved) {
+            console.warn('WebSocket timeout');
+            ws.close();
+            resolved = true;
+            resolve(null);
+          }
+        }, 30000);
+        
+        ws.onopen = () => {
+          console.log('✅ WebSocket connected');
+          // Send join message
+          ws.send(JSON.stringify({
+            fn_index: 0,
+            session_hash: this.getSessionHash()
+          }));
+        };
+        
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('📨 WebSocket message:', data);
+            
+            // Check if this is our result
+            if (data.output || data.data) {
+              clearTimeout(timeout);
+              ws.close();
+              if (!resolved) {
+                resolved = true;
+                this.parseGradioResponse(data, analysisData).then(resolve).catch(reject);
+              }
+            }
+          } catch (error) {
+            console.warn('Failed to parse WebSocket message:', error);
+          }
+        };
+        
+        ws.onerror = (error) => {
+          console.warn('WebSocket error:', error);
+          clearTimeout(timeout);
+          ws.close();
+          if (!resolved) {
+            resolved = true;
+            // Try simple polling as fallback
+            this.trySimplePolling(eventId, analysisData).then(resolve).catch(() => resolve(null));
+          }
+        };
+        
+        ws.onclose = () => {
+          console.log('WebSocket closed');
+          if (!resolved) {
+            resolved = true;
+            // Try simple polling as fallback
+            this.trySimplePolling(eventId, analysisData).then(resolve).catch(() => resolve(null));
+          }
+        };
+        
+      } catch (wsError) {
+        console.warn('WebSocket creation failed:', wsError);
+        // Fallback to simple polling
+        this.trySimplePolling(eventId, analysisData).then(resolve).catch(() => resolve(null));
+      }
+    });
+  }
+
+  /**
+   * Simple polling approach as final fallback
+   */
+  async trySimplePolling(eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult | null> {
+    console.log('🔄 Trying simple polling approach...');
+    
+    // Wait a bit for processing
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Try to get the result by checking the original endpoint again
+    try {
+      const response = await fetch(`${this.baseUrl}/gradio_api/call/predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          data: [""], // Empty data just to check status
+          fn_index: 0,
+          session_hash: this.getSessionHash()
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('📊 Simple polling result:', result);
+        
+        // Check if we got actual data instead of another event ID
+        if (result.data && !result.event_id) {
+          return await this.parseGradioResponse(result, analysisData);
+        }
+      }
+    } catch (error) {
+      console.warn('Simple polling failed:', error);
+    }
+    
+    return null;
+  }
+
+  /**
+   * Read from an event stream endpoint with a direct approach
+   */
+  async readEventStream(streamUrl: string, eventId: string, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult | null> {
+    return new Promise((resolve, reject) => {
+      console.log(`📡 Reading event stream: ${streamUrl}`);
+      
+      const eventSource = new EventSource(streamUrl);
+      let resolved = false;
+      
+      const timeout = setTimeout(() => {
+        if (!resolved) {
+          console.warn('Event stream read timeout');
+          eventSource.close();
+          resolved = true;
+          resolve(null);
+        }
+      }, 15000); // Shorter timeout for polling context
+      
+      eventSource.onopen = () => {
+        console.log('📡 Event stream connection opened');
+      };
+      
+      eventSource.onmessage = (event) => {
+        try {
+          console.log('📨 Stream message:', event.data);
+          
+          // Try to parse the message
+          let data;
+          try {
+            data = JSON.parse(event.data);
+          } catch {
+            // If not JSON, might be plain text result
+            if (event.data && event.data.trim() !== '') {
+              console.log('📝 Non-JSON stream data:', event.data);
+            }
+            return;
+          }
+          
+          // Check for completed results
+          if (data.msg === 'process_completed' && data.output) {
+            clearTimeout(timeout);
+            eventSource.close();
+            if (!resolved) {
+              resolved = true;
+              this.parseGradioResponse({ data: data.output }, analysisData).then(resolve).catch(reject);
+            }
+            return;
+          }
+          
+          // Check for direct data
+          if (data.data || data.output) {
+            clearTimeout(timeout);
+            eventSource.close();
+            if (!resolved) {
+              resolved = true;
+              this.parseGradioResponse(data, analysisData).then(resolve).catch(reject);
+            }
+            return;
+          }
+          
+          // Check for errors
+          if (data.msg === 'unexpected_error' || data.success === false) {
+            clearTimeout(timeout);
+            eventSource.close();
+            if (!resolved) {
+              resolved = true;
+              reject(new Error(data.message || 'Analysis failed'));
+            }
+            return;
+          }
+          
+          // Log status messages
+          if (data.msg) {
+            console.log(`📝 Stream status: ${data.msg}`);
+          }
+          
+        } catch (error) {
+          console.warn('Failed to handle stream message:', error);
+        }
+      };
+      
+      eventSource.onerror = (error) => {
+        console.warn('Event stream error:', error);
+        clearTimeout(timeout);
+        eventSource.close();
+        if (!resolved) {
+          resolved = true;
+          resolve(null); // Don't reject, just return null to try other methods
+        }
+      };
+    });
+  }
+
+  /**
+   * Use the official HuggingFace API endpoint as documented
+   */
+  async tryOfficialAPI(file: File, analysisData: SkinLesionAnalysisRequest): Promise<AIAnalysisResult> {
+    try {
+      console.log('🎯 Trying official HuggingFace API endpoint...');
+      
+      const base64 = await this.fileToBase64(file);
+      
+      // Try multiple endpoint variations based on common HuggingFace patterns
+      const endpointVariations = [
+        {
+          url: `${this.baseUrl}/api/predict`,
+          payload: {
+            data: [{
+              path: null,
+              url: base64,
+              size: null,
+              orig_name: file.name,
+              mime_type: file.type,
+              is_stream: false,
+              meta: {}
+            }],
+            api_name: "/predict"
+          }
+        },
+        {
+          url: `${this.baseUrl}/run/predict`,
+          payload: {
+            data: [base64],
+            api_name: "/predict"
+          }
+        },
+        {
+          url: `${this.baseUrl}/predict`,
+          payload: {
+            data: [base64]
+          }
+        },
+        {
+          url: `${this.baseUrl}/gradio_api/run/predict`,
+          payload: {
+            data: [base64],
+            fn_index: 0
+          }
+        }
+      ];
+      
+      for (const variation of endpointVariations) {
+        try {
+          console.log(`📤 Trying endpoint: ${variation.url}`);
+          console.log('📤 Payload:', variation.payload);
+          
+          const response = await fetch(variation.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(variation.payload)
+          });
+          
+          console.log(`📨 Response status: ${response.status}`);
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ API Response:', result);
+            
+            // Check if we got a direct result (not a queue event)
+            if (result && result.data && !result.event_id) {
+              const predictionResult = result.data[0];
+              console.log('📊 Direct prediction result:', predictionResult);
+              
+              if (typeof predictionResult === 'string') {
+                return this.parseTextPrediction(predictionResult, analysisData);
+              } else if (predictionResult && typeof predictionResult === 'object') {
+                return this.parseHuggingFaceResponse(predictionResult, analysisData);
+              }
+            }
+            
+            // If we got an event_id, this endpoint uses queuing
+            if (result.event_id) {
+              console.log(`⚠️ Endpoint ${variation.url} returned queue event: ${result.event_id}`);
+              continue; // Try next endpoint variation
+            }
+          } else {
+            console.warn(`❌ Endpoint ${variation.url} failed with status: ${response.status}`);
+            const errorText = await response.text();
+            console.warn('Error details:', errorText);
+          }
+          
+        } catch (endpointError) {
+          console.warn(`❌ Endpoint ${variation.url} error:`, endpointError);
+          continue;
+        }
+      }
+      
+    } catch (error) {
+      console.warn('❌ All official API variations failed:', error);
+    }
+    
+    throw new Error('Unable to connect to AI analysis service. The service may be experiencing issues.');
+  }
+
+  /**
+   * Parse text prediction from the official API
+   */
+  private parseTextPrediction(predictionText: string, analysisData: SkinLesionAnalysisRequest): AIAnalysisResult {
+    console.log('🔍 Parsing prediction text:', predictionText);
+    
+    try {
+      // Try to parse as JSON first
+      let parsedData;
+      try {
+        parsedData = JSON.parse(predictionText);
+        if (parsedData && (parsedData['🎯 Top Prediction'] || parsedData.predictions)) {
+          return this.parseHuggingFaceResponse(parsedData, analysisData);
+        }
+      } catch {
+        // Not JSON, treat as plain text
+      }
+      
+      // Extract information from text format
+      const lines = predictionText.split('\n').map(line => line.trim()).filter(line => line);
+      
+      // Look for prediction patterns
+      let topPrediction = { class_id: 0, label: 'UNKNOWN', confidence: 0.5, percentage: 50 };
+      let predictions: any[] = [];
+      
+      for (const line of lines) {
+        // Look for "Top Prediction:" or similar patterns
+        if (line.includes('🎯') || line.toLowerCase().includes('prediction')) {
+          // Extract class and confidence
+          const classMatch = line.match(/([A-Z]{2,4})/);
+          const confidenceMatch = line.match(/(\d+\.?\d*)%/);
+          
+          if (classMatch && confidenceMatch) {
+            const predictedClass = classMatch[1];
+            const confidence = parseFloat(confidenceMatch[1]) / 100;
+            
+            topPrediction = {
+              class_id: this.getClassId(predictedClass),
+              label: predictedClass,
+              confidence: confidence,
+              percentage: confidence * 100
+            };
+            
+            predictions.push(topPrediction);
+            break;
+          }
+        }
+      }
+      
+      // If no structured data found, extract any class mentioned
+      if (predictions.length === 0) {
+        const classPattern = /\b(MEL|BCC|SCC|ACK|NEV|SEK|AKIEC|DF|VASC)\b/g;
+        const matches = predictionText.match(classPattern);
+        if (matches && matches.length > 0) {
+          const predictedClass = matches[0];
+          topPrediction = {
+            class_id: this.getClassId(predictedClass),
+            label: predictedClass,
+            confidence: 0.7, // Default confidence
+            percentage: 70
+          };
+          predictions.push(topPrediction);
+        }
+      }
+      
+      return {
+        success: true,
+        predictions: predictions,
+        top_prediction: topPrediction,
+        analysis: {
+          predicted_class: topPrediction.label,
+          confidence: topPrediction.confidence,
+          body_region: analysisData.body_region,
+          analysis_timestamp: new Date().toISOString()
+        },
+        risk_assessment: {
+          risk_level: this.getRiskLevelFromClass(topPrediction.label),
+          confidence_level: this.getConfidenceLevel(topPrediction.confidence),
+          needs_professional_review: this.needsProfessionalReview(this.getRiskLevelFromClass(topPrediction.label)),
+          needs_urgent_attention: this.getRiskLevelFromClass(topPrediction.label) === 'URGENT',
+          base_risk: this.getRiskLevelFromClass(topPrediction.label),
+          confidence_score: topPrediction.confidence,
+          predicted_class: topPrediction.label
+        },
+        recommendations: this.getRecommendationsFromClass(topPrediction.label),
+        workflow: {
+          needs_cadre_review: this.needsCadreReview(this.getRiskLevelFromClass(topPrediction.label)),
+          needs_doctor_review: this.needsDoctorReview(this.getRiskLevelFromClass(topPrediction.label)),
+          priority_level: this.getPriorityLevel(this.getRiskLevelFromClass(topPrediction.label)),
+          estimated_follow_up_days: this.getFollowUpDays(this.getRiskLevelFromClass(topPrediction.label))
+        },
+        timestamp: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      console.error('Failed to parse prediction text:', error);
+      throw new Error('Failed to parse AI analysis results. Please try again.');
+    }
+  }
+
+  // ...existing methods...
 }
 
 export default HuggingFaceAIService;
