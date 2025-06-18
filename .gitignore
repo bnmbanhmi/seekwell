@@ -30,3 +30,5 @@ env/
 
 # Log files
 *.log
+
+data/
