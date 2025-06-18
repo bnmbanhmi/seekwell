@@ -26,7 +26,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     isAuthenticated = false,
     position = 'fixed',
     className = '',
-    placeholder = 'Nhập câu hỏi của bạn...'
+    placeholder = 'Type your question...'
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -55,46 +55,46 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 
     const getWelcomeMessage = () => {
         if (!isAuthenticated) {
-            return `Xin chào! Tôi là trợ lý AI của phòng khám.
+            return `Hello! I am the AI assistant for SeekWell.
 
-Tôi có thể giúp bạn:
-- **Thông tin phòng khám** (giờ làm việc, dịch vụ, địa chỉ)
-- **Hướng dẫn đặt lịch khám**
-- **Tư vấn triệu chứng cơ bản**
-- **Câu hỏi thường gặp về sức khỏe**
+I can help you with:
+- **Information about SeekWell** (services, how it works)
+- **Guidance on using the AI skin analysis**
+- **Basic skin health advice**
+- **Frequently asked questions**
 
-Bạn có thể hỏi tôi bất cứ điều gì!`;
+Feel free to ask me anything!`;
         }
 
         switch (userRole) {
             case 'PATIENT':
-                return `Xin chào! Tôi là trợ lý AI cá nhân của bạn tại Phòng khám.
+                return `Hello! I am your personal AI assistant at SeekWell.
 
-Tôi có thể giúp bạn:
-- **Tư vấn triệu chứng và sức khỏe**
-- **Hướng dẫn chuẩn bị khám bệnh**
-- **Giải thích quy trình khám**
-- **Thông tin sau khám**
+I can help you with:
+- **Understanding your skin health**
+- **Guiding you through the skin analysis process**
+- **Explaining your AI results**
+- **Preparing for your consultation**
 
-Hãy đặt câu hỏi để tôi hỗ trợ bạn!`;
+Just ask, and I'll assist you!`;
 
             case 'DOCTOR':
             case 'LOCAL_CADRE':
             case 'ADMIN':
-                return `Xin chào! Tôi là trợ lý AI cho nhân viên y tế.
+                return `Welcome! I am the AI assistant for healthcare professionals at SeekWell.
 
-Tôi có thể hỗ trợ:
-- **Tư vấn chẩn đoán ban đầu**
-- **Thông tin y khoa**
-- **Hướng dẫn quy trình**
-- **Quản lý bệnh nhân**
+I can assist with:
+- **Reviewing AI-based preliminary diagnoses**
+- **Accessing medical information**
+- **Navigating operational procedures**
+- **Managing patient cases**
 
-Tôi sẵn sàng hỗ trợ công việc của bạn!`;
+I'm here to support your work!`;
 
             default:
-                return `Xin chào! Tôi là trợ lý AI của phòng khám. 
+                return `Hello! I am the SeekWell AI assistant. 
 
-Tôi có thể giúp bạn với các thông tin cơ bản về phòng khám và sức khỏe. Hãy đặt câu hỏi nhé!`;
+I can provide general information about our platform and skin health. How can I help you today?`;
         }
     };
 

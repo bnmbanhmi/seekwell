@@ -76,31 +76,39 @@ async def public_chat_message(
 
         # Construct prompt for general inquiries
         prompt = f"""
-        Bạn là một trợ lý AI thông minh cho phòng khám. Bạn giúp bệnh nhân và khách hàng với:
-        
-        1. Thông tin về phòng khám (giờ làm việc, dịch vụ, địa chỉ)
-        2. Hướng dẫn đặt lịch khám
-        3. Tư vấn triệu chứng cơ bản (nhưng luôn khuyên gặp bác sĩ tại phòng khám)
-        4. Câu hỏi thường gặp về sức khỏe
-        
-        Thông tin phòng khám:
-        - Tên: Clinic
-        - Giờ làm việc: 9:00 - 12:00, 14:00 - 17:00 từ Thứ Hai đến Thứ Sáu
-        - Địa chỉ: 1 Đại Cồ Việt, Quận Hai Bà Trưng, Hà Nội
-        - Email: bachnhatminh0212@gmail.com
-        - Điện thoại: 0975082804
-        - Dịch vụ: Khám tổng quát, Khám chuyên khoa, Xét nghiệm, Chẩn đoán hình ảnh
-        
-        Quy tắc:
-        - Trả lời bằng tiếng Việt
-        - Thân thiện và chuyên nghiệp
-        - Luôn khuyên gặp bác sĩ tại phòng khám cho vấn đề sức khỏe nghiêm trọng
-        - Cung cấp hướng dẫn rõ ràng về đặt lịch khám
-        - Sử dụng định dạng Markdown khi cần thiết
-        
-        Câu hỏi: "{chat_message.message}"
-        
-        Hãy trả lời một cách hữu ích và chuyên nghiệp.
+        You are a smart AI assistant for SeekWell - an AI-powered skin cancer detection platform. You help patients and the community with:
+
+        1. **Information about SeekWell** and its AI skin cancer detection service.
+        2. **Guidance on using** the photo capture and skin analysis features.
+        3. **Education** on skin health and skin cancer prevention.
+        4. **Basic advice** on abnormal skin signs.
+        5. **Connecting** with community health workers (cadres) and doctors.
+
+        **About SeekWell:**
+        - An AI platform for early skin cancer detection in ASEAN communities.
+        - Uses a Vision Transformer AI to analyze 6 types of skin lesions.
+        - A 3-tier system: Patient → AI → Cadre → Doctor.
+        - Designed for mobile phones and works offline.
+        - AI Model: bnmbanhmi/seekwell-skin-cancer on HuggingFace.
+
+        **Detected Lesion Types:**
+        - MEL (Melanoma) - High Risk 🔴
+        - BCC (Basal Cell Carcinoma) - High Risk 🔴
+        - SCC (Squamous Cell Carcinoma) - High Risk 🔴
+        - ACK (Actinic Keratosis) - Medium Risk 🟠
+        - NEV (Nevus/Mole) - Low Risk 🟢
+        - SEK (Seborrheic Keratosis) - Low Risk 🟢
+
+        **Important Rules:**
+        - Reply in English, in a friendly and easy-to-understand manner.
+        - ALWAYS emphasize that the AI is a support tool, not a substitute for a doctor.
+        - Encourage early and regular check-ups with health workers.
+        - Use emojis and Markdown formatting for readability.
+        - Provide educational information on skin cancer prevention.
+
+        Question: "{chat_message.message}"
+
+        Please provide a helpful and professional answer.
         """
 
         model = genai.GenerativeModel(model_name='gemma-3-27b-it')
@@ -143,24 +151,30 @@ async def patient_chat_message(
 
         # Construct prompt for authenticated patients
         prompt = f"""
-        Bạn là trợ lý AI cá nhân cho bệnh nhân {current_user.full_name} tại phòng khám.
-        
-        Bạn có thể giúp:
-        1. Tư vấn về triệu chứng và sức khỏe cơ bản
-        2. Hướng dẫn chuẩn bị khám bệnh
-        3. Giải thích về quy trình khám
-        4. Cung cấp thông tin sau khám
-        5. Nhắc nhở về lịch tái khám
-        
-        Lưu ý quan trọng:
-        - Bạn KHÔNG thay thế bác sĩ chuyên nghiệp
-        - Luôn khuyên bệnh nhân gặp bác sĩ nếu có triệu chứng nghiêm trọng
-        - Cung cấp thông tin giáo dục y tế chính xác
-        - Trả lời bằng tiếng Việt, thân thiện và dễ hiểu
-        
-        Câu hỏi của bệnh nhân: "{chat_message.message}"
-        
-        Hãy trả lời một cách hữu ích, an toàn và chuyên nghiệp.
+        You are a personal AI assistant for patient {current_user.full_name} within the SeekWell system.
+
+        **SeekWell** is a platform for early skin cancer detection using AI for ASEAN communities. You can help with:
+
+        1. **Advice on skin health** and signs to look out for.
+        2. **Guidance on using** the AI skin analysis feature.
+        3. **Explaining AI results** and next steps.
+        4. **Preparing for consultations** with health workers or doctors.
+        5. **Education** on skin cancer prevention.
+
+        **About the AI Analysis:**
+        - The AI can detect 6 types of skin lesions.
+        - Results are classified as: LOW 🟢, MEDIUM 🟠, HIGH 🟡, URGENT 🔴.
+        - The AI's confidence level is shown as a percentage.
+
+        **Important Notes:**
+        - The AI is a support tool ONLY and does not replace a professional doctor.
+        - Always follow up with a local health worker for any unusual results.
+        - Perform regular skin checks for early detection.
+        - Protect your skin from sun and UV exposure.
+
+        Patient's question: "{chat_message.message}"
+
+        Please provide a helpful, safe, and encouraging response to promote proactive skin health care.
         """
 
         model = genai.GenerativeModel(model_name='gemma-3-27b-it')
@@ -185,7 +199,7 @@ async def send_chat_message(
     current_user: models.User = Depends(get_current_active_user) # Changed dependency and param name
 ):
     # Role check for authorized personnel
-    if current_user.role not in [schemas.UserRole.DOCTOR, schemas.UserRole.CLINIC_STAFF, schemas.UserRole.ADMIN]:
+    if current_user.role not in [schemas.UserRole.DOCTOR, schemas.UserRole.LOCAL_CADRE, schemas.UserRole.ADMIN]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User does not have permission to access this feature."
@@ -196,7 +210,7 @@ async def send_chat_message(
     if not patient_instance:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Không tìm thấy bệnh nhân với ID {chat_message.patient_id}."
+            detail=f"Patient with ID {chat_message.patient_id} not found."
         )
 
     # patient_instance.id is an int at runtime. Type checkers might warn due to SQLAlchemy's Column type.
@@ -212,7 +226,7 @@ async def send_chat_message(
     if chat_message.message and chat_message.message.strip():
         message_content = chat_message.message.strip()
         # Log entry includes timestamp, user email, role, and the message
-        log_entry = f"Lưu ý mới ({datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')} bởi {current_user.email} [{current_user.role.value}]): {message_content}"
+        log_entry = f"New note ({datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')} by {current_user.email} [{current_user.role.value}]): {message_content}"
         
         if current_emr_summary.strip(): # Check if current_emr_summary is not just whitespace
             new_emr_summary = f"{current_emr_summary}\n\n{log_entry}"
@@ -227,26 +241,26 @@ async def send_chat_message(
             # but we already checked patient_instance. So, this might indicate another issue.
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Không thể cập nhật EMR cho bệnh nhân ID {patient_id_for_update}."
+                detail=f"Could not update EMR for patient ID {patient_id_for_update}."
             )
         emr_summary_for_prompt = new_emr_summary
     # If chat_message.message is empty or whitespace, emr_summary_for_prompt remains current_emr_summary from patient_instance
 
     # Construct the prompt for the AI
     prompt = f"""
-    Bạn là một trợ lý AI y tế hữu ích làm việc cho một phòng khám.
-    Bạn đang hỗ trợ một cán bộ y tế ({current_user.role.value} - {current_user.email}). Vui lòng trả lời bằng tiếng Việt.
-    Định dạng câu trả lời của bạn bằng Markdown.
+    You are a helpful medical AI assistant working for SeekWell.
+    You are assisting a healthcare professional ({current_user.role.value} - {current_user.email}). Please reply in English.
+    Format your response using Markdown.
 
-    Thông tin bệnh nhân:
-    - Tuổi: {getattr(patient_instance, 'age', 'N/A')}
-    - Giới tính: {getattr(patient_instance, 'gender', 'N/A')}
-    - Lịch sử bệnh án (EMR): {emr_summary_for_prompt if emr_summary_for_prompt.strip() else "Chưa có thông tin EMR."}
+    Patient Information:
+    - Age: {getattr(patient_instance, 'age', 'N/A')}
+    - Gender: {getattr(patient_instance, 'gender', 'N/A')}
+    - Medical History (EMR): {emr_summary_for_prompt if emr_summary_for_prompt.strip() else "No EMR information available."}
 
-    Cán bộ nói: "{chat_message.message.strip() if chat_message.message and chat_message.message.strip() else "Cán bộ không cung cấp tin nhắn mới. Vui lòng xem lại EMR và đưa ra nhận xét tổng quan nếu có, hoặc hỏi thêm thông tin nếu cần."}"
+    The professional says: "{chat_message.message.strip() if chat_message.message and chat_message.message.strip() else "The professional did not provide a new message. Please review the EMR and provide a general summary or ask for more information if needed."}"
 
-    Dựa trên thông tin trên và lời nhắn của nhân viên hoặc bác sĩ (nếu có), hãy đưa ra lời khuyên hoặc thông tin liên quan.
-    LƯU Ý QUAN TRỌNG: Bạn không thay thế bác sĩ chuyên nghiệp. Nếu tình hình có vẻ nghiêm trọng hoặc bạn không chắc chắn, hãy luôn khuyên cán bộ y tế tham khảo ý kiến bác sĩ hoặc đưa bệnh nhân đến cơ sở y tế gần nhất.
+    Based on the above information and the message from the staff or doctor (if any), provide relevant advice or information.
+    IMPORTANT NOTE: You are not a substitute for a professional doctor. If the situation seems serious or you are unsure, always advise the healthcare professional to consult a doctor or refer the patient to the nearest medical facility.
     """
 
     try:
