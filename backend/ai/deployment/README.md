@@ -10,6 +10,34 @@ This is the HuggingFace Space for SeekWell's AI-powered skin cancer detection sy
 - **Accuracy**: 69%
 - **Training Dataset**: ISIC skin cancer dataset
 
+## API Documentation
+
+### Using Python Gradio Client
+
+1. Install the python client:
+```bash
+pip install gradio_client
+```
+
+2. Use the API:
+```python
+from gradio_client import Client, handle_file
+
+client = Client("bnmbanhmi/seekwell-skin-cancer")
+result = client.predict(
+    image=handle_file('path/to/your/image.jpg'),
+    api_name="/predict"
+)
+print(result)
+```
+
+### API Endpoint Details
+
+- **API Name**: `/predict`
+- **Input**: Image file (dict format with path/url, size, mime_type, etc.)
+- **Output**: String containing classification results
+- **Method**: POST to `https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict`
+
 ## Supported Classes
 
 1. **ACK** - Actinic keratoses (Precancerous lesions)
@@ -49,7 +77,34 @@ This is the HuggingFace Space for SeekWell's AI-powered skin cancer detection sy
 - **Framework**: PyTorch + Transformers
 - **Processor**: Google ViT Base Patch16-224
 - **Interface**: Gradio
+- **API Format**: RESTful HTTP API with JSON payloads
+- **Response Format**: Plain text string with classification results
 - **Developer**: SeekWell Team
+
+## API Integration Examples
+
+### JavaScript/TypeScript Frontend
+```javascript
+// Using fetch API
+const formData = new FormData();
+formData.append('data', JSON.stringify([imageFile]));
+
+const response = await fetch(
+  'https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict',
+  {
+    method: 'POST',
+    body: formData
+  }
+);
+const result = await response.json();
+```
+
+### cURL Example
+```bash
+curl -X POST \
+  -F "data=@image.jpg" \
+  https://bnmbanhmi-seekwell-skin-cancer.hf.space/api/predict
+```
 
 ## Integration
 
