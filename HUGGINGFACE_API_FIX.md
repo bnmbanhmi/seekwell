@@ -155,6 +155,107 @@ async tryGradioCallAPI(file: File) {
 const pollUrl = `${baseUrl}/gradio_api/queue/data?session_hash=${sessionHash}`;
 ```
 
+## 🔄 **UPDATED SOLUTION - SSE Queue-Based Approach**
+
+After analyzing the Unicode decode error and "POST method not allowed" errors from the HuggingFace Space logs, I identified the real issue:
+
+### **Root Cause - Wrong Protocol**
+The space uses **Server-Sent Events (SSE) with queue-based processing**, not direct HTTP POST calls:
+```json
+{
+  "protocol": "sse_v3",
+  "enable_queue": true,
+  "api_prefix": "/gradio_api"
+}
+```
+
+### **Updated Implementation - SSE Queue System**
+
+**New approach:**
+1. **Upload File**: POST to `/gradio_api/upload`
+2. **Join Queue**: POST to `/gradio_api/queue/join` 
+3. **Wait for Results**: SSE connection to `/gradio_api/queue/data`
+
+```typescript
+// ✅ NEW: Correct SSE-based implementation
+class HuggingFaceAIService {
+  async analyzeImageAI(file: File) {
+    // Step 1: Upload file first
+    const uploadedFile = await this.uploadFile(file);
+    
+    // Step 2: Join processing queue
+    const queueData = await this.joinQueue(uploadedFile);
+    
+    // Step 3: Wait for results via SSE
+    const result = await this.waitForQueueResults(queueData.event_id);
+    
+    return this.parseAPIResponse(result, analysisData);
+  }
+
+  private async uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append('files', file);
+    
+    const response = await fetch(`${baseUrl}/gradio_api/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    return await response.json();
+  }
+
+  private async joinQueue(uploadedFile: any) {
+    const queueData = {
+      data: [uploadedFile],
+      fn_index: 2,
+      session_hash: this.generateSessionHash()
+    };
+    
+    const response = await fetch(`${baseUrl}/gradio_api/queue/join`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(queueData)
+    });
+    
+    return await response.json();
+  }
+
+  private async waitForQueueResults(eventId: string) {
+    return new Promise((resolve, reject) => {
+      const eventSource = new EventSource(`${baseUrl}/gradio_api/queue/data?session_hash=${sessionHash}`);
+      
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.msg === 'process_completed') {
+          eventSource.close();
+          resolve(data.output);
+        }
+      };
+    });
+  }
+}
+```
+
+### **Why This Fixes the Errors**
+
+1. **Unicode Decode Error**: Fixed by proper file upload endpoint
+2. **POST Method Not Allowed**: Fixed by using correct queue endpoints
+3. **Too Little Data**: Fixed by proper SSE protocol handling
+
+### **Expected Flow Now**
+```
+🚀 Starting AI Analysis with Gradio Queue System...
+📁 Uploading file to Gradio space...
+📤 File uploaded: {path: "/tmp/gradio/abc123.jpg"}
+🔄 Joining processing queue...
+📋 Joined queue: {event_id: "xyz789"}
+⏳ Waiting for queue results...
+🔄 AI processing started...
+✅ Got results from queue
+📊 Classification Results: MEL: 85.32%...
+✅ Analysis successful!
+```
+
 ## 🚀 Expected Results
 
 The API integration should now work correctly:
