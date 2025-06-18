@@ -303,7 +303,8 @@ class HuggingFaceAIService {
   }
 
   /**
-   * Parse the result text to extract predicted class and confidence
+   * Parse the result text to extract predicted class and confidence - FIXED
+   * Now correctly finds the classification with the highest confidence
    */
   private parseResultText(resultText: string): { predictedClass: string; confidence: number } {
     // Skin lesion class mappings
@@ -316,7 +317,47 @@ class HuggingFaceAIService {
       'SEK': 'Seborrheic keratosis'
     };
     
-    // Look for known skin lesion classes in the result
+    console.log('🔍 Parsing result text for highest confidence:', resultText);
+    
+    // Extract all classifications with their confidence scores
+    const classifications: { class: string; confidence: number; shortName: string }[] = [];
+    
+    // Parse each line for pattern like "ACK: 3.61%"
+    const lines = resultText.split('\n');
+    for (const line of lines) {
+      const match = line.match(/([A-Z]{3,4}):\s*(\d+\.?\d*)%/);
+      if (match) {
+        const shortName = match[1];
+        const confidence = parseFloat(match[2]) / 100;
+        const longName = skinLesionClasses[shortName as keyof typeof skinLesionClasses];
+        
+        if (longName) {
+          classifications.push({
+            class: longName,
+            confidence: confidence,
+            shortName: shortName
+          });
+          console.log(`📊 Found classification: ${shortName} (${longName}) - ${(confidence * 100).toFixed(2)}%`);
+        }
+      }
+    }
+    
+    // Find the classification with the highest confidence
+    if (classifications.length > 0) {
+      const topClassification = classifications.reduce((prev, current) => 
+        current.confidence > prev.confidence ? current : prev
+      );
+      
+      console.log(`🎯 Top prediction: ${topClassification.shortName} (${topClassification.class}) - ${(topClassification.confidence * 100).toFixed(2)}%`);
+      
+      return {
+        predictedClass: topClassification.class,
+        confidence: topClassification.confidence
+      };
+    }
+    
+    // Fallback: if no structured data found, use the old logic
+    console.warn('⚠️ No structured classifications found, using fallback parsing');
     let predictedClass = 'Unknown';
     let confidence = 0.5;
 
@@ -333,12 +374,6 @@ class HuggingFaceAIService {
     const confidenceMatch = resultText.match(/(\d+\.?\d*)%/);
     if (confidenceMatch) {
       confidence = parseFloat(confidenceMatch[1]) / 100;
-    } else {
-      // Try to find decimal confidence (e.g., 0.85)
-      const decimalMatch = resultText.match(/0\.(\d+)/);
-      if (decimalMatch) {
-        confidence = parseFloat(`0.${decimalMatch[1]}`);
-      }
     }
 
     return { predictedClass, confidence };

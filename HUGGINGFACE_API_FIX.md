@@ -366,3 +366,87 @@ The HuggingFace API integration should now work perfectly! 🎉
 4. **Production deployment** - Service ready for live use
 
 The HuggingFace API integration is now correctly implemented and should resolve all 404 errors!
+
+## 🎯 **PARSING FIX - Highest Confidence Selection**
+
+### **Issue Identified:**
+The AI analysis was working correctly and returning proper results, but the parsing logic was incorrectly selecting the **first** classification result instead of the **highest confidence** result.
+
+**Example API Response:**
+```
+Classification Results:
+ACK: 3.61%    ← Was incorrectly selecting this (first in list)
+BCC: 4.08%
+MEL: 8.79%
+NEV: 65.69%   ← Should select this (highest confidence)
+SCC: 3.09%
+SEK: 14.74%
+```
+
+**Result:** Showing "Actinic keratoses 3.6%" instead of "Nevus/Mole 65.69%"
+
+### **Fix Implemented:**
+
+```typescript
+// ✅ FIXED: Now parses ALL classifications and finds highest confidence
+private parseResultText(resultText: string) {
+  const classifications: { class: string; confidence: number; shortName: string }[] = [];
+  
+  // Parse each line for pattern like "NEV: 65.69%"
+  const lines = resultText.split('\n');
+  for (const line of lines) {
+    const match = line.match(/([A-Z]{3,4}):\s*(\d+\.?\d*)%/);
+    if (match) {
+      const shortName = match[1];
+      const confidence = parseFloat(match[2]) / 100;
+      const longName = skinLesionClasses[shortName];
+      
+      if (longName) {
+        classifications.push({ class: longName, confidence, shortName });
+      }
+    }
+  }
+  
+  // ✅ Find the classification with the HIGHEST confidence
+  const topClassification = classifications.reduce((prev, current) => 
+    current.confidence > prev.confidence ? current : prev
+  );
+  
+  return {
+    predictedClass: topClassification.class,
+    confidence: topClassification.confidence
+  };
+}
+```
+
+### **Expected Working Result:**
+
+**Before Fix:**
+```
+AI Analysis Results
+Risk Level: MEDIUM
+AI Prediction: Actinic keratoses
+Confidence: 3.6% (VERY_LOW)
+```
+
+**After Fix:**
+```
+AI Analysis Results  
+Risk Level: LOW
+AI Prediction: Nevus/Mole
+Confidence: 65.69% (HIGH)
+```
+
+### **Console Logs Added:**
+```
+🔍 Parsing result text for highest confidence: Classification Results:...
+📊 Found classification: ACK (Actinic keratoses) - 3.61%
+📊 Found classification: BCC (Basal cell carcinoma) - 4.08%
+📊 Found classification: MEL (Melanoma) - 8.79%
+📊 Found classification: NEV (Nevus/Mole) - 65.69%
+📊 Found classification: SCC (Squamous cell carcinoma) - 3.09%
+📊 Found classification: SEK (Seborrheic keratosis) - 14.74%
+🎯 Top prediction: NEV (Nevus/Mole) - 65.69%
+```
+
+The AI analysis will now correctly display the classification with the highest confidence score! 🎉
