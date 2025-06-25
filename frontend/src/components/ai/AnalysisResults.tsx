@@ -29,8 +29,8 @@ import { AIAnalysisResult, RISK_LEVEL_COLORS } from '../../types/AIAnalysisTypes
 
 interface AnalysisResultsProps {
   result: AIAnalysisResult;
-  onScheduleFollowUp?: () => void;
-  onRequestReview?: () => void;
+  onScheduleFollowUp?: (result: AIAnalysisResult) => void;
+  onRequestReview?: (result: AIAnalysisResult) => void;
 }
 
 export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
@@ -220,26 +220,43 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   </Alert>
                 )}
 
+                {/* High-Risk Consultation Button for Urgent/High cases */}
+                {(riskLevel === 'URGENT' || riskLevel === 'HIGH') && (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    startIcon={<LocalHospital />}
+                    onClick={() => onScheduleFollowUp?.(result)}
+                    fullWidth
+                    sx={{ fontWeight: 'bold' }}
+                  >
+                    {riskLevel === 'URGENT' ? 'Đặt khám khẩn cấp ngay' : 'Đặt lịch tư vấn ưu tiên'}
+                  </Button>
+                )}
+
                 {result.risk_assessment.needs_professional_review && (
                   <Button
                     variant="contained"
                     color="warning"
                     startIcon={<Visibility />}
-                    onClick={onRequestReview}
+                    onClick={() => onRequestReview?.(result)}
                     fullWidth
                   >
                     Request Professional Review
                   </Button>
                 )}
 
-                <Button
-                  variant="outlined"
-                  startIcon={<Schedule />}
-                  onClick={onScheduleFollowUp}
-                  fullWidth
-                >
-                  Schedule Follow-up
-                </Button>
+                {/* Regular follow-up for Medium/Low risk */}
+                {(riskLevel === 'MEDIUM' || riskLevel === 'LOW') && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<Schedule />}
+                    onClick={() => onScheduleFollowUp?.(result)}
+                    fullWidth
+                  >
+                    Schedule Follow-up
+                  </Button>
+                )}
 
                 <Divider />
 
