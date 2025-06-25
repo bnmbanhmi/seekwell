@@ -11,7 +11,14 @@ import {
   Tabs,
   Tab,
   Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  DialogContentText,
 } from '@mui/material';
+import { Warning, LocalHospital } from '@mui/icons-material';
 import { AIAnalysisResult } from '../../types/AIAnalysisTypes';
 import { ImageUpload } from './ImageUpload';
 import { AnalysisResults } from './AnalysisResults';
@@ -47,6 +54,10 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
   const [success, setSuccess] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [serviceStatus, setServiceStatus] = useState<any>(null);
+  
+  // Confirmation dialog state
+  const [urgentDialogOpen, setUrgentDialogOpen] = useState(false);
+  const [pendingUrgentResult, setPendingUrgentResult] = useState<AIAnalysisResult | null>(null);
 
   // Load analysis history on component mount
   useEffect(() => {
@@ -85,11 +96,12 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
     // Add to history
     setAnalysisHistory(prev => [result, ...prev]);
     
-    // Auto-trigger high-risk consultation for urgent/high risk cases
+    // Show confirmation dialog for urgent/high risk cases instead of auto-redirect
     if (result.risk_assessment?.risk_level === 'URGENT' || 
         result.risk_assessment?.risk_level === 'HIGH') {
       setTimeout(() => {
-        handleScheduleHighRiskConsultation(result);
+        setPendingUrgentResult(result);
+        setUrgentDialogOpen(true);
       }, 2000); // Give user time to see the results first
     }
   };
@@ -124,6 +136,21 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
   const handleRequestReview = (result: AIAnalysisResult) => {
     // TODO: Implement professional review request
     setSuccess('Professional review requested!');
+  };
+
+  // Confirmation dialog handlers
+  const handleUrgentDialogConfirm = () => {
+    if (pendingUrgentResult) {
+      handleScheduleHighRiskConsultation(pendingUrgentResult);
+    }
+    setUrgentDialogOpen(false);
+    setPendingUrgentResult(null);
+  };
+
+  const handleUrgentDialogCancel = () => {
+    setUrgentDialogOpen(false);
+    setPendingUrgentResult(null);
+    setSuccess('You can schedule an urgent consultation later from the Results tab.');
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -290,6 +317,70 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
           {success}
         </Alert>
       </Snackbar>
+
+      {/* Urgent Consultation Confirmation Dialog */}
+      <Dialog
+        open={urgentDialogOpen}
+        onClose={() => setUrgentDialogOpen(false)}
+        aria-labelledby="urgent-consultation-dialog-title"
+        aria-describedby="urgent-consultation-dialog-description"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="urgent-consultation-dialog-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Warning color="error" />
+          Urgent Medical Consultation Recommended
+        </DialogTitle>
+        <DialogContent>
+          <Alert severity={pendingUrgentResult?.risk_assessment?.risk_level === 'URGENT' ? 'error' : 'warning'} sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              <strong>Risk Level: {pendingUrgentResult?.risk_assessment?.risk_level}</strong>
+            </Typography>
+            <Typography variant="body2">
+              Predicted Condition: {pendingUrgentResult?.top_prediction?.label || 'Unknown'}
+            </Typography>
+            <Typography variant="body2">
+              Confidence: {((pendingUrgentResult?.top_prediction?.confidence || 0) * 100).toFixed(1)}%
+            </Typography>
+          </Alert>
+          
+          <DialogContentText id="urgent-consultation-dialog-description">
+            Based on the AI analysis, this skin lesion requires {pendingUrgentResult?.risk_assessment?.risk_level === 'URGENT' ? 'immediate' : 'priority'} medical attention.
+            
+            <br /><br />
+            
+            Would you like to schedule an urgent consultation with a specialist? This will help you:
+            
+            <br />
+            • Get expert medical evaluation
+            <br />
+            • Receive proper diagnosis and treatment
+            <br />
+            • Access priority appointment scheduling
+            <br /><br />
+            
+            You can also schedule this consultation later from your dashboard.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, gap: 1 }}>
+          <Button 
+            onClick={handleUrgentDialogCancel} 
+            color="inherit" 
+            variant="outlined"
+          >
+            Schedule Later
+          </Button>
+          <Button 
+            onClick={handleUrgentDialogConfirm} 
+            color={pendingUrgentResult?.risk_assessment?.risk_level === 'URGENT' ? 'error' : 'warning'}
+            variant="contained"
+            startIcon={<LocalHospital />}
+            autoFocus
+          >
+            Schedule Now
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

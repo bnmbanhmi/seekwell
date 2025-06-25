@@ -202,7 +202,7 @@ const CreateEMR: React.FC = () => {
     
     // Validation
     if (!selectedPatientId || !doctorId) {
-      setError('Vui lòng chọn bệnh nhân và bác sĩ.');
+      setError('Please select a patient and doctor.');
       return;
     }
     
@@ -238,7 +238,7 @@ const CreateEMR: React.FC = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setSuccess('Hồ sơ bệnh án đã được lưu thành công!');
+      setSuccess('Medical record has been saved successfully!');
       setFormData({
         in_diagnosis: '',
         doctor_notes: '',
@@ -273,14 +273,14 @@ const CreateEMR: React.FC = () => {
       } else if (err.response?.status === 400) {
         setError(`Yêu cầu không hợp lệ: ${err.response.data?.detail || 'Dữ liệu không hợp lệ'}`);
       } else {
-        setError('Không thể lưu hồ sơ bệnh án. Vui lòng thử lại.');
+        setError('Unable to save medical record. Please try again.');
       }
     }
   };
 
   return (
     <div className={styles.createEmrContainer}>
-      <h1 className={styles.title}>Tạo Hồ sơ Bệnh án</h1>
+      <h1 className={styles.title}>Create Medical Record</h1>
       {error && <p className={styles.errorMessage}>{error}</p>}
       {success && <p className={styles.successMessage}>{success}</p>}
 
@@ -545,14 +545,14 @@ const CreateEMR: React.FC = () => {
               </li>
             ))}
           </ul>
-          <button className={styles.button} onClick={() => setStep(4)}>Xem lại hồ sơ</button>
+          <button className={styles.button} onClick={() => setStep(4)}>Review record</button>
         </div>
       )}
 
       {/* Step 4: Review EMR */}
       {step === 4 && (
         <div className={styles.reviewEmr}>
-          <h2>Xem lại Hồ sơ Bệnh án</h2>
+          <h2>Review Medical Record</h2>
           <p>
             <strong>Ghi chú tư vấn:</strong> {formData.doctor_notes}
           </p>
@@ -570,7 +570,7 @@ const CreateEMR: React.FC = () => {
               </li>
             ))}
           </ul>
-          <button className={styles.button} onClick={handleSaveEMR}>Lưu hồ sơ</button>
+          <button className={styles.button} onClick={handleSaveEMR}>Save record</button>
           <button className={styles.button} onClick={handleCancel}>Hủy</button>
         </div>
       )}

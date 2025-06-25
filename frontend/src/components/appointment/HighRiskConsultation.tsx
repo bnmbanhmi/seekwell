@@ -133,7 +133,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
       setDoctors(specialists.length > 0 ? specialists : response.data);
     } catch (err) {
       console.error('Failed to fetch doctors:', err);
-      setError('Không thể tải danh sách bác sĩ chuyên khoa.');
+      setError('Unable to load specialist doctor list.');
     } finally {
       setLoading(false);
     }
@@ -141,7 +141,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
 
   const fetchPrioritySlots = async () => {
     if (!formData.date) {
-      setError('Vui lòng chọn ngày khám.');
+      setError('Please select an examination date.');
       return;
     }
 
@@ -178,7 +178,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
       setStep(2);
     } catch (err) {
       console.error('Failed to fetch available slots:', err);
-      setError('Không thể tải lịch trống ưu tiên.');
+      setError('Unable to load priority schedule.');
     } finally {
       setLoading(false);
     }
@@ -197,7 +197,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
 
   const handleBooking = async () => {
     if (!formData.doctorId || !formData.date || !formData.time) {
-      setError('Vui lòng điền đầy đủ thông tin.');
+      setError('Please fill in all information.');
       return;
     }
 
@@ -225,7 +225,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
         },
       });
 
-      setSuccess('Đặt lịch khám khẩn cấp thành công! Bạn sẽ nhận được xác nhận trong thời gian sớm nhất.');
+      setSuccess('Urgent consultation appointment booked successfully! You will receive confirmation shortly.');
       
       if (onBookingComplete) {
         onBookingComplete(true);
@@ -246,7 +246,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
 
     } catch (err: any) {
       console.error('Failed to book appointment:', err);
-      const errorMessage = err.response?.data?.detail || 'Không thể đặt lịch khám. Vui lòng thử lại.';
+      const errorMessage = err.response?.data?.detail || 'Unable to book appointment. Please try again.';
       setError(errorMessage);
       
       if (onBookingComplete) {
@@ -268,17 +268,17 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
 
   const getPriorityText = (urgency: string) => {
     switch (urgency) {
-      case 'URGENT': return 'Khẩn cấp - Cần khám ngay';
-      case 'HIGH': return 'Ưu tiên cao - Khám trong 1-2 ngày';
-      case 'MEDIUM': return 'Ưu tiên trung bình - Khám trong tuần';
-      default: return 'Ưu tiên trung bình';
+      case 'URGENT': return 'Urgent - Need immediate consultation';
+      case 'HIGH': return 'High priority - Consult within 1-2 days';
+      case 'MEDIUM': return 'Medium priority - Consult within the week';
+      default: return 'Medium priority';
     }
   };
 
   return (
     <div className="high-risk-consultation">
       <div className="consultation-header">
-        <h2>Đặt lịch khám chuyên khoa</h2>
+        <h2>Book Specialist Consultation</h2>
         <div className={`priority-badge ${getPriorityBadgeClass(formData.urgencyLevel)}`}>
           {getPriorityText(formData.urgencyLevel)}
         </div>
@@ -289,8 +289,8 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
         <div className="ai-redirect-notice">
           <div className="notice-icon">🤖</div>
           <div className="notice-content">
-            <h4>Tự động chuyển từ phân tích AI</h4>
-            <p>Hệ thống AI đã phát hiện ca có mức độ rủi ro cao. Thông tin đã được điền sẵn dựa trên kết quả phân tích.</p>
+            <h4>Auto-transferred from AI Analysis</h4>
+            <p>The AI system has detected a high-risk case. Information has been pre-filled based on analysis results.</p>
           </div>
         </div>
       )}
@@ -305,14 +305,14 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
           
           {aiAnalysisResult && (
             <div className="ai-assessment-summary">
-              <h4>Kết quả đánh giá AI:</h4>
+              <h4>AI Assessment Results:</h4>
               <div className="assessment-details">
                 <div className="detail-row">
                   <span className="label">Tình trạng phát hiện:</span>
                   <span className="value">{aiAnalysisResult.top_prediction?.label}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Độ tin cậy:</span>
+                  <span className="label">Confidence:</span>
                   <span className="value">{((aiAnalysisResult.top_prediction?.confidence || 0) * 100).toFixed(1)}%</span>
                 </div>
                 <div className="detail-row">
@@ -323,7 +323,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
                 </div>
                 {aiAnalysisResult.risk_assessment.needs_urgent_attention && (
                   <div className="urgent-notice">
-                    ⚠️ Cần được chú ý khẩn cấp
+                    ⚠️ Requires urgent attention
                   </div>
                 )}
               </div>
@@ -331,7 +331,7 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
           )}
 
           <div className="form-group">
-            <label htmlFor="consultation-date">Ngày mong muốn khám:</label>
+            <label htmlFor="consultation-date">Preferred consultation date:</label>
             <input
               id="consultation-date"
               type="date"
@@ -343,9 +343,9 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
               required
             />
             <small className="help-text">
-              {formData.urgencyLevel === 'URGENT' && 'Chỉ hiển thị 3 ngày tới cho ca khẩn cấp'}
-              {formData.urgencyLevel === 'HIGH' && 'Khuyến nghị khám trong vòng 1-2 ngày'}
-              {formData.urgencyLevel === 'MEDIUM' && 'Khuyến nghị khám trong tuần'}
+              {formData.urgencyLevel === 'URGENT' && 'Only showing next 3 days for urgent cases'}
+              {formData.urgencyLevel === 'HIGH' && 'Recommended consultation within 1-2 days'}
+              {formData.urgencyLevel === 'MEDIUM' && 'Recommended consultation within the week'}
             </small>
           </div>
 
@@ -393,10 +393,10 @@ const HighRiskConsultation: React.FC<HighRiskConsultationProps> = ({
                 <div key={slot.datetime} className="time-slot-card">
                   <div className="slot-time">
                     {slot.datetime.split('T')[1].slice(0, 5)}
-                    {slot.isEmergency && <span className="emergency-badge">Khẩn cấp</span>}
+                    {slot.isEmergency && <span className="emergency-badge">Urgent</span>}
                   </div>
                   <div className="available-doctors">
-                    <h5>Bác sĩ khả dụng:</h5>
+                    <h5>Available doctors:</h5>
                     {slot.available_doctors.map((doctor: any) => (
                       <button
                         key={doctor.doctor_id}

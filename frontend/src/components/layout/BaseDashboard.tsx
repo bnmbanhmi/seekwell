@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import Logo from '../common/Logo';
 import { UserRole } from '../../types/UserType';
 import './BaseDashboard.css'; // Assuming you have a CSS file for styles
 
@@ -77,14 +78,11 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
               <span></span>
             </button>
             
-            <img
-              src="/logo192.png"
-              alt="SeekWell Logo"
+            <Logo 
               className="logo"
+              alt="SeekWell Logo"
+              height={36}
             />
-            <h1 className="title">
-              SeekWell - AI Health Assistant
-            </h1>
           </div>
 
           {/* Account dropdown */}
@@ -113,13 +111,13 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
                   className="dropdown-item"
                   onClick={handleProfile}
                 >
-                  Hồ sơ
+                  Profile
                 </button>
                 <button
                   className="dropdown-item"
                   onClick={handleLogout}
                 >
-                  Đăng xuất
+                  Logout
                 </button>
               </div>
             )}

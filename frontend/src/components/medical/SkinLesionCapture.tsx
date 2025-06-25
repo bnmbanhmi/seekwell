@@ -72,7 +72,7 @@ const SkinLesionCapture: React.FC<SkinLesionCaptureProps> = ({ onCapture, onClos
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
-      alert('Không thể truy cập camera. Vui lòng sử dụng chức năng tải ảnh từ thư viện.');
+      alert('Cannot access camera. Please use the image upload function from library.');
     }
   }, [cameraMode]);
 
@@ -441,7 +441,7 @@ const SkinLesionCapture: React.FC<SkinLesionCaptureProps> = ({ onCapture, onClos
                 <div className={styles.disclaimer}>
                   <p className={styles.disclaimerText}>
                     ⚠️ <strong>Lưu ý quan trọng:</strong> Kết quả phân tích AI chỉ mang tính chất tham khảo. 
-                    Vui lòng tham khảo ý kiến bác sĩ chuyên khoa để có chẩn đoán chính xác.
+                    Please consult a specialist doctor for accurate diagnosis.
                   </p>
                 </div>
               </>

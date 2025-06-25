@@ -125,37 +125,44 @@ const MobileCHWInterface: React.FC = () => {
 
   const quickActions: QuickAction[] = [
     {
-      id: 'ai-scan',
-      title: 'AI Skin Analysis',
-      icon: '🤖',
+      id: 'ai-bridge',
+      title: 'Bridge AI to Care',
+      icon: '🔗',
       path: '/dashboard/ai-analysis',
       color: '#8b5cf6',
     },
     {
+      id: 'cultural-guidance',
+      title: 'Cultural Health Guidance',
+      icon: '🌍',
+      path: '/dashboard/cultural-guidance',
+      color: '#10b981',
+    },
+    {
+      id: 'doctor-bridge',
+      title: 'Doctor-Community Bridge',
+      icon: '🤝',
+      path: '/dashboard/doctor-bridge',
+      color: '#3b82f6',
+    },
+    {
       id: 'emergency',
-      title: 'High-Risk Consultation',
-      icon: '🚨',
+      title: 'Urgent Care Bridge',
+      icon: '�',
       path: '/dashboard/appointments/high-risk',
       color: '#ef4444',
       urgent: true,
     },
     {
-      id: 'visit',
-      title: 'Schedule Visit',
-      icon: '📅',
-      path: '/dashboard/community-health',
-      color: '#10b981',
-    },
-    {
-      id: 'emr',
-      title: 'Create Health Record',
-      icon: '📝',
-      path: '/dashboard/community-emr',
-      color: '#3b82f6',
+      id: 'first-mile',
+      title: 'First Mile Coordination',
+      icon: '�',
+      path: '/dashboard/care-coordination',
+      color: '#f59e0b',
     },
     {
       id: 'patients',
-      title: 'My Patients',
+      title: 'Community Members',
       icon: '👥',
       path: '/dashboard/patients',
       color: '#f59e0b',
@@ -225,7 +232,8 @@ const MobileCHWInterface: React.FC = () => {
           </div>
           <div className={styles.userDetails}>
             <h2>Hello, {user?.full_name || user?.username}!</h2>
-            <p>Community Health Worker</p>
+            <p>Community Health Bridge</p>
+            <small>Connecting AI insights to culturally sensitive care</small>
           </div>
         </div>
         <div className={styles.date}>

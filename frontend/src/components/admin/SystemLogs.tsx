@@ -76,7 +76,7 @@ const SystemLogs: React.FC = () => {
         'Cuộc hẹn đã hoàn thành'
       ],
       USER: [
-        'Hồ sơ người dùng đã được cập nhật',
+        'User profile has been updated',
         'Người dùng mới đã đăng ký',
         'Vai trò người dùng đã được thay đổi',
         'Tài khoản người dùng đã bị vô hiệu hóa',

@@ -34,7 +34,7 @@ try:
         genai.configure(api_key=settings.GOOGLE_API_KEY)
         print("Gemini SDK configured successfully at module level.") # Added for confirmation
     else:
-        print("CẢNH BÁO: GOOGLE_API_KEY chưa được đặt trong cài đặt. Hãy đảm bảo biến này được đặt trong môi trường của bạn để SDK hoạt động chính xác.")
+        print("WARNING: GOOGLE_API_KEY is not set in settings. Please ensure this variable is set in your environment for the SDK to work properly.")
 except AttributeError as e:
     print(f"CRITICAL SDK ATTRIBUTE ERROR at module level: Failed to configure Gemini SDK - {e}. Check google-generativeai installation and version.")
 except Exception as e:
@@ -76,39 +76,46 @@ async def public_chat_message(
 
         # Construct prompt for general inquiries
         prompt = f"""
-        You are a smart AI assistant for SeekWell - an AI-powered skin cancer detection platform. You help patients and the community with:
+        You are the SeekWell AI assistant - a friendly, knowledgeable guide for community health services in ASEAN. 
+        
+        🌟 **About SeekWell:**
+        SeekWell is a community-driven health platform that combines AI-powered skin cancer detection with a network of local health workers (cadres) to serve ASEAN communities. Our mission is to make early detection accessible, especially in underserved areas.
 
-        1. **Information about SeekWell** and its AI skin cancer detection service.
-        2. **Guidance on using** the photo capture and skin analysis features.
-        3. **Education** on skin health and skin cancer prevention.
-        4. **Basic advice** on abnormal skin signs.
-        5. **Connecting** with community health workers (cadres) and doctors.
+        📱 **How SeekWell Works:**
+        1. **Patients** use mobile phones to capture skin lesion photos
+        2. **AI Analysis** provides instant preliminary screening (6 lesion types)
+        3. **Community Health Cadres** review cases and provide local care
+        4. **Doctors** handle complex cases through our referral system
+        5. **Mobile-first** design works offline and in low-connectivity areas
 
-        **About SeekWell:**
-        - An AI platform for early skin cancer detection in ASEAN communities.
-        - Uses a Vision Transformer AI to analyze 6 types of skin lesions.
-        - A 3-tier system: Patient → AI → Cadre → Doctor.
-        - Designed for mobile phones and works offline.
-        - AI Model: bnmbanhmi/seekwell-skin-cancer on HuggingFace.
+        🔍 **AI Detection Capabilities:**
+        - **HIGH PRIORITY** 🔴: MEL (Melanoma), BCC (Basal Cell Carcinoma), SCC (Squamous Cell Carcinoma)
+        - **MEDIUM PRIORITY** 🟠: ACK (Actinic Keratosis/Solar Keratosis)
+        - **LOW PRIORITY** 🟢: NEV (Nevus/Mole), SEK (Seborrheic Keratosis)
+        - **AI Model:** bnmbanhmi/seekwell-skin-cancer (HuggingFace)
 
-        **Detected Lesion Types:**
-        - MEL (Melanoma) - High Risk 🔴
-        - BCC (Basal Cell Carcinoma) - High Risk 🔴
-        - SCC (Squamous Cell Carcinoma) - High Risk 🔴
-        - ACK (Actinic Keratosis) - Medium Risk 🟠
-        - NEV (Nevus/Mole) - Low Risk 🟢
-        - SEK (Seborrheic Keratosis) - Low Risk 🟢
+        🏥 **Community Health Network:**
+        - **Health Centers** serve as local hubs for care and referrals
+        - **Local Cadres** are trained community health workers who bridge AI and clinical care
+        - **Mobile Coordination** allows cadres to work efficiently in the field
+        - **Referral Pathways** ensure complex cases reach appropriate specialists
 
-        **Important Rules:**
-        - Reply in English, in a friendly and easy-to-understand manner.
-        - ALWAYS emphasize that the AI is a support tool, not a substitute for a doctor.
-        - Encourage early and regular check-ups with health workers.
-        - Use emojis and Markdown formatting for readability.
-        - Provide educational information on skin cancer prevention.
+        ✨ **Your Role as Assistant:**
+        Help visitors understand SeekWell's services, guide them through the AI analysis process, provide skin health education, and connect them with local health resources. Always emphasize that AI is a screening tool - not a replacement for professional medical care.
 
-        Question: "{chat_message.message}"
+        🤝 **Community Focus:**
+        Emphasize that SeekWell is designed by and for ASEAN communities, with special attention to rural and underserved areas. Promote the value of local health cadres and community-based care.
 
-        Please provide a helpful and professional answer.
+        **User Question:** "{chat_message.message}"
+
+        **Instructions:**
+        - Respond in a warm, helpful tone using emojis and markdown formatting
+        - Focus on community health and early detection
+        - Highlight the role of local health cadres
+        - Encourage regular skin checks and sun protection
+        - Always remind users that AI results need professional follow-up
+        - Provide practical, actionable advice
+        - Mention SeekWell's mobile-first, offline-capable design when relevant
         """
 
         model = genai.GenerativeModel(model_name='gemma-3-27b-it')
@@ -123,7 +130,7 @@ async def public_chat_message(
         print(f"Error in public chat: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Xin lỗi, hiện tại hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ trực tiếp qua số điện thoại (028) 1234-5678."
+            detail="Sorry, the system is currently experiencing issues. Please try again later or contact us directly."
         )
 
 # Patient-specific chatbot endpoint
@@ -151,30 +158,50 @@ async def patient_chat_message(
 
         # Construct prompt for authenticated patients
         prompt = f"""
-        You are a personal AI assistant for patient {current_user.full_name} within the SeekWell system.
+        You are the personal SeekWell AI assistant for patient {current_user.full_name}. You're here to support their health journey within our community health network.
 
-        **SeekWell** is a platform for early skin cancer detection using AI for ASEAN communities. You can help with:
+        👋 **Welcome {current_user.full_name}!**
+        
+        🌟 **How I Can Help You:**
+        
+        🔍 **AI Analysis Support:**
+        - Guide you through taking clear, well-lit photos of skin lesions
+        - Explain AI results and confidence levels in simple terms
+        - Help you understand the 6 types of lesions we detect
+        - Prepare you for follow-up with your local health cadre
 
-        1. **Advice on skin health** and signs to look out for.
-        2. **Guidance on using** the AI skin analysis feature.
-        3. **Explaining AI results** and next steps.
-        4. **Preparing for consultations** with health workers or doctors.
-        5. **Education** on skin cancer prevention.
+        🏥 **Community Health Navigation:**
+        - Explain the role of your local community health cadre
+        - Help you prepare questions for health visits
+        - Guide you through the referral pathway if specialist care is needed
+        - Connect you with nearby health centers and services
 
-        **About the AI Analysis:**
-        - The AI can detect 6 types of skin lesions.
-        - Results are classified as: LOW 🟢, MEDIUM 🟠, HIGH 🟡, URGENT 🔴.
-        - The AI's confidence level is shown as a percentage.
+        📱 **Your Health Journey:**
+        - Track your skin health over time
+        - Understand when to seek immediate care vs. routine follow-up
+        - Learn about skin cancer prevention and sun protection
+        - Get tips for regular self-examinations
 
-        **Important Notes:**
-        - The AI is a support tool ONLY and does not replace a professional doctor.
-        - Always follow up with a local health worker for any unusual results.
-        - Perform regular skin checks for early detection.
-        - Protect your skin from sun and UV exposure.
+        🤝 **Community Connection:**
+        - Your local health cadre is trained to work with our AI system
+        - They can provide personalized care and answer detailed questions
+        - SeekWell works offline, so you can use it anywhere
+        - You're part of a growing network of health-conscious communities
 
-        Patient's question: "{chat_message.message}"
+        ⚠️ **Important Reminders:**
+        - Our AI is a screening tool - always follow up with health professionals
+        - HIGH PRIORITY results (🔴) need prompt attention from your cadre
+        - Regular skin checks help catch changes early
+        - Protect your skin with sunscreen, clothing, and shade
 
-        Please provide a helpful, safe, and encouraging response to promote proactive skin health care.
+        **Your Question:** "{chat_message.message}"
+
+        **Response Guidelines:**
+        - Be encouraging and supportive about their health journey
+        - Use simple, clear language with relevant emojis
+        - Focus on actionable next steps
+        - Emphasize the community support available to them
+        - Always promote collaboration with local health cadres
         """
 
         model = genai.GenerativeModel(model_name='gemma-3-27b-it')
@@ -189,7 +216,7 @@ async def patient_chat_message(
         print(f"Error in patient chat: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Xin lỗi, hiện tại hệ thống đang gặp sự cố. Vui lòng thử lại sau."
+            detail="Sorry, the system is currently experiencing issues. Please try again later."
         )
 
 @router.post("/send", response_model=ChatResponse)
@@ -247,20 +274,83 @@ async def send_chat_message(
     # If chat_message.message is empty or whitespace, emr_summary_for_prompt remains current_emr_summary from patient_instance
 
     # Construct the prompt for the AI
+    role_specific_context = ""
+    if current_user.role == models.UserRole.LOCAL_CADRE:
+        role_specific_context = """
+        **Role Context - Community Health Cadre:**
+        You are supporting a frontline community health worker who serves as the crucial bridge between AI technology and community care. They conduct home visits, manage patient follow-ups, coordinate with health centers, and work with mobile tools often in offline conditions.
+        
+        **Focus Areas:**
+        - Community health visit planning and documentation
+        - AI result interpretation for community members
+        - Mobile coordination and offline workflow management
+        - Patient education and prevention programs
+        - Referral pathway coordination with doctors
+        - Coverage area management and resource allocation
+        """
+    elif current_user.role == models.UserRole.DOCTOR:
+        role_specific_context = """
+        **Role Context - Medical Doctor:**
+        You are supporting a doctor who receives pre-screened cases from the AI system and community health cadres. They focus on complex diagnoses, treatment planning, and clinical oversight of the community health network.
+        
+        **Focus Areas:**
+        - Clinical decision support for AI-flagged cases
+        - Referral management from community cadres
+        - Complex case diagnosis and treatment planning
+        - EMR review and clinical documentation
+        - Health center coordination and quality assurance
+        - Professional guidance for community health programs
+        """
+    elif current_user.role == models.UserRole.ADMIN:
+        role_specific_context = """
+        **Role Context - System Administrator:**
+        You are supporting a system administrator who manages the overall SeekWell platform, including user management, cadre assignments, health center coordination, and system analytics.
+        
+        **Focus Areas:**
+        - System performance and analytics monitoring
+        - Cadre management (assignments, training, coverage areas)
+        - Health center network coordination
+        - User management and access control
+        - Data insights and community health trends
+        - Platform configuration and workflow optimization
+        """
+
     prompt = f"""
-    You are a helpful medical AI assistant working for SeekWell.
-    You are assisting a healthcare professional ({current_user.role.value} - {current_user.email}). Please reply in English.
-    Format your response using Markdown.
+    You are the SeekWell AI assistant for healthcare professionals, designed to support community health initiatives across ASEAN.
 
-    Patient Information:
-    - Age: {getattr(patient_instance, 'age', 'N/A')}
-    - Gender: {getattr(patient_instance, 'gender', 'N/A')}
-    - Medical History (EMR): {emr_summary_for_prompt if emr_summary_for_prompt.strip() else "No EMR information available."}
+    {role_specific_context}
 
-    The professional says: "{chat_message.message.strip() if chat_message.message and chat_message.message.strip() else "The professional did not provide a new message. Please review the EMR and provide a general summary or ask for more information if needed."}"
+    **SeekWell System Overview:**
+    - **Mission:** Community-driven health network combining AI screening with local expertise
+    - **Network:** Patients → AI Analysis → Community Cadres → Doctors → Health Centers
+    - **Technology:** Mobile-first, offline-capable, AI-powered skin cancer detection
+    - **Coverage:** ASEAN communities with focus on underserved areas
 
-    Based on the above information and the message from the staff or doctor (if any), provide relevant advice or information.
-    IMPORTANT NOTE: You are not a substitute for a professional doctor. If the situation seems serious or you are unsure, always advise the healthcare professional to consult a doctor or refer the patient to the nearest medical facility.
+    **Current Case Context:**
+    **Healthcare Professional:** {current_user.role.value} - {current_user.email}
+    **Patient Information:**
+    - **Age:** {getattr(patient_instance, 'age', 'N/A')}
+    - **Gender:** {getattr(patient_instance, 'gender', 'N/A')}
+    - **Medical History (EMR):** {emr_summary_for_prompt if emr_summary_for_prompt.strip() else "No EMR information available."}
+
+    **Professional's Message/Query:** "{chat_message.message.strip() if chat_message.message and chat_message.message.strip() else "No specific message provided. Please review the EMR and provide clinical insights or ask for more information if needed."}"
+
+    **AI Detection System Reference:**
+    - **HIGH PRIORITY** 🔴: MEL (Melanoma), BCC (Basal Cell Carcinoma), SCC (Squamous Cell Carcinoma)
+    - **MEDIUM PRIORITY** 🟠: ACK (Actinic Keratosis)
+    - **LOW PRIORITY** 🟢: NEV (Nevus/Mole), SEK (Seborrheic Keratosis)
+
+    **Response Guidelines:**
+    - Provide professional, evidence-based guidance appropriate for the user's role
+    - Use clear medical terminology while remaining accessible
+    - Focus on community health and preventive care approaches
+    - Emphasize collaboration between AI, cadres, and clinical staff
+    - Consider resource limitations and mobile/offline working conditions
+    - Suggest practical next steps for patient care and case management
+    - Use markdown formatting for clarity and organization
+
+    **Critical Safety Note:**
+    You are a clinical decision support tool, not a replacement for professional medical judgment. For urgent cases or diagnostic uncertainty, always recommend direct consultation with appropriate medical specialists or referral to equipped healthcare facilities.
     """
 
     try:
@@ -291,29 +381,29 @@ async def send_chat_message(
     except AttributeError as ae:
         # This can happen if genai.GenerativeModel or genai.configure wasn't found/imported as expected
         # due to SDK version or setup issues, despite user's working version.
-        print(f"Lỗi thuộc tính SDK: {ae}. Kiểm tra cấu hình google-generativeai và phiên bản SDK (kỳ vọng 0.8.5).")
+        print(f"SDK attribute error: {ae}. Please check google-generativeai configuration and SDK version (expected 0.8.5).")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="SDK AI không được cấu hình đúng hoặc một phương thức/thuộc tính không tồn tại."
+            detail="AI SDK is not configured properly or a method/attribute does not exist."
         )
     except Exception as e: # General catch-all, then try to identify specific Gemini errors
         error_handled = False
         
         # Handle BlockedPromptException if successfully imported and e is an instance
         if BlockedPromptException and isinstance(e, BlockedPromptException):
-            print(f"Yêu cầu bị chặn bởi API Gemini do chính sách nội dung: {e}")
+            print(f"Request blocked by Gemini API due to content policy: {e}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Yêu cầu của bạn đã bị chặn bởi dịch vụ AI vì lý do an toàn hoặc chính sách nội dung."
+                detail="Your request was blocked by the AI service due to safety or content policy reasons."
             )
 
         # Handle GoogleGenerativeAIError if successfully imported and e is an instance
         # Must be checked *after* more specific exceptions if there's inheritance, or if not, ensure error_handled logic is correct.
         if GoogleGenerativeAIError and isinstance(e, GoogleGenerativeAIError):
-            print(f"Lỗi Google Generative AI: {e}")
+            print(f"Google Generative AI error: {e}")
             error_str = str(e).lower()
             status_code_to_raise = status.HTTP_500_INTERNAL_SERVER_ERROR
-            detail_message = f"Đã xảy ra lỗi với dịch vụ AI. Lỗi: {e}"
+            detail_message = f"An error occurred with the AI service. Error: {e}"
 
             if ("permission_denied" in error_str or
                 "insufficient authentication scopes" in error_str or
@@ -326,20 +416,20 @@ async def send_chat_message(
                     "api key not valid" in error_str or 
                     "invalid api key" in error_str):
                     status_code_to_raise = status.HTTP_401_UNAUTHORIZED
-                detail_message = f"Xác thực dịch vụ AI không thành công, không đủ quyền, hoặc khóa API không hợp lệ. Lỗi: {e}"
+                detail_message = f"AI service authentication failed, insufficient permissions, or invalid API key. Error: {e}"
             elif "resource_exhausted" in error_str or "quota" in error_str:
                 status_code_to_raise = status.HTTP_429_TOO_MANY_REQUESTS
-                detail_message = f"Đã đạt giới hạn yêu cầu cho dịch vụ AI (hết quota). Vui lòng thử lại sau. Lỗi: {e}"
+                detail_message = f"AI service request limit reached (quota exhausted). Please try again later. Error: {e}"
             
             raise HTTPException(status_code=status_code_to_raise, detail=detail_message)
             error_handled = True # Mark as handled if it was this type of error
 
         if not error_handled and not (BlockedPromptException and isinstance(e, BlockedPromptException)): # Re-check if not handled by GoogleGenerativeAIError
             # Fallback for other exceptions not caught above
-            print(f"Lỗi không xác định khi gọi Gemini API: {type(e).__name__} - {e}")
+            print(f"Unknown error when calling Gemini API: {type(e).__name__} - {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Không thể nhận phản hồi từ dịch vụ AI do lỗi không xác định. Lỗi: {type(e).__name__}"
+                detail=f"Unable to get response from AI service due to unknown error. Error: {type(e).__name__}"
             )
 
     return ChatResponse(reply=ai_reply)
@@ -347,3 +437,126 @@ async def send_chat_message(
 @router.get("/history")
 async def get_chat_history_placeholder():
     return {"history": [], "message": "Chat history placeholder - to be implemented if needed"}
+
+# General staff chatbot endpoint for healthcare professionals
+@router.post("/staff", response_model=ChatResponse)
+async def staff_chat_message(
+    chat_message: GeneralChatMessageCreate,
+    current_user: models.User = Depends(get_current_active_user)
+):
+    # Ensure user is a healthcare professional
+    if current_user.role not in [models.UserRole.DOCTOR, models.UserRole.LOCAL_CADRE, models.UserRole.ADMIN]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This endpoint is only available for healthcare professionals."
+        )
+    
+    try:
+        # Configure AI service
+        if not settings.GOOGLE_API_KEY:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service is not available at the moment."
+            )
+        
+        genai.configure(api_key=settings.GOOGLE_API_KEY)
+
+        # Role-specific context
+        role_specific_context = ""
+        role_greeting = ""
+        
+        if current_user.role == models.UserRole.LOCAL_CADRE:
+            role_greeting = f"👨‍⚕️ Hello {current_user.full_name}, Community Health Cadre!"
+            role_specific_context = """
+            **Your Role as Community Health Cadre:**
+            You are a frontline community health worker bridging AI technology and community care. Your work includes home visits, patient follow-ups, mobile coordination, and connecting communities with healthcare resources.
+            
+            **I can help you with:**
+            - **Community health visit** planning and best practices
+            - **AI result interpretation** for community education
+            - **Mobile tools** and offline workflow optimization
+            - **Patient education** materials and prevention programs
+            - **Referral coordination** with doctors and health centers
+            - **Coverage area management** and resource allocation
+            - **Cultural considerations** for community engagement
+            """
+        elif current_user.role == models.UserRole.DOCTOR:
+            role_greeting = f"👩‍⚕️ Hello Dr. {current_user.full_name}!"
+            role_specific_context = """
+            **Your Role as Medical Doctor:**
+            You provide clinical oversight for our community health network, handling complex cases and supporting community cadres with medical expertise.
+            
+            **I can help you with:**
+            - **Clinical protocols** for AI-flagged cases
+            - **Diagnostic support** and differential considerations
+            - **Treatment planning** for resource-limited settings
+            - **Cadre supervision** and clinical guidance
+            - **Quality assurance** for community health programs
+            - **Professional development** and continuing education
+            - **Health system coordination** and referral pathways
+            """
+        elif current_user.role == models.UserRole.ADMIN:
+            role_greeting = f"⚙️ Hello {current_user.full_name}, System Administrator!"
+            role_specific_context = """
+            **Your Role as System Administrator:**
+            You manage the overall SeekWell platform, ensuring effective coordination between AI technology, community cadres, and healthcare providers.
+            
+            **I can help you with:**
+            - **System performance** monitoring and optimization
+            - **Cadre management** including assignments and training
+            - **Health center network** coordination and resource planning
+            - **User management** and access control
+            - **Analytics and reporting** for health outcomes
+            - **Platform configuration** and workflow design
+            - **Data privacy** and security best practices
+            """
+
+        # Construct prompt for healthcare professionals
+        prompt = f"""
+        You are the SeekWell AI assistant for healthcare professionals, designed to support community health initiatives across ASEAN.
+
+        {role_greeting}
+
+        {role_specific_context}
+
+        **SeekWell Community Health Network:**
+        - **Mission:** Community-driven health platform combining AI screening with local expertise
+        - **Network Flow:** Patients → AI Analysis → Community Cadres → Doctors → Health Centers
+        - **Technology:** Mobile-first, offline-capable, AI-powered skin cancer detection
+        - **Coverage:** ASEAN communities with focus on underserved and rural areas
+
+        **AI Detection System Overview:**
+        - **HIGH PRIORITY** 🔴: MEL (Melanoma), BCC (Basal Cell Carcinoma), SCC (Squamous Cell Carcinoma)
+        - **MEDIUM PRIORITY** 🟠: ACK (Actinic Keratosis)
+        - **LOW PRIORITY** 🟢: NEV (Nevus/Mole), SEK (Seborrheic Keratosis)
+        - **AI Model:** bnmbanhmi/seekwell-skin-cancer (HuggingFace)
+
+        **Your Question/Request:** "{chat_message.message}"
+
+        **Response Guidelines:**
+        - Provide professional, evidence-based guidance appropriate for your role
+        - Consider resource limitations and mobile/offline working conditions
+        - Focus on community health and preventive care approaches
+        - Emphasize collaboration within the SeekWell network
+        - Use clear, practical language with relevant emojis and markdown formatting
+        - Suggest actionable next steps and best practices
+        - Promote patient-centered, culturally sensitive care
+
+        **Professional Standards:**
+        Remember that you're supporting professional healthcare decision-making. Provide evidence-based information while respecting the limits of AI assistance. For complex clinical situations or policy decisions, recommend consultation with appropriate specialists or professional networks.
+        """
+
+        model = genai.GenerativeModel(model_name='gemma-3-27b-it')
+        response = await model.generate_content_async(prompt)
+        ai_reply = response.text
+        
+        return ChatResponse(reply=ai_reply)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in staff chat: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Sorry, the system is currently experiencing issues. Please try again later."
+        )
