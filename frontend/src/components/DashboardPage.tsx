@@ -209,16 +209,16 @@ const DashboardPage: React.FC = () => {
     }
 
     return (
-        <div style={{ padding: '25px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 50px)', fontSize: baseFontSize, backgroundColor: '#f4f7f6' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px solid #cdd5de' }}>
-                <h2 style={{ fontSize: headingFontSize, color: '#2c3e50', margin: 0 }}>Welcome Staff to Dashboard</h2> {/* Changed "cán bộ" to "Staff" */}
+        <div style={{ padding: '25px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 50px)', fontSize: baseFontSize, backgroundColor: 'var(--color-white)' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px solid var(--secondary-300)' }}>
+                <h2 style={{ fontSize: headingFontSize, color: 'var(--secondary-700)', margin: 0 }}>Welcome Staff to Dashboard</h2> {/* Changed "cán bộ" to "Staff" */}
                 <button 
                     onClick={handleLogout} 
                     style={{
                         padding: '12px 20px', 
                         fontSize: '1em',
                         cursor: 'pointer', 
-                        backgroundColor: '#e74c3c', // Softer red
+                        backgroundColor: 'var(--error-600)', // Using new error color
                         color: 'white', 
                         border: 'none', 
                         borderRadius: '5px',
@@ -229,11 +229,11 @@ const DashboardPage: React.FC = () => {
                 </button>
             </header>
 
-            {errorPatients && <p style={{ color: '#c0392b', fontSize: itemFontSize, margin: '0 0 20px 0' }}>Error fetching patient list: {errorPatients}</p>}
+            {errorPatients && <p style={{ color: 'var(--error-600)', fontSize: itemFontSize, margin: '0 0 20px 0' }}>Error fetching patient list: {errorPatients}</p>}
 
             <div style={{ display: 'flex', flexGrow: 1, gap: '25px', overflow: 'hidden' }}>
-                <div style={{ width: '350px', borderRight: '1px solid #cdd5de', paddingRight: '25px', overflowY: 'auto', height: '100%', backgroundColor: '#ffffff', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ fontSize: subHeadingFontSize, color: '#34495e', marginBottom: '15px', paddingTop: '15px', paddingLeft: '15px' }}>Patients</h3>
+                <div style={{ width: '350px', borderRight: '1px solid var(--secondary-300)', paddingRight: '25px', overflowY: 'auto', height: '100%', backgroundColor: 'var(--color-white)', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <h3 style={{ fontSize: subHeadingFontSize, color: 'var(--secondary-600)', marginBottom: '15px', paddingTop: '15px', paddingLeft: '15px' }}>Patients</h3>
                     {patients.length > 0 ? (
                         <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
                             {patients.map((patient) => (
@@ -242,10 +242,10 @@ const DashboardPage: React.FC = () => {
                                     onClick={() => handleSelectPatient(patient)}
                                     style={{
                                         padding: '15px 20px', 
-                                        borderBottom: '1px solid #ecf0f1',
+                                        borderBottom: '1px solid var(--secondary-200)',
                                         cursor: 'pointer',
-                                        backgroundColor: selectedPatient?.id === patient.id ? '#3498db' : 'transparent', // Highlight selected
-                                        color: selectedPatient?.id === patient.id ? '#ffffff' : '#2c3e50',
+                                        backgroundColor: selectedPatient?.id === patient.id ? 'var(--primary-500)' : 'transparent', // Highlight selected
+                                        color: selectedPatient?.id === patient.id ? 'var(--color-white)' : 'var(--secondary-700)',
                                         fontWeight: selectedPatient?.id === patient.id ? 'bold' : 'normal',
                                         fontSize: itemFontSize, 
                                         transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',

@@ -5,30 +5,30 @@
 
 /* CSS Custom Properties (Variables) */
 :root {
-  /* Primary Color Palette */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+  /* Primary Color Palette - SeekWell Brand Colors */
+  --primary-50: #f0f9f0;
+  --primary-100: #dcf4dc;
+  --primary-200: #bae8ba;
+  --primary-300: #8dd88d;
+  --primary-400: #5bc35b;
+  --primary-500: #36a41d;
+  --primary-600: #2d8617;
+  --primary-700: #246b13;
+  --primary-800: #1d5610;
+  --primary-900: #17460e;
 
-  /* Secondary Color Palette */
+  /* Secondary Color Palette - Updated Gray Scale */
   --secondary-50: #f8fafc;
   --secondary-100: #f1f5f9;
   --secondary-150: #e8eff5;
   --secondary-200: #e2e8f0;
   --secondary-300: #cbd5e1;
-  --secondary-400: #94a3b8;
-  --secondary-500: #64748b;
-  --secondary-600: #475569;
-  --secondary-700: #334155;
-  --secondary-800: #1e293b;
-  --secondary-900: #0f172a;
+  --secondary-400: #a0aec0;
+  --secondary-500: #718096;
+  --secondary-600: #4a5568;
+  --secondary-700: #2d3748;
+  --secondary-800: #1a202c;
+  --secondary-900: #171923;
 
   /* Success Colors */
   --success-50: #f0fdf4;
@@ -38,13 +38,31 @@
   --success-600: #16a34a;
   --success-700: #15803d;
 
-  /* Warning Colors */
-  --warning-50: #fffbeb;
-  --warning-100: #fef3c7;
-  --warning-200: #fde68a;
-  --warning-500: #f59e0b;
-  --warning-600: #d97706;
-  --warning-700: #b45309;
+  /* Warning Colors - Orange Palette */
+  --warning-50: #fff7ed;
+  --warning-100: #ffedd5;
+  --warning-200: #fed7aa;
+  --warning-500: #f56a00;
+  --warning-600: #ea5900;
+  --warning-700: #c2490a;
+
+  /* Accent Colors - Yellow Palette */
+  --accent-50: #fffbeb;
+  --accent-100: #fef3c7;
+  --accent-200: #fde68a;
+  --accent-300: #ffd700;
+  --accent-400: #ffcd3c;
+  --accent-500: #ffc933;
+  --accent-600: #f5b800;
+  --accent-700: #d19700;
+
+  /* Error Colors - Red Palette */
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  --error-700: #b91c1c;
 
   /* Error Colors */
   --error-50: #fef2f2;
@@ -75,18 +93,18 @@
   --mobile-lg: 768px;
   --tablet: 1024px;
   
-  /* Mobile Specific Colors for SeekWell */
-  --seekwell-primary: #3498db;
-  --seekwell-secondary: #2ecc71;
-  --seekwell-accent: #e74c3c;
-  --seekwell-warning: #f39c12;
-  --seekwell-info: #3498db;
+  /* Mobile Specific Colors for SeekWell - Updated Brand Palette */
+  --seekwell-primary: #36a41d;
+  --seekwell-secondary: #f56a00;
+  --seekwell-accent: #ffc933;
+  --seekwell-warning: #f56a00;
+  --seekwell-info: #36a41d;
   
   /* Skin Lesion Risk Colors */
-  --risk-low: #2ecc71;
-  --risk-medium: #f39c12;
-  --risk-high: #e74c3c;
-  --risk-urgent: #8e44ad;
+  --risk-low: #36a41d;
+  --risk-medium: #ffc933;
+  --risk-high: #f56a00;
+  --risk-urgent: #dc2626;
 
   /* Typography */
   --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -161,8 +179,8 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-primary: 0 4px 8px rgba(52, 152, 219, 0.2);
-  --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  --shadow-primary: 0 4px 8px rgba(54, 164, 29, 0.2);
+  --shadow-focus: 0 0 0 3px rgba(54, 164, 29, 0.1);
 
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
@@ -197,9 +215,9 @@
   --color-border-hover: var(--secondary-300);
 
   /* Primary Colors */
-  --color-primary: var(--primary-600);
-  --color-primary-light: var(--primary-100);
-  --color-primary-dark: var(--primary-700);
+  --color-primary: var(--primary-500);
+  --color-primary-light: var(--primary-400);
+  --color-primary-dark: var(--primary-600);
 
   /* Success Colors */
   --color-success: var(--success-600);
@@ -228,17 +246,17 @@
   /* Background Hover States */
   --color-background-hover: var(--secondary-150);
 
-  /* Gray Colors */
+  /* Gray Colors - Updated to match palette */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
   --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
+  --gray-400: #a0aec0;
+  --gray-500: #718096;
+  --gray-600: #4a5568;
+  --gray-700: #2d3748;
+  --gray-800: #1a202c;
+  --gray-900: #171923;
 
   /* Gray Colors */
   --color-gray-600: var(--secondary-600);
@@ -250,6 +268,19 @@
   --gradient-success: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
   --gradient-warning: linear-gradient(135deg, var(--warning-500) 0%, var(--warning-600) 100%);
   --gradient-error: linear-gradient(135deg, var(--error-500) 0%, var(--error-600) 100%);
+  
+  /* SeekWell Brand Color Aliases - Easy Access */
+  --seekwell-green: #36a41d;       /* Main brand color */
+  --seekwell-orange: #f56a00;      /* Secondary accent */
+  --seekwell-yellow: #ffc933;      /* Accent color */
+  --seekwell-dark-gray: #4a5568;   /* Text color */
+  --seekwell-light-gray: #a0aec0;  /* Secondary text */
+  --seekwell-white: #ffffff;       /* Pure white */
+
+  /* Additional Gradient Definitions */
+  --gradient-brand: linear-gradient(135deg, var(--seekwell-green) 0%, var(--primary-600) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--seekwell-orange) 0%, var(--warning-600) 100%);
+  --gradient-warning: linear-gradient(135deg, var(--seekwell-yellow) 0%, var(--accent-600) 100%);
 }
 
 /* Global Styles */
@@ -261,8 +292,8 @@ body {
   font-family: var(--font-family-primary);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
-  color: var(--secondary-800);
-  background-color: var(--secondary-50);
+  color: var(--secondary-600);
+  background-color: var(--color-white);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;

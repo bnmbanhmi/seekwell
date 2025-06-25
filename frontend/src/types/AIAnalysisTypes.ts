@@ -89,16 +89,16 @@ export const BODY_REGIONS: { value: BodyRegion; label: string }[] = [
 ];
 
 export const RISK_LEVEL_COLORS = {
-  URGENT: '#d32f2f',    // Red
-  HIGH: '#f57c00',      // Orange
-  MEDIUM: '#fbc02d',    // Yellow
-  LOW: '#388e3c',       // Green
-  UNCERTAIN: '#757575'  // Gray
+  URGENT: '#dc2626',    // Red
+  HIGH: '#f56a00',      // Orange (from palette)
+  MEDIUM: '#ffc933',    // Yellow (from palette)
+  LOW: '#36a41d',       // Green (from palette)
+  UNCERTAIN: '#a0aec0'  // Gray (from palette)
 };
 
 export const CONFIDENCE_LEVEL_COLORS = {
-  HIGH: '#2e7d32',      // Dark Green
-  MEDIUM: '#ed6c02',    // Orange
-  LOW: '#d32f2f',       // Red
-  VERY_LOW: '#424242'   // Dark Gray
+  HIGH: '#36a41d',      // Green (from palette)
+  MEDIUM: '#f56a00',    // Orange (from palette)
+  LOW: '#ffc933',       // Yellow (from palette)
+  VERY_LOW: '#4a5568'   // Dark Gray (from palette)
 };
