@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
 from .config import settings  # Import settings
-from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions, cadre, community
+from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions, cadre, community, analytics, mobile_chw
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -77,6 +77,8 @@ app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"]) #
 app.include_router(skin_lesions.router, prefix="/skin-lesions", tags=["Skin Lesion Analysis"]) # Include the new skin lesions router
 app.include_router(cadre.router, prefix="/cadre", tags=["Community Health Cadre"]) # SeekWell cadre workflow
 app.include_router(community.router, prefix="/community", tags=["Community Health"]) # SeekWell community metrics
+app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"]) # Community health analytics
+app.include_router(mobile_chw.router, prefix="/mobile-chw", tags=["Mobile CHW Interface"]) # Mobile CHW interface
 
 
 @app.get("/", tags=["Root"])
