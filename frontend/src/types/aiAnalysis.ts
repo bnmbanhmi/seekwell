@@ -84,9 +84,9 @@ export type BodyRegion = typeof BODY_REGIONS[number];
 
 // Risk level colors for UI
 export const RISK_COLORS = {
-  URGENT: '#ff1744',
-  HIGH: '#f44336',
-  MEDIUM: '#ff9800',
-  LOW: '#4caf50',
-  UNCERTAIN: '#9e9e9e'
+  URGENT: '#dc2626',
+  HIGH: '#f56a00',
+  MEDIUM: '#ffc933',
+  LOW: '#36a41d',
+  UNCERTAIN: '#a0aec0'
 } as const;
