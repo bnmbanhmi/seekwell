@@ -28,6 +28,9 @@ import CheckInOut from '../components/staff/CheckInOut';
 import CommunityHealthVisits from '../components/community/CommunityHealthVisits';
 import CommunityHealthEMR from '../components/EMR/CommunityHealthEMR';
 import AISkinAnalysisPage from './AISkinAnalysisPage';
+import CommunityHealthAnalytics from '../components/analytics/CommunityHealthAnalytics';
+import MobileCHWInterface from '../components/mobile/MobileCHWInterface';
+import Phase3IntegrationPage from './Phase3IntegrationPage';
 
 type Props = {
   role: UserRole;
@@ -77,6 +80,9 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="checkin" element={<CheckInOut />} />
         <Route path="community-health" element={<CommunityHealthVisits />} />
         <Route path="community-emr" element={<CommunityHealthEMR />} />
+        <Route path="analytics" element={<CommunityHealthAnalytics />} />
+        <Route path="mobile-chw" element={<MobileCHWInterface />} />
+        <Route path="phase3-integration" element={<Phase3IntegrationPage />} />
         <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
       </Routes>
     </BaseDashboard>
