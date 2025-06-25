@@ -214,12 +214,12 @@
 }
 
 .startButton {
-  background: #3b82f6;
+  background: var(--seekwell-primary);
   color: white;
 }
 
 .startButton:hover {
-  background: #2563eb;
+  background: #2d8a17;
 }
 
 .completeButton {

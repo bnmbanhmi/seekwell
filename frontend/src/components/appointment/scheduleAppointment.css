@@ -88,7 +88,7 @@
   background: #e3f2fd;
   border-color: #3498db;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 4px 12px rgba(54, 164, 29, 0.2);
 }
 
 .patient-card h3 {
@@ -219,7 +219,7 @@
 }
 
 .doctor-slot-button {
-  background: #3498db;
+  background: #36a41d;
   color: white;
   border: none;
   border-radius: 6px;
@@ -230,7 +230,7 @@
 }
 
 .doctor-slot-button:hover {
-  background: #2980b9;
+  background: #2d8a17;
 }
 
 .no-slots {
@@ -267,12 +267,12 @@ button:disabled {
 }
 
 button:not(.back-button):not(:disabled) {
-  background: #3498db;
+  background: #36a41d;
   color: white;
 }
 
 button:not(.back-button):not(:disabled):hover {
-  background: #2980b9;
+  background: #2d8a17;
   transform: translateY(-1px);
 }
 

@@ -220,7 +220,7 @@
 .trendBarFill {
   width: 100%;
   max-width: 30px;
-  background: #3498db;
+  background: #36a41d;
   border-radius: 4px 4px 0 0;
   transition: height 0.3s ease;
   min-height: 5px;

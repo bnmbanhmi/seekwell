@@ -162,13 +162,6 @@ const LoginPage: React.FC = () => {
                         </div>
                     </form>
                 </div>
-
-                {/* Quick Access for Demo */}
-                <div className={styles.demoSection}>
-                    <p className="mobile-text-xs" style={{ color: '#666', textAlign: 'center' }}>
-                        Demo: Try patient@demo.com / password123
-                    </p>
-                </div>
             </div>
         </div>
     );
