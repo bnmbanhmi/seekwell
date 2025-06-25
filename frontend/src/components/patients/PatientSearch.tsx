@@ -110,7 +110,7 @@ const PatientSearch: React.FC = () => {
       console.error('Search error:', err);
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
-          setError('Xác thực thất bại. Vui lòng đăng nhập lại.');
+          setError('Authentication failed. Please log in again.');
         } else if (err.response?.status === 403) {
           setError('Bạn không có quyền tìm kiếm bệnh nhân.');
         } else {
@@ -187,7 +187,7 @@ const PatientSearch: React.FC = () => {
         <h2>Tìm Kiếm Bệnh Nhân</h2>
         <p className="role-info">
           Đang tìm kiếm với vai trò: <strong>{userRole}</strong>
-          {userRole === 'PATIENT' && ' (Bạn chỉ có thể xem hồ sơ của chính mình)'}
+          {userRole === 'PATIENT' && ' (You can only view your own records)'}
         </p>
       </div>
 
@@ -468,15 +468,15 @@ const PatientSearch: React.FC = () => {
                             <button
                               className="emr-btn"
                               onClick={() => navigateToEMR(patient.patient_id)}
-                              title="Xem hồ sơ y tế của bệnh nhân"
+                              title="View patient's medical records"
                             >
-                              Hồ Sơ Y Tế
+                              Medical Records
                             </button>
                             {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
                               <button
                                 className="create-emr-btn"
                                 onClick={() => navigateToCreateEMR(patient.patient_id)}
-                                title="Tạo hồ sơ y tế mới"
+                                title="Create new medical record"
                               >
                                 Tạo EMR
                               </button>
@@ -577,7 +577,7 @@ const PatientSearch: React.FC = () => {
                       closePatientDetails();
                     }}
                   >
-                    📋 Xem Hồ Sơ Y Tế
+                    📋 View Medical Records
                   </button>
                   {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
                     <button
@@ -587,7 +587,7 @@ const PatientSearch: React.FC = () => {
                         closePatientDetails();
                       }}
                     >
-                      ➕ Tạo EMR Mới
+                      ➕ Create New EMR
                     </button>
                   )}
                 </div>

@@ -8,7 +8,7 @@ import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetP
 import RegisterPage from './components/RegisterPage';
 import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
 import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
-
+import { Analytics } from "@vercel/analytics/react"
 import Profile from './pages/Profile'; 
 
 import { UserRole } from './types/UserType'; // Import UserRole type

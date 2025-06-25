@@ -110,33 +110,47 @@ const CadreDashboard = () => {
 
   const communityActions = [
     {
-      title: 'Review AI Analysis',
-      description: 'Review pending AI skin lesion assessments',
-      icon: '🔍',
+      title: 'Bridge AI to Care',
+      description: 'Review AI assessments and guide patients to appropriate care',
+      icon: '�',
       action: () => navigate('/dashboard/pending-reviews'),
       color: '#e74c3c',
       urgent: stats.urgentCases > 0
     },
     {
-      title: 'Community Health Records',
-      description: 'Access patient records and follow-ups',
-      icon: '📋',
-      action: () => navigate('/dashboard/community-records'),
-      color: '#3498db'
-    },
-    {
-      title: 'Health Education',
-      description: 'Share health education materials',
-      icon: '📚',
-      action: () => navigate('/dashboard/health-education'),
+      title: 'Cultural Health Guidance',
+      description: 'Provide culturally sensitive health education and support',
+      icon: '🌍',
+      action: () => navigate('/dashboard/cultural-guidance'),
       color: '#27ae60'
     },
     {
-      title: 'Escalate to Doctor',
-      description: 'Request doctor consultation for complex cases',
-      icon: '🏥',
-      action: () => navigate('/dashboard/doctor-consultation'),
+      title: 'Doctor-Patient Bridge',
+      description: 'Facilitate communication between doctors and community members',
+      icon: '🤝',
+      action: () => navigate('/dashboard/doctor-bridge'),
+      color: '#3498db'
+    },
+    {
+      title: 'Community Health Records',
+      description: 'Maintain comprehensive community health documentation',
+      icon: '�',
+      action: () => navigate('/dashboard/community-records'),
+      color: '#9b59b6'
+    },
+    {
+      title: 'First Mile Care Coordination',
+      description: 'Coordinate initial care and referrals for your community',
+      icon: '🚀',
+      action: () => navigate('/dashboard/care-coordination'),
       color: '#f39c12'
+    },
+    {
+      title: 'AI Insights Translation',
+      description: 'Translate complex AI results into understandable guidance',
+      icon: '🧠',
+      action: () => navigate('/dashboard/ai-translation'),
+      color: '#2c3e50'
     }
   ];
 
@@ -166,8 +180,11 @@ const CadreDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>🏥 Community Health Cadre Dashboard</h2>
-        <p className={styles.subtitle}>Supporting Community Health Through AI-Powered Screening</p>
+        <h2 className={styles.title}>� Community Health Bridge Dashboard</h2>
+        <p className={styles.subtitle}>Empowering the First Mile of Healthcare - Connecting Communities with AI-Driven Care</p>
+        <div className={styles.missionStatement}>
+          <p>🤝 <strong>Your Mission:</strong> Bridge the gap between patients and doctors with culturally sensitive guidance, ensuring AI insights lead to real-world care in your community.</p>
+        </div>
       </div>
 
       {error && (
@@ -177,9 +194,9 @@ const CadreDashboard = () => {
       {/* Community Health Statistics */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>⚠️</div>
+          <div className={styles.statIcon}>🔗</div>
           <div className={styles.statInfo}>
-            <h3>Pending Reviews</h3>
+            <h3>AI Cases to Bridge</h3>
             <p className={styles.statNumber}>{stats.totalPendingReviews}</p>
           </div>
         </div>
@@ -187,7 +204,7 @@ const CadreDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>🚨</div>
           <div className={styles.statInfo}>
-            <h3>Urgent Cases</h3>
+            <h3>Urgent Care Needed</h3>
             <p className={styles.statNumber}>{stats.urgentCases}</p>
           </div>
         </div>
@@ -195,7 +212,7 @@ const CadreDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>✅</div>
           <div className={styles.statInfo}>
-            <h3>Completed Reviews</h3>
+            <h3>Successfully Bridged</h3>
             <p className={styles.statNumber}>{stats.completedReviews}</p>
           </div>
         </div>
@@ -203,7 +220,7 @@ const CadreDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>👥</div>
           <div className={styles.statInfo}>
-            <h3>Community Patients</h3>
+            <h3>Community Members</h3>
             <p className={styles.statNumber}>{stats.totalPatients}</p>
           </div>
         </div>
@@ -211,7 +228,7 @@ const CadreDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>🤖</div>
           <div className={styles.statInfo}>
-            <h3>AI Analyses Today</h3>
+            <h3>AI Insights Today</h3>
             <p className={styles.statNumber}>{stats.aiAnalysesToday}</p>
           </div>
         </div>
@@ -219,7 +236,7 @@ const CadreDashboard = () => {
         <div className={styles.statCard}>
           <div className={styles.statIcon}>📅</div>
           <div className={styles.statInfo}>
-            <h3>Follow-ups Needed</h3>
+            <h3>Care Coordination</h3>
             <p className={styles.statNumber}>{stats.followUpsNeeded}</p>
           </div>
         </div>
@@ -231,14 +248,14 @@ const CadreDashboard = () => {
           <div className={styles.urgentAlert}>
             <div className={styles.alertIcon}>🚨</div>
             <div className={styles.alertContent}>
-              <h4>Urgent Cases Require Immediate Attention</h4>
-              <p>{stats.urgentCases} high-risk skin lesions need cadre review</p>
+              <h4>Community Members Need Your Bridge to Care</h4>
+              <p>{stats.urgentCases} high-risk cases require your cultural guidance to connect with appropriate medical care</p>
             </div>
             <button 
               className={styles.alertButton}
               onClick={() => navigate('/dashboard/urgent-reviews')}
             >
-              Review Now
+              Bridge Now
             </button>
           </div>
         </div>
@@ -246,7 +263,7 @@ const CadreDashboard = () => {
 
       {/* Community Actions */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Community Health Actions</h3>
+        <h3 className={styles.sectionTitle}>🌟 First Mile Healthcare Actions</h3>
         <div className={styles.actionsGrid}>
           {communityActions.map((action, index) => (
             <div
@@ -269,19 +286,19 @@ const CadreDashboard = () => {
       <div className={styles.gridLayout}>
         {/* Pending Reviews Queue */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Pending AI Analysis Reviews</h3>
+          <h3 className={styles.sectionTitle}>🔗 AI Cases Awaiting Cultural Bridge</h3>
           {pendingReviews.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>✅ No pending reviews - Great work!</p>
+              <p>✅ No cases awaiting your bridge - Community well-connected!</p>
             </div>
           ) : (
             <div className={styles.reviewsTable}>
               <div className={styles.tableHeader}>
-                <div>Patient</div>
+                <div>Community Member</div>
                 <div>Time</div>
-                <div>AI Prediction</div>
-                <div>Risk Level</div>
-                <div>Action</div>
+                <div>AI Insights</div>
+                <div>Care Priority</div>
+                <div>Bridge Action</div>
               </div>
               {pendingReviews.map((review) => (
                 <div key={review.image_id} className={styles.tableRow}>
@@ -304,7 +321,7 @@ const CadreDashboard = () => {
                       className={styles.reviewButton}
                       onClick={() => handleReviewCase(review.image_id)}
                     >
-                      Review
+                      Bridge Care
                     </button>
                   </div>
                 </div>
@@ -315,19 +332,23 @@ const CadreDashboard = () => {
 
         {/* Community Health Insights */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Community Health Insights</h3>
+          <h3 className={styles.sectionTitle}>🌍 Cultural Bridge Impact</h3>
           <div className={styles.insightsCard}>
             <div className={styles.insight}>
-              <h4>🎯 AI Screening Impact</h4>
-              <p>AI has helped identify <strong>{stats.urgentCases}</strong> high-risk cases this week</p>
+              <h4>🎯 First Mile Success</h4>
+              <p>You've successfully bridged <strong>{stats.completedReviews}</strong> AI insights to real-world care, ensuring no one is left behind</p>
             </div>
             <div className={styles.insight}>
-              <h4>📈 Community Engagement</h4>
-              <p><strong>{stats.aiAnalysesToday}</strong> patients used AI screening today</p>
+              <h4>🤝 Community Trust</h4>
+              <p><strong>{stats.aiAnalysesToday}</strong> community members trusted AI screening today with your cultural guidance</p>
             </div>
             <div className={styles.insight}>
               <h4>🏥 Healthcare Access</h4>
-              <p>Serving <strong>{stats.totalPatients}</strong> patients in the community</p>
+              <p>You're the vital bridge for <strong>{stats.totalPatients}</strong> community members, connecting them to quality healthcare</p>
+            </div>
+            <div className={styles.insight}>
+              <h4>🌟 Cultural Sensitivity</h4>
+              <p>Your cultural understanding transforms complex AI insights into actionable, culturally appropriate health guidance</p>
             </div>
           </div>
         </div>

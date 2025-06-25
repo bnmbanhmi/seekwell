@@ -55,46 +55,89 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 
     const getWelcomeMessage = () => {
         if (!isAuthenticated) {
-            return `Hello! I am the AI assistant for SeekWell.
+            return `👋 Hello! I'm your SeekWell AI assistant for community health.
 
-I can help you with:
-- **Information about SeekWell** (services, how it works)
-- **Guidance on using the AI skin analysis**
-- **Basic skin health advice**
-- **Frequently asked questions**
+🔍 **What I can help with:**
+- Learn about **SeekWell's AI skin cancer detection**
+- Get guidance on **capturing photos** for analysis
+- Understand **skin health basics** and prevention
+- Find **community health centers** and services
+- Connect with **local health cadres** in your area
 
-Feel free to ask me anything!`;
+💡 **About SeekWell:** We're building a network of AI-powered community health services across ASEAN, focusing on early skin cancer detection and connecting you with local health workers.
+
+How can I assist you today? 🌟`;
         }
 
         switch (userRole) {
             case 'PATIENT':
-                return `Hello! I am your personal AI assistant at SeekWell.
+                return `👋 Welcome back! I'm your personal SeekWell health assistant.
 
-I can help you with:
-- **Understanding your skin health**
-- **Guiding you through the skin analysis process**
-- **Explaining your AI results**
-- **Preparing for your consultation**
+🏥 **I can help you with:**
+- **Track your health journey** and AI analysis results
+- **Prepare for visits** with community health cadres
+- **Understand your skin health** and prevention tips
+- **Schedule appointments** with local health workers
+- **Navigate the referral pathway** to specialists when needed
 
-Just ask, and I'll assist you!`;
+📱 **Quick Tips:** 
+- Use the mobile-friendly skin analysis anytime
+- Your local health cadre can provide follow-up care
+- Regular check-ups help catch issues early
+
+What would you like to know today? 💚`;
+
+            case 'LOCAL_CADRE':
+                return `🌟 Welcome, Community Health Bridge! I'm here to support your vital role as the first mile of healthcare.
+
+🤝 **I can assist with:**
+- **Bridge AI insights to care** - Translate complex AI results into culturally appropriate guidance
+- **Cultural health guidance** - Provide community-sensitive health education and support
+- **Doctor-community connections** - Facilitate seamless communication between specialists and patients
+- **First mile care coordination** - Coordinate initial care pathways and referrals
+- **Community trust building** - Tools to build confidence in AI-assisted healthcare
+- **Mobile coordination** tools for offline community outreach
+
+🌍 **Your Mission:** You're the crucial bridge between advanced AI technology and culturally sensitive community care. You ensure that AI-driven insights lead to real-world, appropriate healthcare for your community.
+
+🎯 **Cultural Bridge Impact:** Your understanding of local customs, language, and beliefs transforms complex medical insights into actionable, trusted guidance that resonates with your community.
+
+How can I support your bridge-building work today? 🌟`;
 
             case 'DOCTOR':
-            case 'LOCAL_CADRE':
+                return `👩‍⚕️ Welcome, Doctor! I'm your SeekWell clinical support assistant.
+
+🏥 **I can help with:**
+- **Clinical decision support** for AI-flagged cases
+- **Patient referral management** from community cadres
+- **EMR documentation** and case tracking
+- **Health center coordination** and resource allocation
+- **Professional development** resources and updates
+- **Quality assurance** for community health programs
+
+🔬 **Clinical Context:** You're receiving pre-screened cases from our AI system and community health cadres, allowing you to focus on complex diagnoses and treatment planning.
+
+What clinical support do you need today? 🩺`;
+
             case 'ADMIN':
-                return `Welcome! I am the AI assistant for healthcare professionals at SeekWell.
+                return `⚙️ Welcome, Administrator! I'm your SeekWell system management assistant.
 
-I can assist with:
-- **Reviewing AI-based preliminary diagnoses**
-- **Accessing medical information**
-- **Navigating operational procedures**
-- **Managing patient cases**
+📊 **I can help with:**
+- **System analytics** and performance monitoring
+- **Cadre management** - assignments, training, coverage
+- **Health center network** coordination and resources
+- **User management** and access control
+- **Data insights** and community health trends
+- **Platform configuration** and workflow optimization
 
-I'm here to support your work!`;
+🌐 **System Overview:** You're managing a community health network that combines AI technology with human expertise to serve ASEAN communities effectively.
+
+What would you like to manage today? 🛠️`;
 
             default:
-                return `Hello! I am the SeekWell AI assistant. 
+                return `👋 Hello! I'm the SeekWell AI assistant for community health.
 
-I can provide general information about our platform and skin health. How can I help you today?`;
+🌟 I can provide information about our platform, community health services, and skin health guidance. How can I help you today?`;
         }
     };
 
@@ -125,8 +168,10 @@ I can provide general information about our platform and skin health. How can I 
                     
                     if (userRole === 'PATIENT') {
                         endpoint = '/chat/patient';
+                    } else if (userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE' || userRole === 'ADMIN') {
+                        endpoint = '/chat/staff';
                     }
-                    // For staff roles, we could use a different endpoint or the existing one
+                    // If no specific role match, will use public endpoint
                 }
             }
 
@@ -146,7 +191,7 @@ I can provide general information about our platform and skin health. How can I 
             setMessages(prev => [...prev, aiMessage]);
         } catch (err) {
             console.error('Error sending message:', err);
-            let errorMessage = 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.';
+            let errorMessage = 'Sorry, an error occurred. Please try again later.';
             
             if (axios.isAxiosError(err) && err.response) {
                 errorMessage = err.response.data.detail || errorMessage;
@@ -202,15 +247,15 @@ I can provide general information about our platform and skin health. How can I 
                             <div className="chatbot-header-info">
                                 <span className="chatbot-avatar">AI</span>
                                 <div>
-                                    <h4>Trợ lý Phòng khám</h4>
-                                    <span className="chatbot-status">Trực tuyến</span>
+                                    <h4>SeekWell Assistant</h4>
+                                    <span className="chatbot-status">Online</span>
                                 </div>
                             </div>
                             <div className="chatbot-header-actions">
                                 <button
                                     onClick={clearChat}
                                     className="chatbot-action-btn"
-                                    title="Xóa lịch sử chat"
+                                    title="Clear chat history"
                                 >
                                     Clear
                                 </button>

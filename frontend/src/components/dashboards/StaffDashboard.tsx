@@ -121,7 +121,7 @@ const StaffDashboard = () => {
     },
     {
       title: 'Tìm kiếm bệnh nhân',
-      description: 'Tìm và xem hồ sơ bệnh nhân',
+      description: 'Search and view patient records',
       icon: '🔍',
       action: () => navigate('/dashboard/patients'),
       color: '#27ae60'

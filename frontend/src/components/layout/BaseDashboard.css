@@ -103,14 +103,13 @@
 }
 
 .logo {
-  height: 30px;  /* Reduced from 40px */
+  height: 36px;  /* Increased size since we removed the title */
+  margin-left: var(--spacing-3);  /* Add some spacing from hamburger menu */
 }
 
+/* Remove the title styles since we're only showing logo */
 .title {
-  font-size: var(--font-size-lg);  /* Reduced from 2xl */
-  font-weight: var(--font-weight-semibold);
-  color: var(--secondary-800);
-  text-align: left;
+  display: none;  /* Hide the title completely */
 }
 
 .account-menu {

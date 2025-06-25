@@ -201,25 +201,25 @@ const Profile: React.FC = () => {
                         <input name="hospital_id" value={formData.hospital_id || ''} onChange={handleChange} className={styles['profile-input']} type="number" disabled />
                     </label>
                     <label className={styles['profile-label']}>
-                        Mật khẩu mới:
+                        New Password:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Lưu</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Hủy</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
                     </div>
                 </form>
             );
         } else if ('patient_id' in userData) {
-            // Patient edit form (as before)
+            // Patient edit form
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Tên:
+                        Name:
                         <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Tên đăng nhập:
+                        Username:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
@@ -227,59 +227,59 @@ const Profile: React.FC = () => {
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Số điện thoại:
+                        Phone Number:
                         <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Địa chỉ:
+                        Address:
                         <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Ngày sinh:
+                        Date of Birth:
                         <input name="date_of_birth" value={formData.date_of_birth || ''} onChange={handleChange} type="date" className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Giới tính:
+                        Gender:
                         <select name="gender" value={formData.gender || ''} onChange={handleChange} className={styles['profile-input']}>
-                            <option value="">Chọn</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
                         </select>
                     </label>
                     <label className={styles['profile-label']}>
-                        Dân tộc:
+                        Ethnicity:
                         <input name="ethnic_group" value={formData.ethnic_group || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Số thẻ BHYT:
+                        Health Insurance Card No:
                         <input name="health_insurance_card_no" value={formData.health_insurance_card_no || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        CMND/CCCD:
+                        ID Card Number:
                         <input name="identification_id" value={formData.identification_id || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Nghề nghiệp:
+                        Occupation:
                         <input name="job" value={formData.job || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Loại đối tượng:
+                        Patient Category:
                         <select name="class_role" value={formData.class_role || ''} onChange={handleChange} className={styles['profile-input']}>
-                            <option value="">Chọn</option>
-                            <option value="Assisted">Hỗ trợ</option>
-                            <option value="Normal">Bình thường</option>
-                            <option value="Free">Miễn phí</option>
-                            <option value="Other">Khác</option>
+                            <option value="">Select</option>
+                            <option value="Assisted">Assisted</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Free">Free</option>
+                            <option value="Other">Other</option>
                         </select>
                     </label>
                     <label className={styles['profile-label']}>
-                        Mật khẩu mới:
+                        New Password:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Lưu</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Hủy</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
                     </div>
                 </form>
             );
@@ -288,11 +288,11 @@ const Profile: React.FC = () => {
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Tên:
+                        Name:
                         <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Tên đăng nhập:
+                        Username:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
@@ -300,20 +300,20 @@ const Profile: React.FC = () => {
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Số điện thoại:
+                        Phone Number:
                         <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Địa chỉ:
+                        Address:
                         <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Mật khẩu mới:
+                        New Password:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Lưu</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Hủy</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
                     </div>
                 </form>
             );

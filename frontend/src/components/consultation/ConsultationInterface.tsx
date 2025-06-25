@@ -163,7 +163,7 @@ const ConsultationInterface: React.FC = () => {
         <div className={styles.historyPanel}>
           <h3>Tiền Sử Bệnh Án Gần Đây</h3>
           {medicalHistory.length === 0 ? (
-            <p className={styles.noHistory}>Không có hồ sơ trước đó</p>
+            <p className={styles.noHistory}>No previous records</p>
           ) : (
             <div className={styles.historyList}>
               {medicalHistory.map((record) => (
@@ -302,7 +302,7 @@ const ConsultationInterface: React.FC = () => {
                   Quay Lại
                 </button>
                 <button className={styles.completeButton} onClick={handleProceedToEMR}>
-                  Hoàn Thành Khám & Tạo Hồ Sơ Bệnh Án
+                  Complete Consultation & Create Medical Record
                 </button>
               </div>
             </div>

@@ -230,7 +230,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                     fullWidth
                     sx={{ fontWeight: 'bold' }}
                   >
-                    {riskLevel === 'URGENT' ? 'Đặt khám khẩn cấp ngay' : 'Đặt lịch tư vấn ưu tiên'}
+                    {riskLevel === 'URGENT' ? 'Book urgent consultation now' : 'Book priority consultation'}
                   </Button>
                 )}
 
