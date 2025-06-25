@@ -50,28 +50,31 @@ class Patient(Base):
     skin_lesion_images = relationship("SkinLesionImage", back_populates="patient", cascade="all, delete-orphan")
 
 
-# Hospitals table
-class Hospital(Base):
-    __tablename__ = "hospitals"
-    hospital_id = Column(Integer, primary_key=True, autoincrement=True)
-    hospital_name = Column(String(100))
+# Community Health Centers table
+class CommunityHealthCenter(Base):
+    __tablename__ = "community_health_centers"
+    center_id = Column(Integer, primary_key=True, autoincrement=True)
+    center_name = Column(String(100))
     address = Column(String(255))
-    governed_by = Column(String(160))  # chỉnh tên đúng typo 'gorverned_by' -> 'governed_by'
+    region = Column(String(160))  # Administrative region or district
+    center_type = Column(String(50))  # e.g., "Rural Health Clinic", "Community Health Post"
+    
+    # Community health workers and doctors associated with this center
+    health_workers = relationship("Doctor", back_populates="health_center", cascade="all, delete-orphan")
 
-    doctors = relationship("Doctor", back_populates="hospital", cascade="all, delete-orphan")
 
-
-# Doctors table
+# Health Workers table (formerly Doctors)
 class Doctor(Base):
     __tablename__ = "doctors"
     doctor_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
     doctor_name = Column(String(100))
-    major = Column(String(160))
-    hospital_id = Column(Integer, ForeignKey("hospitals.hospital_id", ondelete="CASCADE"), nullable=False)
+    specialization = Column(String(160))  # Medical specialization or community health role
+    center_id = Column(Integer, ForeignKey("community_health_centers.center_id", ondelete="CASCADE"), nullable=False)
+    is_community_health_worker = Column(Boolean, default=False)  # Distinguishes CHWs from doctors
 
     # Quan hệ
     user = relationship("User", back_populates="doctor_profile", foreign_keys=[doctor_id])
-    hospital = relationship("Hospital", back_populates="doctors")
+    health_center = relationship("CommunityHealthCenter", back_populates="health_workers")
 
     appointments = relationship("Appointment", back_populates="doctor", cascade="all, delete-orphan")
     medical_reports = relationship("MedicalReport", back_populates="doctor", cascade="all, delete-orphan")

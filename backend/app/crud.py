@@ -81,7 +81,7 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
             doctor_in = schemas.DoctorCreate(
                 doctor_id=user_id_value,
                 doctor_name=full_name_value,
-                hospital_id=1  # TODO: Make this configurable instead of hardcoded
+                center_id=1  # TODO: Make this configurable instead of hardcoded
             )
             create_doctor(db=db, doctor_in=doctor_in, creator_id=user_id_value)
 
@@ -544,12 +544,13 @@ def get_doctors(db: Session, skip: int = 0, limit: int = 100) -> List[models.Doc
 
 
 def create_doctor(db: Session, doctor_in: schemas.DoctorCreate, creator_id: int) -> models.Doctor:
-    """Create a new doctor record."""
+    """Create a new health worker/doctor record."""
     db_doctor = models.Doctor(
         doctor_id=doctor_in.doctor_id,
         doctor_name=doctor_in.doctor_name,
-        major=doctor_in.major or "General Medicine",
-        hospital_id=doctor_in.hospital_id,
+        specialization=doctor_in.specialization or "General Medicine",
+        center_id=doctor_in.center_id,
+        is_community_health_worker=doctor_in.is_community_health_worker or False,
     )
     db.add(db_doctor)
     db.commit()
@@ -587,49 +588,75 @@ def delete_doctor(db: Session, doctor_id: int) -> Optional[models.Doctor]:
 # HOSPITAL CRUD OPERATIONS
 # ============================================================================
 
-def get_hospital(db: Session, hospital_id: int) -> Optional[models.Hospital]:
-    """Retrieve a hospital by hospital ID."""
-    return db.query(models.Hospital).filter(models.Hospital.hospital_id == hospital_id).first()
+# ============================================================================
+# COMMUNITY HEALTH CENTER CRUD OPERATIONS
+# ============================================================================
+
+def get_community_health_center(db: Session, center_id: int) -> Optional[models.CommunityHealthCenter]:
+    """Retrieve a community health center by center ID."""
+    return db.query(models.CommunityHealthCenter).filter(models.CommunityHealthCenter.center_id == center_id).first()
 
 
-def get_hospitals(db: Session, skip: int = 0, limit: int = 100) -> List[models.Hospital]:
-    """Retrieve all hospitals with pagination."""
-    return db.query(models.Hospital).offset(skip).limit(limit).all()
+def get_community_health_centers(db: Session, skip: int = 0, limit: int = 100) -> List[models.CommunityHealthCenter]:
+    """Retrieve all community health centers with pagination."""
+    return db.query(models.CommunityHealthCenter).offset(skip).limit(limit).all()
 
 
-def create_hospital(db: Session, hospital_in: schemas.HospitalCreate) -> models.Hospital:
-    """Create a new hospital record."""
-    db_hospital = models.Hospital(**hospital_in.model_dump())
-    db.add(db_hospital)
+def create_community_health_center(db: Session, center_in: schemas.CommunityHealthCenterCreate) -> models.CommunityHealthCenter:
+    """Create a new community health center record."""
+    db_center = models.CommunityHealthCenter(**center_in.model_dump())
+    db.add(db_center)
     db.commit()
-    db.refresh(db_hospital)
-    return db_hospital
+    db.refresh(db_center)
+    return db_center
 
 
-def update_hospital(db: Session, hospital_id: int, hospital_update: schemas.HospitalUpdate) -> Optional[models.Hospital]:
-    """Update an existing hospital's information."""
-    db_hospital = get_hospital(db, hospital_id=hospital_id)
-    if not db_hospital:
+def update_community_health_center(db: Session, center_id: int, center_update: schemas.CommunityHealthCenterUpdate) -> Optional[models.CommunityHealthCenter]:
+    """Update an existing community health center's information."""
+    db_center = get_community_health_center(db, center_id=center_id)
+    if not db_center:
         return None
 
-    update_data = hospital_update.model_dump(exclude_unset=True)
+    update_data = center_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
-        setattr(db_hospital, key, value)
+        setattr(db_center, key, value)
 
     db.commit()
-    db.refresh(db_hospital)
-    return db_hospital
+    db.refresh(db_center)
+    return db_center
 
 
-def delete_hospital(db: Session, hospital_id: int) -> Optional[models.Hospital]:
-    """Delete a hospital record."""
-    db_hospital = get_hospital(db, hospital_id=hospital_id)
-    if not db_hospital:
+def delete_community_health_center(db: Session, center_id: int) -> Optional[models.CommunityHealthCenter]:
+    """Delete a community health center record."""
+    db_center = get_community_health_center(db, center_id=center_id)
+    if not db_center:
         return None
     
-    db.delete(db_hospital)
+    db.delete(db_center)
     db.commit()
-    return db_hospital
+    return db_center
+
+
+# Legacy hospital functions - kept for backward compatibility during migration
+def get_hospital(db: Session, hospital_id: int) -> Optional[models.CommunityHealthCenter]:
+    """Legacy function - redirects to community health center."""
+    return get_community_health_center(db, center_id=hospital_id)
+
+def get_hospitals(db: Session, skip: int = 0, limit: int = 100) -> List[models.CommunityHealthCenter]:
+    """Legacy function - redirects to community health centers."""
+    return get_community_health_centers(db, skip=skip, limit=limit)
+
+def create_hospital(db: Session, hospital_in: schemas.CommunityHealthCenterCreate) -> models.CommunityHealthCenter:
+    """Legacy function - redirects to community health center creation."""
+    return create_community_health_center(db, center_in=hospital_in)
+
+def update_hospital(db: Session, hospital_id: int, hospital_update: schemas.CommunityHealthCenterUpdate) -> Optional[models.CommunityHealthCenter]:
+    """Legacy function - redirects to community health center update."""
+    return update_community_health_center(db, center_id=hospital_id, center_update=hospital_update)
+
+def delete_hospital(db: Session, hospital_id: int) -> Optional[models.CommunityHealthCenter]:
+    """Legacy function - redirects to community health center deletion."""
+    return delete_community_health_center(db, center_id=hospital_id)
 
 
 # ============================================================================

@@ -70,7 +70,7 @@ app.include_router(chat.router, prefix="/chat", tags=["Chat"]) # Assuming a chat
 app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Include the patients router
 app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"]) # Include the appointments router
 app.include_router(doctors.router, prefix="/doctors", tags=["Doctors"])
-app.include_router(hospitals.router, prefix="/hospitals", tags=["Hospitals"])
+app.include_router(hospitals.router, prefix="/community-health-centers", tags=["Community Health Centers"])
 app.include_router(password.router, prefix="/password", tags=["Password"])
 app.include_router(reports.router, prefix="/medical_reports", tags=["Medical Reports"]) # Include the reports router
 app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"]) # Include the AI prediction router

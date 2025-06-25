@@ -82,21 +82,22 @@ async def create_initial_users():
         else:
             print(f"⚠️  Admin user already exists: {admin_email}")
 
-        # --- 2. CREATE DEFAULT HOSPITAL ---
-        print("\n2. Creating Default Healthcare Facility...")
+        # --- 2. CREATE DEFAULT COMMUNITY HEALTH CENTER ---
+        print("\n2. Creating Default Community Health Center...")
         
-        # Check if default hospital already exists
-        existing_hospital = crud.get_hospital(db, hospital_id=1)
-        if not existing_hospital:
-            hospital_in = schemas.HospitalCreate(
-                hospital_name="SeekWell Regional Health Center",
+        # Check if default community health center already exists
+        existing_center = crud.get_community_health_center(db, center_id=1)
+        if not existing_center:
+            center_in = schemas.CommunityHealthCenterCreate(
+                center_name="SeekWell Regional Community Health Center",
                 address="ASEAN Digital Health Hub, Southeast Asia",
-                governed_by="ASEAN Digital Health Initiative"
+                region="ASEAN Digital Health Initiative",
+                center_type="Regional Community Health Center"
             )
-            hospital = crud.create_hospital(db=db, hospital_in=hospital_in)
-            print(f"✅ Default hospital created: {hospital.hospital_name} (ID: {hospital.hospital_id})")
+            center = crud.create_community_health_center(db=db, center_in=center_in)
+            print(f"✅ Default community health center created: {center.center_name} (ID: {center.center_id})")
         else:
-            print(f"⚠️  Default hospital already exists: {existing_hospital.hospital_name}")
+            print(f"⚠️  Default community health center already exists: {existing_center.center_name}")
 
         # --- 3. CREATE SPECIALIST DOCTORS ---
         print("\n3. Creating Specialist Doctors...")
@@ -335,8 +336,8 @@ async def verify_system_health():
         print(f"✅ {patient_count} demo patients configured")
         
         # Check if hospital exists
-        hospital_count = db.query(models.Hospital).count()
-        print(f"✅ {hospital_count} healthcare facility configured")
+        center_count = db.query(models.CommunityHealthCenter).count()
+        print(f"✅ {center_count} community health center configured")
         
         total_users = db.query(models.User).count()
         print(f"📊 Total system users: {total_users}")
