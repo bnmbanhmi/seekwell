@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -38,6 +39,7 @@ interface AISkinAnalysisDashboardProps {
 export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = ({
   patientId,
 }) => {
+  const navigate = useNavigate();
   const [currentResult, setCurrentResult] = useState<AIAnalysisResult | null>(null);
   const [analysisHistory, setAnalysisHistory] = useState<AIAnalysisResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,18 +84,44 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
     
     // Add to history
     setAnalysisHistory(prev => [result, ...prev]);
+    
+    // Auto-trigger high-risk consultation for urgent/high risk cases
+    if (result.risk_assessment?.risk_level === 'URGENT' || 
+        result.risk_assessment?.risk_level === 'HIGH') {
+      setTimeout(() => {
+        handleScheduleHighRiskConsultation(result);
+      }, 2000); // Give user time to see the results first
+    }
   };
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
   };
 
-  const handleScheduleFollowUp = () => {
-    // TODO: Implement follow-up scheduling
-    setSuccess('Follow-up reminder set!');
+  const handleScheduleFollowUp = (result: AIAnalysisResult) => {
+    if (result && 
+        (result.risk_assessment?.risk_level === 'URGENT' || 
+         result.risk_assessment?.risk_level === 'HIGH')) {
+      // Use high-risk consultation for urgent/high cases
+      handleScheduleHighRiskConsultation(result);
+    } else {
+      // TODO: Implement regular follow-up scheduling for low/medium risk
+      setSuccess('Follow-up reminder set!');
+    }
   };
 
-  const handleRequestReview = () => {
+  const handleScheduleHighRiskConsultation = (result: AIAnalysisResult) => {
+    // Navigate to high-risk consultation page with AI analysis data
+    navigate('/dashboard/appointments/high-risk', {
+      state: {
+        aiAnalysisResult: result,
+        patientId: patientId,
+        autoFill: true
+      }
+    });
+  };
+
+  const handleRequestReview = (result: AIAnalysisResult) => {
     // TODO: Implement professional review request
     setSuccess('Professional review requested!');
   };

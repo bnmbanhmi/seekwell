@@ -12,6 +12,7 @@ import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
 import BookAppointment from '../components/appointment/BookAppointment';
 import ScheduleAppointment from '../components/appointment/ScheduleAppointment';
+import HighRiskConsultation from '../components/appointment/HighRiskConsultation';
 import PatientSearch from '../components/patients/PatientSearch';
 import MyAppointment from '../components/appointment/ViewAppointment';
 import DoctorSchedule from '../components/appointment/DoctorSchedule';
@@ -57,6 +58,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
       <Routes>
         <Route path="/" element={renderDashboard()} />
         <Route path="appointments/book" element={<BookAppointment />} />
+        <Route path="appointments/high-risk" element={<HighRiskConsultation />} />
         <Route path="appointments/schedule" element={<ScheduleAppointment />} />
         <Route path="patients" element={<PatientSearch />} />
         <Route path="appointments" element={<MyAppointment />} />
