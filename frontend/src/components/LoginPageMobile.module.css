@@ -123,7 +123,7 @@
   outline: none;
   border-color: var(--seekwell-primary);
   background: white;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  box-shadow: 0 0 0 3px rgba(54, 164, 29, 0.1);
 }
 
 .input::placeholder {
@@ -147,31 +147,31 @@
   right: var(--mobile-spacing-sm);
   top: 50%;
   transform: translateY(-50%);
-  background: transparent;
+  background: var(--seekwell-primary);
   border: none;
-  color: #64748b;
+  color: white;
   font-size: var(--mobile-text-sm);
   font-weight: 500;
   cursor: pointer;
-  padding: var(--mobile-spacing-sm);
+  padding: var(--mobile-spacing-xs) var(--mobile-spacing-sm);
   border-radius: 6px;
   text-transform: capitalize;
   line-height: 1;
   box-sizing: border-box;
-  /* Lock position completely - no transitions or animations */
-  transition: none;
+  transition: none !important;
   margin: 0;
   outline: none;
   text-decoration: none;
   width: auto;
   height: auto;
-  min-width: 0;
-  min-height: 0;
-  max-width: none;
-  max-height: none;
+  min-width: 40px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Absolutely NO hover effects on password toggle */
+/* Password toggle hover states - completely static */
 .passwordToggle:hover,
 .passwordToggle:focus,
 .passwordToggle:active {
@@ -179,27 +179,16 @@
   right: var(--mobile-spacing-sm) !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  background: transparent !important;
-  border: none !important;
-  color: #64748b !important;
-  font-size: var(--mobile-text-sm) !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  padding: var(--mobile-spacing-sm) !important;
-  border-radius: 6px !important;
-  text-transform: capitalize !important;
-  line-height: 1 !important;
-  box-sizing: border-box !important;
+  background: #2d8a17 !important;
+  color: white !important;
   transition: none !important;
-  margin: 0 !important;
+  border: none !important;
   outline: none !important;
-  text-decoration: none !important;
-  width: auto !important;
-  height: auto !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
+  min-width: 40px !important;
+  min-height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Button Styles */
@@ -239,14 +228,14 @@
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, var(--seekwell-primary) 0%, #2980b9 100%);
+  background: linear-gradient(135deg, var(--seekwell-primary) 0%, #2d8a17 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 15px rgba(54, 164, 29, 0.3);
 }
 
 .primaryButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+  box-shadow: 0 6px 20px rgba(54, 164, 29, 0.4);
 }
 
 .primaryButton:disabled {
@@ -338,7 +327,7 @@
 }
 
 .link:hover {
-  background: rgba(52, 152, 219, 0.1);
+  background: rgba(54, 164, 29, 0.1);
   text-decoration: underline;
 }
 
