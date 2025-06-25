@@ -88,43 +88,47 @@ class PatientSchema(PatientBase):
 
     model_config = ConfigDict(from_attributes=True) # Updated for Pydantic v2
 
-# Doctor Schemas
+# Health Worker Schemas (formerly Doctor)
 class DoctorBase(BaseModel):
     username: Optional[str] = None  # Changed to optional
     email: Optional[EmailStr] = None  # Add email
     doctor_name: str
-    major: Optional[str] = None
-    hospital_id: int  # required as per the model (nullable=False)
+    specialization: Optional[str] = None  # Changed from 'major' to 'specialization'
+    center_id: int  # required as per the model (nullable=False), changed from hospital_id
+    is_community_health_worker: Optional[bool] = False
 
 class DoctorCreate(DoctorBase):
     doctor_id: int  # Link to User.user_id
 
 class DoctorUpdate(BaseModel):
     doctor_name: Optional[str] = None
-    major: Optional[str] = None
-    hospital_id: Optional[int] = None
+    specialization: Optional[str] = None  # Changed from 'major' to 'specialization'
+    center_id: Optional[int] = None  # Changed from hospital_id
+    is_community_health_worker: Optional[bool] = None
 
 class DoctorSchema(DoctorBase):
     doctor_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
-# Hospital Schemas
-class HospitalBase(BaseModel):
-    hospital_name: str
+# Community Health Center Schemas
+class CommunityHealthCenterBase(BaseModel):
+    center_name: str
     address: Optional[str] = None
-    governed_by: Optional[str] = None
+    region: Optional[str] = None
+    center_type: Optional[str] = None
 
-class HospitalCreate(HospitalBase):
+class CommunityHealthCenterCreate(CommunityHealthCenterBase):
     pass
 
-class HospitalUpdate(BaseModel):
-    hospital_name: Optional[str] = None
+class CommunityHealthCenterUpdate(BaseModel):
+    center_name: Optional[str] = None
     address: Optional[str] = None
-    governed_by: Optional[str] = None
+    region: Optional[str] = None
+    center_type: Optional[str] = None
 
-class HospitalSchema(HospitalBase):
-    hospital_id: int
+class CommunityHealthCenterSchema(CommunityHealthCenterBase):
+    center_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
