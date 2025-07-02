@@ -560,6 +560,117 @@
   gap: var(--spacing-xs);
 }
 
+/* Demo Account Section */
+.demoSection {
+  background: linear-gradient(135deg, var(--primary-50), var(--secondary-50));
+  border: 2px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.demoTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-700);
+  margin: 0 0 var(--spacing-sm) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.demoDescription {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.demoCredentials {
+  background: var(--surface-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border: 1px solid var(--border-subtle);
+}
+
+.credentialItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  font-family: var(--font-mono, 'Monaco', 'Courier New', monospace);
+}
+
+.credentialItem:first-child {
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+}
+
+.credentialLabel {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.credentialValue {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  background: var(--primary-50);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  user-select: all;
+  cursor: text;
+}
+
+.demoButton {
+  background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--easing-standard);
+  box-shadow: var(--shadow-md);
+  margin: var(--spacing-sm) 0;
+  min-height: var(--touch-target-size);
+  
+  /* Touch-friendly */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.demoButton:hover {
+  background: linear-gradient(135deg, var(--secondary-600), var(--secondary-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.demoButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.demoNote {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin: var(--spacing-sm) 0 0 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.footerDivider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--spacing-lg) 0;
+}
+
 /* Responsive Design */
 
 /* Small mobile devices */
@@ -602,6 +713,17 @@
   .summaryValue {
     max-width: 100%;
     text-align: left;
+  }
+  
+  .credentialItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .credentialValue {
+    width: 100%;
+    text-align: center;
   }
 }
 
@@ -681,6 +803,11 @@
   .button {
     flex: none;
     min-width: 120px;
+  }
+  
+  .demoSection {
+    max-width: 400px;
+    margin: 0 auto var(--spacing-lg) auto;
   }
 }
 

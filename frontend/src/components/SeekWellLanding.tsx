@@ -332,6 +332,92 @@ const SeekWellLanding: React.FC = () => {
         </Container>
       </Box>
 
+      {/* Demo Account Section */}
+      <Box sx={{ bgcolor: '#e8f5e8', py: 6 }}>
+        <Container maxWidth="md">
+          <Paper
+            elevation={3}
+            sx={{
+              p: 4,
+              textAlign: 'center',
+              border: '2px solid #27ae60',
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fff8 100%)',
+            }}
+          >
+            <Typography variant="h5" component="h2" gutterBottom fontWeight="bold" color="primary">
+              🚀 Try SeekWell Instantly
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
+              Don't want to create an account? Use our demo patient account to explore SeekWell's features immediately.
+            </Typography>
+            
+            <Box
+              sx={{
+                bgcolor: '#f0f9f0',
+                p: 3,
+                borderRadius: 2,
+                border: '1px solid #27ae60',
+                mb: 3,
+                maxWidth: 400,
+                mx: 'auto',
+              }}
+            >
+              <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                Demo Patient Account
+              </Typography>
+              <Box sx={{ textAlign: 'left', mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  <strong>Email:</strong>
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: 'monospace',
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    p: 1,
+                    borderRadius: 1,
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  patient1@seekwell.health
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'left' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  <strong>Password:</strong>
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: 'monospace',
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    p: 1,
+                    borderRadius: 1,
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  PatientDemo2025
+                </Typography>
+              </Box>
+            </Box>
+            
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/auth/login')}
+              sx={{
+                bgcolor: '#27ae60',
+                '&:hover': { bgcolor: '#219a52' },
+                px: 4,
+              }}
+            >
+              Go to Login Page
+            </Button>
+          </Paper>
+        </Container>
+      </Box>
+
       {/* CTA Section */}
       <Box
         sx={{

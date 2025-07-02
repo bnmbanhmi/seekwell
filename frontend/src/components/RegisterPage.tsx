@@ -39,13 +39,13 @@ const RegisterPage: React.FC = () => {
 
         // Validate all required fields
         if (!fullname || !username || !mail || !password) {
-            setError('Vui lòng điền đầy đủ tất cả thông tin bắt buộc.');
+            setError('Please fill in all required information.');
             setLoading(false);
             return;
         }
 
         if (!passwordValidation.isValid) {
-            setError('Mật khẩu không đáp ứng yêu cầu bảo mật.');
+            setError('Password does not meet security requirements.');
             setLoading(false);
             return;
         }
@@ -63,7 +63,7 @@ const RegisterPage: React.FC = () => {
             });
 
             if (response.status === 201 || response.status === 200) {
-                toast.success(t('Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.'));
+                toast.success(t('Registration successful! You can now log in.'));
                 setTimeout(() => {
                     navigate('/login');
                 }, 1000);
@@ -76,10 +76,10 @@ const RegisterPage: React.FC = () => {
                     // Join all error messages into a single string
                     setError(detail.map((e: any) => e.msg).join(' | '));
                 } else {
-                    setError(detail || 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
+                    setError(detail || 'Registration failed. Please check your information.');
                 }
             } else {
-                setError('Đăng ký thất bại. Vui lòng kiểm tra kết nối mạng và thử lại.');
+                setError('Registration failed. Please check your internet connection and try again.');
             }
             console.error("Register error:", err);
         } finally {
@@ -93,11 +93,11 @@ const RegisterPage: React.FC = () => {
 
     const nextStep = () => {
         if (currentStep === 1 && (!fullname || !username)) {
-            setError('Vui lòng điền đầy đủ thông tin cá nhân');
+            setError('Please fill in all personal information');
             return;
         }
         if (currentStep === 2 && (!mail || !password)) {
-            setError('Vui lòng điền đầy đủ thông tin tài khoản');
+            setError('Please fill in all account information');
             return;
         }
         setError('');
@@ -151,7 +151,7 @@ const RegisterPage: React.FC = () => {
                             style={{ width: `${(currentStep / 3) * 100}%` }}
                         ></div>
                     </div>
-                    <p className={styles.progressText}>Bước {currentStep} của 3</p>
+                    <p className={styles.progressText}>Step {currentStep} of 3</p>
                 </div>
 
                 <div className={styles.stepContainer}>
@@ -159,12 +159,12 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>👤</span>
-                                Thông tin cá nhân
+                                Personal Information
                             </h2>
-                            <p className={styles.stepDescription}>Hãy cho chúng tôi biết về bạn</p>
+                            <p className={styles.stepDescription}>Tell us about yourself</p>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="fullname" className={styles.label}>Họ và tên *</label>
+                                <label htmlFor="fullname" className={styles.label}>Full Name *</label>
                                 <input
                                     type="text"
                                     id="fullname"
@@ -172,12 +172,12 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setFullname(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="Nguyễn Văn A"
+                                    placeholder="John Doe"
                                 />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="username" className={styles.label}>Tên đăng nhập *</label>
+                                <label htmlFor="username" className={styles.label}>Username *</label>
                                 <input
                                     type="text"
                                     id="username"
@@ -185,9 +185,9 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="tenchophepnguoidung"
+                                    placeholder="yourusername"
                                 />
-                                <p className={styles.inputHint}>Tên đăng nhập sẽ dùng để đăng nhập vào ứng dụng</p>
+                                <p className={styles.inputHint}>Username will be used to log into the application</p>
                             </div>
                         </div>
                     )}
@@ -196,9 +196,9 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>🔐</span>
-                                Tài khoản & Bảo mật
+                                Account & Security
                             </h2>
-                            <p className={styles.stepDescription}>Thiết lập email và mật khẩu an toàn</p>
+                            <p className={styles.stepDescription}>Set up your email and secure password</p>
 
                             <div className={styles.formGroup}>
                                 <label htmlFor="mail" className={styles.label}>Email *</label>
@@ -209,12 +209,12 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setMail(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="ten@email.com"
+                                    placeholder="name@email.com"
                                 />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="password" className={styles.label}>Mật khẩu *</label>
+                                <label htmlFor="password" className={styles.label}>Password *</label>
                                 <div className={styles.passwordInput}>
                                     <input
                                         type={showPassword ? 'text' : 'password'}
@@ -223,13 +223,13 @@ const RegisterPage: React.FC = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         className={`${styles.input} touch-target`}
-                                        placeholder="Nhập mật khẩu mạnh"
+                                        placeholder="Enter a strong password"
                                     />
                                     <button
                                         type="button"
                                         className={`${styles.passwordToggle} touch-target`}
                                         onClick={() => setShowPassword(!showPassword)}
-                                        aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                                     >
                                         {showPassword ? '🙈' : '👁️'}
                                     </button>
@@ -240,16 +240,16 @@ const RegisterPage: React.FC = () => {
                                     <div className={styles.passwordStrength}>
                                         <div className={styles.strengthChecks}>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.minLength ? styles.valid : ''}`}>
-                                                {passwordValidation.minLength ? '✓' : '○'} Ít nhất 8 ký tự
+                                                {passwordValidation.minLength ? '✓' : '○'} At least 8 characters
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasUpper ? styles.valid : ''}`}>
-                                                {passwordValidation.hasUpper ? '✓' : '○'} Có chữ hoa
+                                                {passwordValidation.hasUpper ? '✓' : '○'} Has uppercase letter
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasLower ? styles.valid : ''}`}>
-                                                {passwordValidation.hasLower ? '✓' : '○'} Có chữ thường
+                                                {passwordValidation.hasLower ? '✓' : '○'} Has lowercase letter
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasNumber ? styles.valid : ''}`}>
-                                                {passwordValidation.hasNumber ? '✓' : '○'} Có số
+                                                {passwordValidation.hasNumber ? '✓' : '○'} Has number
                                             </div>
                                         </div>
                                     </div>
@@ -262,17 +262,17 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>✨</span>
-                                Xác nhận thông tin
+                                Confirm Information
                             </h2>
-                            <p className={styles.stepDescription}>Kiểm tra lại thông tin trước khi đăng ký</p>
+                            <p className={styles.stepDescription}>Review your information before registration</p>
 
                             <div className={styles.summaryCard}>
                                 <div className={styles.summaryItem}>
-                                    <span className={styles.summaryLabel}>Họ và tên:</span>
+                                    <span className={styles.summaryLabel}>Full Name:</span>
                                     <span className={styles.summaryValue}>{fullname}</span>
                                 </div>
                                 <div className={styles.summaryItem}>
-                                    <span className={styles.summaryLabel}>Tên đăng nhập:</span>
+                                    <span className={styles.summaryLabel}>Username:</span>
                                     <span className={styles.summaryValue}>{username}</span>
                                 </div>
                                 <div className={styles.summaryItem}>
@@ -283,11 +283,11 @@ const RegisterPage: React.FC = () => {
 
                             <div className={styles.termsSection}>
                                 <div className={styles.termsText}>
-                                    <p>Bằng cách đăng ký, bạn đồng ý với:</p>
+                                    <p>By registering, you agree to:</p>
                                     <ul>
-                                        <li><button type="button" className={styles.termsLink}>Điều khoản sử dụng</button></li>
-                                        <li><button type="button" className={styles.termsLink}>Chính sách bảo mật</button></li>
-                                        <li><button type="button" className={styles.termsLink}>Quy định về dữ liệu y tế</button></li>
+                                        <li><button type="button" className={styles.termsLink}>Terms of Service</button></li>
+                                        <li><button type="button" className={styles.termsLink}>Privacy Policy</button></li>
+                                        <li><button type="button" className={styles.termsLink}>Medical Data Regulations</button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -309,7 +309,7 @@ const RegisterPage: React.FC = () => {
                                 onClick={prevStep}
                                 className={`${styles.button} ${styles.buttonSecondary} touch-target`}
                             >
-                                ← Quay lại
+                                ← Back
                             </button>
                         )}
 
@@ -319,7 +319,7 @@ const RegisterPage: React.FC = () => {
                                 onClick={nextStep}
                                 className={`${styles.button} ${styles.buttonPrimary} touch-target`}
                             >
-                                Tiếp theo →
+                                Next →
                             </button>
                         ) : (
                             <button
@@ -334,10 +334,10 @@ const RegisterPage: React.FC = () => {
                                 {loading ? (
                                     <>
                                         <span className={styles.spinner}></span>
-                                        Đang đăng ký...
+                                        Registering...
                                     </>
                                 ) : (
-                                    'Tạo tài khoản'
+                                    'Create Account'
                                 )}
                             </button>
                         )}
@@ -347,20 +347,50 @@ const RegisterPage: React.FC = () => {
 
             {/* Footer */}
             <div className={styles.footer}>
+                {/* Demo Account Section */}
+                <div className={styles.demoSection}>
+                    <h3 className={styles.demoTitle}>🚀 Try SeekWell Instantly</h3>
+                    <p className={styles.demoDescription}>
+                        Don't want to create an account right now? Use our demo patient account:
+                    </p>
+                    <div className={styles.demoCredentials}>
+                        <div className={styles.credentialItem}>
+                            <span className={styles.credentialLabel}>📧 Email:</span>
+                            <span className={styles.credentialValue}>patient1@seekwell.health</span>
+                        </div>
+                        <div className={styles.credentialItem}>
+                            <span className={styles.credentialLabel}>🔑 Password:</span>
+                            <span className={styles.credentialValue}>PatientDemo2025</span>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/login')}
+                        className={styles.demoButton}
+                    >
+                        Go to Login with Demo Account
+                    </button>
+                    <p className={styles.demoNote}>
+                        💡 This demo account lets you explore all SeekWell features including AI skin analysis
+                    </p>
+                </div>
+
+                <div className={styles.footerDivider}></div>
+
                 <p className={styles.footerText}>
-                    Đã có tài khoản?{' '}
+                    Already have an account?{' '}
                     <button
                         type="button"
                         onClick={handleLogin}
                         className={styles.linkButton}
                     >
-                        Đăng nhập ngay
+                        Sign in now
                     </button>
                 </p>
                 
                 <div className={styles.securityInfo}>
                     <p className={styles.securityText}>
-                        🔒 Thông tin của bạn được bảo vệ bằng mã hóa SSL
+                        🔒 Your information is protected with SSL encryption
                     </p>
                 </div>
             </div>
