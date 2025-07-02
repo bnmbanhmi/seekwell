@@ -160,6 +160,65 @@ const LoginPage: React.FC = () => {
                                 Forgot Password?
                             </Link>
                         </div>
+
+                        {/* Demo Account Section */}
+                        <div className={styles.demoSection}>
+                            <h3 className="mobile-text-lg" style={{ margin: '0 0 12px 0', color: '#374151', fontWeight: '600' }}>
+                                🚀 Try SeekWell Instantly
+                            </h3>
+                            <p className="mobile-text-sm" style={{ margin: '0 0 16px 0', color: '#64748b' }}>
+                                Use our demo patient account to explore SeekWell's features:
+                            </p>
+                            
+                            <div style={{
+                                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                                border: '2px solid #22c55e',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                marginBottom: '16px'
+                            }}>
+                                <div style={{ textAlign: 'left', marginBottom: '12px' }}>
+                                    <strong style={{ color: '#16a34a', fontSize: '0.875rem' }}>Email:</strong>
+                                    <div style={{
+                                        fontFamily: 'monospace',
+                                        background: 'rgba(255,255,255,0.8)',
+                                        padding: '8px',
+                                        borderRadius: '6px',
+                                        border: '1px solid #d1d5db',
+                                        marginTop: '4px',
+                                        fontSize: '0.875rem'
+                                    }}>
+                                        patient1@seekwell.health
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'left' }}>
+                                    <strong style={{ color: '#16a34a', fontSize: '0.875rem' }}>Password:</strong>
+                                    <div style={{
+                                        fontFamily: 'monospace',
+                                        background: 'rgba(255,255,255,0.8)',
+                                        padding: '8px',
+                                        borderRadius: '6px',
+                                        border: '1px solid #d1d5db',
+                                        marginTop: '4px',
+                                        fontSize: '0.875rem'
+                                    }}>
+                                        PatientDemo2025
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setUsername('patient1@seekwell.health');
+                                    setPassword('PatientDemo2025');
+                                }}
+                                className={`${styles.button} ${styles.secondaryButton} mobile-button touch-target haptic-light`}
+                                style={{ fontSize: '0.875rem' }}
+                            >
+                                Fill Demo Credentials
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
