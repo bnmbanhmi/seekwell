@@ -110,7 +110,7 @@ export class AIAnalysisService {
   static async getAnalysisHistory(): Promise<AIAnalysisResult[]> {
     try {
       const response = await apiClient.get('/skin-lesions/history');
-      return response.data;
+      return response.data.analyses || response.data;
     } catch (error: any) {
       console.error('Get History Error:', error);
       throw new Error(

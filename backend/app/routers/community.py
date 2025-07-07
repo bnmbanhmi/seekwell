@@ -17,7 +17,10 @@ async def get_community_stats(
     db: Session = Depends(get_db)
 ):
     """
-    Get community health statistics - works for both patients and cadres
+    Get community health statistics - role-based access:
+    - Patients: Only their own statistics  
+    - Cadres: Community-wide statistics (all users)
+    - Doctors/Admin: Full system statistics
     """
     try:
         # Calculate date ranges
@@ -25,40 +28,40 @@ async def get_community_stats(
         week_ago = today - timedelta(days=7)
         
         if current_user.role.value == 'LOCAL_CADRE':
-            # Get pending reviews count
+            # Cadres see community-wide statistics (all users)
+            
+            # Total pending reviews (all users)
             total_pending = db.query(SkinLesionImage).filter(
                 SkinLesionImage.status == 'pending',
                 SkinLesionImage.reviewed_by_cadre.is_(None)
             ).count()
             
-            # Get urgent cases count
+            # Urgent cases (HIGH and URGENT risk levels) - all users
             urgent_cases = db.query(SkinLesionImage).join(
                 AIAssessment, SkinLesionImage.image_id == AIAssessment.image_id
             ).filter(
-                SkinLesionImage.status == 'pending',
-                AIAssessment.risk_level.in_(['URGENT', 'HIGH']),
-                SkinLesionImage.reviewed_by_cadre.is_(None)
+                AIAssessment.risk_level.in_(['URGENT', 'HIGH'])
             ).count()
             
-            # Get completed reviews count
+            # Completed reviews by any cadre
             completed_reviews = db.query(SkinLesionImage).filter(
-                SkinLesionImage.reviewed_by_cadre == current_user.user_id
+                SkinLesionImage.reviewed_by_cadre.isnot(None)
             ).count()
             
-            # Get total patients count (approximate community size)
+            # Total patients in the system
             total_patients = db.query(Patient).count()
             
-            # Get AI analyses today
+            # AI analyses today (all users)
             ai_analyses_today = db.query(SkinLesionImage).filter(
                 SkinLesionImage.upload_timestamp >= datetime.combine(today, datetime.min.time())
             ).count()
             
-            # Get follow-ups needed
-            follow_ups_needed = db.query(SkinLesionImage).join(
+            # Total consultations needed (high-risk cases not yet reviewed by doctor)
+            consultations_needed = db.query(SkinLesionImage).join(
                 AIAssessment, SkinLesionImage.image_id == AIAssessment.image_id
             ).filter(
-                AIAssessment.follow_up_needed == True,
-                SkinLesionImage.status == 'reviewed'
+                AIAssessment.risk_level.in_(['URGENT', 'HIGH']),
+                SkinLesionImage.reviewed_by_doctor.is_(None)
             ).count()
             
             return {
@@ -67,7 +70,8 @@ async def get_community_stats(
                 "completedReviews": completed_reviews,
                 "totalPatients": total_patients,
                 "aiAnalysesToday": ai_analyses_today,
-                "followUpsNeeded": follow_ups_needed
+                "consultationsNeeded": consultations_needed,
+                "followUpsNeeded": urgent_cases  # For dashboard display
             }
         
         else:  # Patient or other roles
@@ -116,14 +120,15 @@ async def get_community_stats(
         
     except Exception as e:
         logger.error(f"Error fetching community stats: {str(e)}")
-        # Return mock data for demo purposes
+        # Return role-appropriate mock data for demo purposes
         if current_user.role.value == 'LOCAL_CADRE':
             return {
-                "totalPendingReviews": 2,
-                "urgentCases": 1,
-                "completedReviews": 15,
-                "totalPatients": 45,
-                "aiAnalysesToday": 8,
+                "totalPendingReviews": 8,
+                "urgentCases": 3,
+                "completedReviews": 25,
+                "totalPatients": 156,
+                "aiAnalysesToday": 12,
+                "consultationsNeeded": 3,
                 "followUpsNeeded": 3
             }
         else:

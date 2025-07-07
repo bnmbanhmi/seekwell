@@ -109,7 +109,7 @@ const CreateEMR: React.FC = () => {
           }
         });
 
-        const patientsList = (await Promise.all(patientPromises)).filter(patient => patient !== null);
+        const patientsList = (await Promise.all(patientPromises)).filter((patient): patient is Patient => patient !== null);
         console.log('Final patients list:', patientsList); // Debug log
         setPatients(patientsList);
         setFilteredPatients(patientsList);

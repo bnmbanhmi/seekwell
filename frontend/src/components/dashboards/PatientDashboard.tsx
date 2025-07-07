@@ -103,14 +103,35 @@ const PatientDashboard = () => {
         );
 
         setAppointments(appointmentsWithDoctorNames);
-        setStats({
-          todayAppointments: todayAppointments.length,
-          upcomingAppointments,
-          completedAppointments,
-          totalPrescriptions: 0, // Placeholder for future implementation
-          totalSkinAssessments: 0, // Placeholder for future implementation
-          pendingReviews: 0, // Placeholder for future implementation
-        });
+        
+        // Fetch patient's skin assessment stats
+        try {
+          const statsResponse = await axios.get(`${BACKEND_URL}/community/stats`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          
+          const skinStats = statsResponse.data;
+          setStats({
+            todayAppointments: todayAppointments.length,
+            upcomingAppointments,
+            completedAppointments,
+            totalPrescriptions: 0, // Placeholder for future implementation
+            totalSkinAssessments: skinStats.totalSkinAssessments || 0,
+            pendingReviews: skinStats.pendingReviews || 0,
+          });
+        } catch (statsErr) {
+          console.error('Failed to fetch skin assessment stats:', statsErr);
+          setStats({
+            todayAppointments: todayAppointments.length,
+            upcomingAppointments,
+            completedAppointments,
+            totalPrescriptions: 0,
+            totalSkinAssessments: 0,
+            pendingReviews: 0,
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
         setError('Unable to load dashboard data.');

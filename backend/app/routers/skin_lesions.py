@@ -3,7 +3,7 @@ Skin Lesions Router
 API endpoints for skin lesion analysis and management.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
 from typing import Optional
 import logging
@@ -12,7 +12,7 @@ import io
 
 from ..database import get_db
 from ..dependencies import get_current_user, get_current_active_local_cadre, get_current_doctor
-from ..models import User, Doctor
+from ..models import User, Doctor, UserRole
 from ..services.lesion_service import lesion_service
 from ..services.ai_integration import ai_service
 
@@ -72,24 +72,110 @@ async def upload_and_analyze_lesion(
         raise HTTPException(status_code=500, detail="Internal server error during analysis")
 
 
-@router.get("/analysis-history/{patient_id}")
-async def get_patient_analysis_history(
-    patient_id: int,
+@router.get("/history")
+async def get_analysis_history(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Get analysis history for a patient.
+    Get analysis history based on user role:
+    - Patients: Only their own analysis history
+    - Cadres: All analysis history from the community
+    - Doctors/Admin: All analysis history
     """
-    # For now, return placeholder data
-    # This would integrate with the database to get actual history
+    from ..models import SkinLesionImage, AIAssessment, Patient
+    from sqlalchemy.orm import joinedload
     
-    return {
-        "patient_id": patient_id,
-        "analyses": [],
-        "total_count": 0,
-        "message": "Analysis history will be available after database integration"
-    }
+    try:
+        # Build base query
+        query = db.query(SkinLesionImage).options(
+            joinedload(SkinLesionImage.ai_assessment),
+            joinedload(SkinLesionImage.patient)
+        )
+        
+        # Apply role-based filtering
+        if current_user.role.value == UserRole.PATIENT.value:
+            # Patients can only see their own history
+            query = query.filter(SkinLesionImage.patient_id == current_user.user_id)
+        elif current_user.role.value == UserRole.LOCAL_CADRE.value:
+            # Cadres can see all analyses (for community health monitoring)
+            pass  # No additional filter needed
+        elif current_user.role.value in [UserRole.DOCTOR.value, UserRole.ADMIN.value]:
+            # Doctors and admins can see all analyses
+            pass  # No additional filter needed
+        else:
+            # Other roles get no access
+            return {"analyses": [], "total_count": 0}
+        
+        # Order by most recent first
+        skin_lesions = query.order_by(SkinLesionImage.upload_timestamp.desc()).all()
+        
+        # Format the results
+        analyses = []
+        for lesion in skin_lesions:
+            ai_assessment = lesion.ai_assessment
+            patient = lesion.patient
+            
+            if ai_assessment:
+                analysis_data = {
+                    "success": True,
+                    "image_id": lesion.image_id,
+                    "patient_id": lesion.patient_id,
+                    "patient_name": patient.full_name if patient else "Unknown Patient",
+                    "predictions": [
+                        {
+                            "class_id": 1,
+                            "label": ai_assessment.predicted_class,
+                            "confidence": float(ai_assessment.confidence_level or 0.0),
+                            "percentage": float(ai_assessment.confidence_level or 0.0) * 100
+                        }
+                    ],
+                    "top_prediction": {
+                        "label": ai_assessment.predicted_class,
+                        "confidence": float(ai_assessment.confidence_level or 0.0),
+                        "percentage": float(ai_assessment.confidence_level or 0.0) * 100
+                    },
+                    "analysis": {
+                        "predicted_class": ai_assessment.predicted_class,
+                        "confidence": float(ai_assessment.confidence_level or 0.0),
+                        "body_region": lesion.body_region,
+                        "analysis_timestamp": lesion.upload_timestamp.isoformat()
+                    },
+                    "risk_assessment": {
+                        "risk_level": ai_assessment.risk_level,
+                        "confidence_level": ai_assessment.confidence_level,
+                        "needs_professional_review": ai_assessment.needs_professional_review or False,
+                        "needs_urgent_attention": ai_assessment.risk_level in ['URGENT', 'HIGH'],
+                        "base_risk": ai_assessment.risk_level,
+                        "confidence_score": float(ai_assessment.confidence_level or 0.0),
+                        "predicted_class": ai_assessment.predicted_class
+                    },
+                    "recommendations": [
+                        "Consult with healthcare provider",
+                        "Monitor for changes",
+                        "Follow up as recommended"
+                    ],
+                    "workflow": {
+                        "needs_cadre_review": lesion.reviewed_by_cadre is None and ai_assessment.risk_level in ['MEDIUM', 'HIGH'],
+                        "needs_doctor_review": lesion.reviewed_by_doctor is None and ai_assessment.risk_level in ['HIGH', 'URGENT'],
+                        "priority_level": ai_assessment.risk_level,
+                        "estimated_follow_up_days": 30 if ai_assessment.risk_level == 'LOW' else 14 if ai_assessment.risk_level == 'MEDIUM' else 7
+                    },
+                    "timestamp": lesion.upload_timestamp.isoformat()
+                }
+                analyses.append(analysis_data)
+        
+        return {
+            "analyses": analyses,
+            "total_count": len(analyses)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching analysis history: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch analysis history"
+        )
 
 
 @router.get("/pending-reviews")

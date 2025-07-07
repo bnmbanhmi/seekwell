@@ -47,10 +47,12 @@ interface HighRiskAlert {
 }
 
 interface CommunityStats {
-  total_patients: number;
-  pending_reviews: number;
-  high_risk_cases: number;
-  consultations_needed: number;
+  totalPatients: number;
+  totalPendingReviews: number;
+  urgentCases: number;
+  consultationsNeeded: number;
+  completedReviews?: number;
+  aiAnalysesToday?: number;
 }
 
 interface PatientDetails {
@@ -87,10 +89,10 @@ const CadreDashboard: React.FC = () => {
 
       setHighRiskAlerts(alertsResponse.data || []);
       setCommunityStats(statsResponse.data || {
-        total_patients: 0,
-        pending_reviews: 0,
-        high_risk_cases: 0,
-        consultations_needed: 0
+        totalPatients: 0,
+        totalPendingReviews: 0,
+        urgentCases: 0,
+        consultationsNeeded: 0
       });
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -169,7 +171,7 @@ const CadreDashboard: React.FC = () => {
               <Box display="flex" alignItems="center">
                 <Person color="primary" sx={{ mr: 2 }} />
                 <Box>
-                  <Typography variant="h4">{communityStats?.total_patients || 0}</Typography>
+                  <Typography variant="h4">{communityStats?.totalPatients || 0}</Typography>
                   <Typography color="text.secondary">Total Patients</Typography>
                 </Box>
               </Box>
@@ -181,11 +183,11 @@ const CadreDashboard: React.FC = () => {
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center">
-                <Badge badgeContent={communityStats?.pending_reviews || 0} color="error">
+                <Badge badgeContent={communityStats?.totalPendingReviews || 0} color="error">
                   <Warning color="warning" sx={{ mr: 2 }} />
                 </Badge>
                 <Box>
-                  <Typography variant="h4">{communityStats?.pending_reviews || 0}</Typography>
+                  <Typography variant="h4">{communityStats?.totalPendingReviews || 0}</Typography>
                   <Typography color="text.secondary">Pending Reviews</Typography>
                 </Box>
               </Box>
@@ -199,7 +201,7 @@ const CadreDashboard: React.FC = () => {
               <Box display="flex" alignItems="center">
                 <Warning color="error" sx={{ mr: 2 }} />
                 <Box>
-                  <Typography variant="h4">{communityStats?.high_risk_cases || 0}</Typography>
+                  <Typography variant="h4">{communityStats?.urgentCases || 0}</Typography>
                   <Typography color="text.secondary">High Risk Cases</Typography>
                 </Box>
               </Box>
@@ -213,7 +215,7 @@ const CadreDashboard: React.FC = () => {
               <Box display="flex" alignItems="center">
                 <LocalHospital color="info" sx={{ mr: 2 }} />
                 <Box>
-                  <Typography variant="h4">{communityStats?.consultations_needed || 0}</Typography>
+                  <Typography variant="h4">{communityStats?.consultationsNeeded || 0}</Typography>
                   <Typography color="text.secondary">Need Consultation</Typography>
                 </Box>
               </Box>
