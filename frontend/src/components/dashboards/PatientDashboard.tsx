@@ -107,9 +107,9 @@ const PatientDashboard = () => {
           todayAppointments: todayAppointments.length,
           upcomingAppointments,
           completedAppointments,
-          totalPrescriptions: 0, // We'll fetch this from prescriptions API later
-          totalSkinAssessments: 0, // Will be implemented in Phase 2
-          pendingReviews: 0, // Will be implemented in Phase 2
+          totalPrescriptions: 0, // Placeholder for future implementation
+          totalSkinAssessments: 0, // Placeholder for future implementation
+          pendingReviews: 0, // Placeholder for future implementation
         });
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
@@ -146,10 +146,10 @@ const PatientDashboard = () => {
       color: '#10b981'
     },
     {
-      title: 'Community Health Support',
-      description: 'Connect with local health cadres',
-      icon: '�',
-      action: () => navigate('/dashboard/community-health'),
+      title: 'My Appointments',
+      description: 'View and manage your appointments',
+      icon: '⏰',
+      action: () => navigate('/dashboard/appointments'),
       color: '#f39c12'
     }
   ];

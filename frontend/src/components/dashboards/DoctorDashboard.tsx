@@ -139,7 +139,7 @@ const DoctorDashboard = () => {
   const quickActions = [
     {
       title: 'View Full Schedule',
-      description: 'Manage your appointments',
+      description: 'Manage your appointments and schedule',
       icon: '📅',
       action: () => navigate('/dashboard/schedule'),
       color: '#3498db'
@@ -160,24 +160,17 @@ const DoctorDashboard = () => {
     },
     {
       title: 'Medical Reports',
-      description: 'Manage your medical reports',
+      description: 'View and manage medical reports',
       icon: '📊',
       action: () => navigate('/dashboard/medical-reports'),
       color: '#f39c12'
     },
     {
       title: 'Medical History',
-      description: 'View patient medical history',
+      description: 'Access patient medical history',
       icon: '📋',
       action: () => navigate('/dashboard/medical-history'),
       color: '#9b59b6'
-    },
-    {
-      title: 'Prescriptions',
-      description: 'Manage patient prescriptions',
-      icon: '💊',
-      action: () => navigate('/dashboard/prescriptions'),
-      color: '#1abc9c'
     }
   ];
 

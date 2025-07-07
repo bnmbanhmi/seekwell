@@ -42,7 +42,6 @@ class Patient(Base):
     job = Column(String(100))
     class_role = Column(Enum(Class), nullable=False)
 
-    # Quan hệ
     user = relationship("User", back_populates="patient_profile", foreign_keys=[patient_id])
 
     appointments = relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")

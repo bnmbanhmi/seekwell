@@ -24,14 +24,13 @@ Transform the existing clinic management system into **SeekWell** - a mobile-fir
 ### **Backend Stack**
 - **Core Framework**: Python 3.11+ with FastAPI
 - **Database**: PostgreSQL with SQLAlchemy ORM
-- **AI/ML Stack**: PyTorch, Transformers, NumPy, HuggingFace
+- **AI/ML Stack**: PyTorch, Transformers, HuggingFace
 - **API Documentation**: Automatic OpenAPI/Swagger generation
 - **Authentication**: JWT tokens with role-based access
 - **Server**: Uvicorn ASGI server
 
 ### **AI & Machine Learning**
 - **Deep Learning**: PyTorch for model development and inference
-- **Computer Vision**: Torchvision for image processing
 - **Model Serving**: HuggingFace Transformers for model deployment
 - **Image Processing**: PIL/Pillow for image manipulation
 - **Deployment**: Gradio for interactive AI interfaces
@@ -42,7 +41,7 @@ Transform the existing clinic management system into **SeekWell** - a mobile-fir
 - **Build Tool**: Create React App with modern tooling
 - **Styling**: Material-UI 7 and Custom CSS with design system
 - **State Management**: React Context and Hooks
-- **PWA Features**: Service workers and offline capabilities
+- **PWA Features**: Manifest configuration and mobile optimization
 
 ### **Infrastructure**
 - **Database**: PostgreSQL with comprehensive migrations
@@ -60,12 +59,11 @@ Transform the existing clinic management system into **SeekWell** - a mobile-fir
 users                 -- Authentication and role management
 patients              -- Patient demographics and health data
 doctors               -- Doctor profiles and specializations
-hospitals             -- Hospital/clinic information
+community_health_centers -- Community health centers/clinics
 
 -- Appointments and EMR
 appointments          -- Healthcare scheduling
-medical_reports       -- Electronic medical records
-prescriptions         -- Medication prescriptions
+medical_reports       -- Electronic medical records (includes prescriptions)
 
 -- AI and Skin Lesion Analysis
 skin_lesion_images    -- Patient images and metadata
@@ -179,22 +177,6 @@ const SKIN_LESION_CLASSES = {
 - ❌ **Timeout Errors**: Implement polling for queued Gradio responses
 - ✅ **Best Practice**: Use multiple endpoint fallbacks for reliability
 
-### **Risk Assessment Algorithm**
-```python
-def determine_risk_level(predicted_class, confidence, body_region):
-    if predicted_class in ['MEL', 'BCC', 'SCC']:
-        if confidence > 0.8:
-            return 'URGENT'      # Immediate medical attention
-        elif confidence > 0.6:
-            return 'HIGH'        # Doctor review within 1-2 weeks
-        else:
-            return 'MEDIUM'      # Cadre review and monitoring
-    elif body_region in ['face', 'head', 'neck']:
-        return 'MEDIUM'          # High-visibility areas
-    else:
-        return 'LOW'             # Routine monitoring
-```
-
 ---
 
 ## 📋 Development Phases & Progress
@@ -213,7 +195,6 @@ def determine_risk_level(predicted_class, confidence, body_region):
 - ✅ Backend UserRole enum: `CLINIC_STAFF` → `LOCAL_CADRE`
 - ✅ All frontend TypeScript types updated
 - ✅ Permission systems updated throughout codebase
-- ✅ Vietnamese UI text localized
 
 #### 1.3 Mobile-First Design ✅
 - ✅ 30+ mobile-specific CSS variables
@@ -224,7 +205,6 @@ def determine_risk_level(predicted_class, confidence, body_region):
 #### 1.4 Key Components ✅
 - ✅ `PatientDashboardMobile.tsx`
 - ✅ `MobileNavigation.tsx`
-- ✅ `SkinLesionCapture.tsx`
 - ✅ `BodyRegionSelector.tsx`
 - ✅ Enhanced authentication
 
@@ -289,7 +269,6 @@ GET  /api/cadre/urgent-reviews       # Urgent cases
 - ✅ `SeekWellLanding.tsx` - Project landing page
 
 #### 3.3 Internationalization ✅
-- ✅ Complete English translation from Vietnamese
 - ✅ Medical terminology standardization
 - ✅ Global accessibility improvements
 
@@ -327,7 +306,7 @@ cp .env.example .env
 # Edit .env with your database credentials and secrets
 
 # 5. Database initialization
-python app/create_initial_admin.py
+python setup_seekwell_database.py
 ```
 
 ### Frontend Setup
@@ -407,56 +386,6 @@ npm run build
 # Serve with backend
 cd backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-### Docker Deployment
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_BACKEND_URL=http://backend:8000
-    depends_on:
-      - backend
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/seekwell
-    depends_on:
-      - postgres
-
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: seekwell
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-volumes:
-  postgres_data:
-```
-
-```bash
-# Run with Docker
-docker-compose up -d
-
-# Stop services
-docker-compose down
 ```
 
 ---
@@ -547,73 +476,7 @@ Body: {
 
 ---
 
-## 🧪 Testing Strategy
-
-### Backend Testing
-```bash
-# Install test dependencies
-pip install pytest pytest-asyncio pytest-cov
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Run specific test file
-pytest tests/test_ai_analysis.py -v
-```
-
-### Frontend Testing
-```bash
-# Run unit tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run integration tests
-npm run test:integration
-
-# Run e2e tests
-npm run test:e2e
-```
-
-### AI Model Testing
-```python
-# Test AI integration
-python tests/test_huggingface_integration.py
-
-# Test different skin lesion types
-python tests/test_skin_lesion_classification.py
-
-# Performance testing
-python tests/test_ai_performance.py
-```
-
----
-
 ## 🔒 Security Considerations
-
-### Data Protection
-```python
-# Image encryption for storage
-from cryptography.fernet import Fernet
-
-def encrypt_image_data(image_data: bytes, key: bytes) -> bytes:
-    f = Fernet(key)
-    return f.encrypt(image_data)
-
-# Secure file uploads
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-
-def validate_image_upload(file):
-    # File type validation
-    # File size validation
-    # Image content validation
-    pass
-```
 
 ### Authentication & Authorization
 ```python
@@ -634,12 +497,6 @@ def require_role(required_role: UserRole):
 async def cadre_review_endpoint():
     pass
 ```
-
-### Medical Data Compliance
-- **HIPAA Compliance**: Encrypted data storage and transmission
-- **Audit Logging**: Complete tracking of medical decisions
-- **Data Anonymization**: Research data with PII removed
-- **Access Controls**: Role-based permissions with principle of least privilege
 
 ---
 
@@ -666,26 +523,6 @@ async def cadre_review_endpoint():
     }
   ]
 }
-```
-
-### Service Worker Implementation
-```javascript
-// public/sw.js
-const CACHE_NAME = 'seekwell-v1';
-const urlsToCache = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/dashboard',
-  '/ai-analysis'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
-});
 ```
 
 ### Camera Integration
@@ -797,7 +634,7 @@ npm run build
 # 2. Prepare backend
 cd backend
 pip install -r requirements.txt
-python app/create_initial_admin.py  # Only first deployment
+python setup_seekwell_database.py  # Only first deployment
 
 # 3. Database migrations
 python -m alembic upgrade head
@@ -825,62 +662,7 @@ async def health_check():
 
 ---
 
-## 📊 Monitoring & Analytics
-
-### Application Monitoring
-```python
-# Basic monitoring setup
-import logging
-from prometheus_client import Counter, Histogram, generate_latest
-
-# Metrics
-REQUEST_COUNT = Counter('requests_total', 'Total requests', ['method', 'endpoint'])
-REQUEST_DURATION = Histogram('request_duration_seconds', 'Request duration')
-
-# Usage
-@app.middleware("http")
-async def monitor_requests(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    duration = time.time() - start_time
-    
-    REQUEST_COUNT.labels(
-        method=request.method,
-        endpoint=str(request.url.path)
-    ).inc()
-    REQUEST_DURATION.observe(duration)
-    
-    return response
-```
-
-### User Analytics
-```typescript
-// Frontend analytics
-interface AnalyticsEvent {
-  action: string;
-  category: string;
-  label?: string;
-  value?: number;
-}
-
-const trackEvent = (event: AnalyticsEvent) => {
-  // Track AI analysis usage
-  // Track user workflow completion
-  // Track error rates
-};
-
-// Usage examples
-trackEvent({
-  action: 'ai_analysis_completed',
-  category: 'skin_lesion',
-  label: 'melanoma_detection',
-  value: confidence_score
-});
-```
-
----
-
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -891,7 +673,7 @@ sudo systemctl status postgresql
 
 # Reset database
 dropdb seekwell && createdb seekwell
-python app/create_initial_admin.py
+python setup_seekwell_database.py
 ```
 
 #### AI Model Integration Issues
@@ -918,20 +700,6 @@ npm run type-check
 
 # Update dependencies
 npm audit fix
-```
-
-#### Mobile PWA Issues
-```javascript
-// Service worker registration
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(registration => console.log('SW registered'))
-    .catch(error => console.log('SW registration failed'));
-}
-
-// Check manifest
-// Ensure HTTPS for PWA features
-// Validate icon sizes and formats
 ```
 
 ---
@@ -1088,7 +856,7 @@ PORT=8000
 # Copy internal database URL to DATABASE_URL env var
 
 # Run initial migration
-python app/create_initial_admin.py
+python setup_seekwell_database.py
 ```
 
 #### **4. Custom Domain & SSL**
@@ -1118,7 +886,7 @@ export DATABASE_URL="postgresql://user:pass@host:port/db"
 
 # Run migrations
 cd backend
-python app/create_initial_admin.py
+python setup_seekwell_database.py
 
 # Verify connection
 python -c "
@@ -1225,26 +993,6 @@ async def check_database_health():
 # https://api.seekwell.health/docs (API Documentation)
 ```
 
-#### **3. Error Tracking & Logging**
-```javascript
-// Frontend error tracking (Sentry)
-import * as Sentry from "@sentry/react";
-
-Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_DSN,
-  environment: process.env.REACT_APP_ENVIRONMENT,
-});
-
-// Backend logging (Python logging)
-import logging
-from app.config import settings
-
-logging.basicConfig(
-    level=logging.INFO if settings.environment == "production" else logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-```
-
 ### **Performance Optimization**
 
 #### **1. Frontend Optimization**
@@ -1316,125 +1064,5 @@ result = await session.execute(
 )
 ```
 
-### **Backup & Recovery**
 
-#### **1. Database Backups**
-```bash
-# Automated daily backups (Render PostgreSQL)
-# Manual backup
-pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
 
-# Restore from backup
-psql $DATABASE_URL < backup_20250615.sql
-```
-
-#### **2. File Storage Backup**
-```python
-# Image backup strategy
-import boto3
-from app.config import settings
-
-# Backup uploaded images to S3
-s3_client = boto3.client('s3')
-
-async def backup_image(file_path: str):
-    s3_client.upload_file(
-        file_path,
-        settings.s3_backup_bucket,
-        f"backups/{datetime.now().isoformat()}/{file_path}"
-    )
-```
-
-### **Scaling Considerations**
-
-#### **1. Frontend Scaling**
-```bash
-# Vercel automatically handles:
-# - Global CDN distribution
-# - Automatic scaling
-# - Edge function deployment
-# - Image optimization
-
-# No additional configuration needed for frontend scaling
-```
-
-#### **2. Backend Scaling**
-```yaml
-# Render scaling configuration
-services:
-  - type: web
-    name: seekwell-backend
-    plan: starter  # Can upgrade to standard/pro
-    scaling:
-      minInstances: 1
-      maxInstances: 10
-    
-    # Health check for auto-scaling
-    healthCheckPath: /health
-```
-
-#### **3. Database Scaling**
-```sql
--- Database optimization for scaling
-CREATE INDEX idx_skin_lesion_patient_id ON skin_lesion_images(patient_id);
-CREATE INDEX idx_skin_lesion_timestamp ON skin_lesion_images(upload_timestamp);
-CREATE INDEX idx_ai_assessment_risk_level ON ai_assessments(risk_level);
-
--- Connection pooling
-SET max_connections = 100;
-SET shared_buffers = '256MB';
-```
-
-### **Cost Optimization**
-
-#### **1. Service Costs**
-```
-Monthly Costs (Estimated):
-┌─────────────────┬──────────────┬─────────────────┐
-│ Service         │ Plan         │ Monthly Cost    │
-├─────────────────┼──────────────┼─────────────────┤
-│ Vercel          │ Pro          │ $20 (team)      │
-│ Render Web      │ Starter      │ $7              │
-│ Render DB       │ Starter      │ $7              │
-│ Domain          │ Annual       │ $1/month        │
-│ Monitoring      │ Free tier    │ $0              │
-├─────────────────┼──────────────┼─────────────────┤
-│ Total           │              │ ~$35/month      │
-└─────────────────┴──────────────┴─────────────────┘
-```
-
-#### **2. Cost Optimization Strategies**
-```bash
-# Frontend optimization
-- Use Vercel free tier for development
-- Implement efficient image compression
-- Minimize bundle size with tree shaking
-
-# Backend optimization
-- Use connection pooling
-- Implement efficient database queries
-- Cache frequently accessed data
-- Use free tier for development/staging
-```
-
-### **Disaster Recovery**
-
-#### **1. Recovery Plan**
-```bash
-# Full system recovery procedure
-1. Restore database from latest backup
-2. Redeploy backend service on Render
-3. Redeploy frontend on Vercel
-4. Verify all health checks pass
-5. Test critical user workflows
-
-# Recovery time objective (RTO): < 2 hours
-# Recovery point objective (RPO): < 24 hours
-```
-
-#### **2. Backup Schedule**
-```
-Daily: Database backups
-Weekly: Full system configuration backup
-Monthly: Disaster recovery testing
-```

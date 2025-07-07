@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       setStats(stats);
     } catch (err: any) {
       console.error('Error fetching dashboard stats:', err);
-      setError('Không thể tải thống kê dashboard');
+      setError('Unable to load dashboard statistics');
     } finally {
       setLoading(false);
     }
@@ -55,8 +55,8 @@ const AdminDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Bảng điều khiển quản trị viên</h2>
-        <p className={styles.subtitle}>Quản lý và giám sát hoạt động phòng khám</p>
+        <h2 className={styles.title}>Admin Dashboard</h2>
+        <p className={styles.subtitle}>Manage and monitor clinic operations</p>
       </div>
 
       {error && (
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>👥</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalUsers}</h3>
-            <p className={styles.statLabel}>Tổng người dùng</p>
+            <p className={styles.statLabel}>Total Users</p>
           </div>
         </div>
         
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>🏥</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalPatients}</h3>
-            <p className={styles.statLabel}>Bệnh nhân</p>
+            <p className={styles.statLabel}>Patients</p>
           </div>
         </div>
         
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>👨‍⚕️</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalDoctors}</h3>
-            <p className={styles.statLabel}>Bác sĩ</p>
+            <p className={styles.statLabel}>Doctors</p>
           </div>
         </div>
         
@@ -93,44 +93,44 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>👩‍💼</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalStaff}</h3>
-            <p className={styles.statLabel}>Nhân viên</p>
+            <p className={styles.statLabel}>Local Cadres</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className={styles.actionsSection}>
-        <h3 className={styles.sectionTitle}>Hành động nhanh</h3>
+        <h3 className={styles.sectionTitle}>Quick Actions</h3>
         <div className={styles.actionsGrid}>
           <Link to="/dashboard/users" className={styles.actionCard}>
             <div className={styles.actionIcon}>👥</div>
             <div className={styles.actionContent}>
-              <h4>Quản lý người dùng</h4>
-              <p>Tạo, chỉnh sửa và quản lý tài khoản người dùng</p>
+              <h4>User Management</h4>
+              <p>Create, edit and manage user accounts</p>
             </div>
           </Link>
           
           <Link to="/dashboard/reports" className={styles.actionCard}>
             <div className={styles.actionIcon}>📊</div>
             <div className={styles.actionContent}>
-              <h4>Báo cáo & Phân tích</h4>
-              <p>Xem báo cáo sử dụng hệ thống và hiệu suất</p>
+              <h4>Reports & Analytics</h4>
+              <p>View system usage reports and performance</p>
             </div>
           </Link>
           
           <Link to="/dashboard/schedule-settings" className={styles.actionCard}>
             <div className={styles.actionIcon}>⚙️</div>
             <div className={styles.actionContent}>
-              <h4>Cài đặt lịch trình</h4>
-              <p>Cấu hình lịch trình bác sĩ và cài đặt phòng khám</p>
+              <h4>Schedule Settings</h4>
+              <p>Configure doctor schedules and clinic settings</p>
             </div>
           </Link>
           
           <Link to="/dashboard/logs" className={styles.actionCard}>
             <div className={styles.actionIcon}>🗂️</div>
             <div className={styles.actionContent}>
-              <h4>Nhật ký hệ thống</h4>
-              <p>Theo dõi hoạt động hệ thống và khắc phục sự cố</p>
+              <h4>System Logs</h4>
+              <p>Monitor system activity and troubleshoot issues</p>
             </div>
           </Link>
         </div>
@@ -138,12 +138,12 @@ const AdminDashboard = () => {
 
       {/* Recent Activity */}
       <div className={styles.activitySection}>
-        <h3 className={styles.sectionTitle}>Tổng quan hệ thống</h3>
+        <h3 className={styles.sectionTitle}>System Overview</h3>
         <div className={styles.activityCard}>
-          <p>✅ Hệ thống đang hoạt động ổn định</p>
-          <p>📈 Hoạt động người dùng bình thường</p>
-          <p>🛡️ Tất cả kiểm tra bảo mật đã vượt qua</p>
-          <p>💾 Sao lưu cơ sở dữ liệu đã cập nhật</p>
+          <p>✅ System running normally</p>
+          <p>📈 User activity is normal</p>
+          <p>🛡️ All security checks passed</p>
+          <p>💾 Database backup is up to date</p>
         </div>
       </div>
     </div>

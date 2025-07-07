@@ -111,7 +111,7 @@ No CLI commands, no manual deployment - just pure automation!
 
 6. **Initialize Database**
    - Go to Service → Shell
-   - Run: `python app/create_initial_admin.py`
+   - Run: `python setup_seekwell_database.py`
 
 ### **Auto-Deploy is Now Active**
 - Every commit to `main` branch → Automatic deployment
