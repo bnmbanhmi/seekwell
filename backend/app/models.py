@@ -14,7 +14,6 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.PATIENT, nullable=False)
     full_name = Column(String(255), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
 
     patient_profile = relationship("Patient", back_populates="user", uselist=False, cascade="all, delete-orphan")
     # Simplified: A user can be a doctor, but we don't need a separate Doctor table for now.

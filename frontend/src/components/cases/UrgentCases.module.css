@@ -1,0 +1,60 @@
+/* UrgentCases.module.css */
+.container {
+    padding: 2rem;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .caseList table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .caseList th, .caseList td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .caseList th {
+    background-color: #f9f9f9;
+  }
+  
+  .riskLabel {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+  }
+  
+  .high .riskLabel {
+    background-color: #f44336; /* Red */
+  }
+  
+  .urgent .riskLabel {
+    background-color: #9c27b0; /* Purple */
+  }
+  
+  .actionButton {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .actionButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 2rem;
+  }
+  

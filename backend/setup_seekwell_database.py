@@ -6,7 +6,7 @@ Handles database schema creation and initial admin user setup.
 import sys
 import os
 import argparse
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 # --- Setup Project Path ---
@@ -42,8 +42,10 @@ def setup_database(reset=False):
     if reset:
         print("\n⚠️  --reset flag detected. Dropping all tables...")
         try:
-            Base.metadata.drop_all(bind=engine)
-            print("🗑️  All tables dropped successfully.")
+            # Use a more robust method to drop all tables, including dependencies
+            with engine.connect() as connection:
+                connection.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"))
+                print("🗑️  All tables dropped successfully by resetting the public schema.")
         except Exception as e:
             print(f"❌ Error dropping tables: {e}")
             return
@@ -61,9 +63,13 @@ def setup_database(reset=False):
     print("\n👤 Creating initial admin user...")
     db = SessionLocal()
     try:
-        admin_username = settings.ADMIN_USERNAME
-        admin_email = settings.ADMIN_EMAIL
-        admin_password = settings.ADMIN_PASSWORD
+        admin_username = os.getenv("ADMIN_USERNAME", "admin")
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
+        admin_password = os.getenv("ADMIN_PASSWORD", "adminpassword")
+
+        if not all([admin_username, admin_email, admin_password]):
+            print("❌ Admin credentials (ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD) not found in .env file. Skipping admin creation.")
+            return
 
         admin = crud.get_user_by_username(db, username=admin_username)
         if not admin:

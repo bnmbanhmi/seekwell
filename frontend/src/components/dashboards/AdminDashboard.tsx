@@ -7,8 +7,6 @@ const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, ''
 
 interface DashboardStats {
   totalUsers: number;
-  totalPatients: number;
-  totalDoctors: number;
   totalOfficials: number;
   urgentCases: number;
 }
@@ -16,8 +14,6 @@ interface DashboardStats {
 const AdminDashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
-    totalPatients: 0,
-    totalDoctors: 0,
     totalOfficials: 0,
     urgentCases: 0,
   });
@@ -43,8 +39,6 @@ const AdminDashboard = () => {
 
       const stats = {
         totalUsers: users.length,
-        totalPatients: users.filter((user: any) => user.role === 'PATIENT').length,
-        totalDoctors: users.filter((user: any) => user.role === 'DOCTOR').length,
         totalOfficials: users.filter((user: any) => user.role === 'OFFICIAL').length,
         urgentCases: urgentCasesCount,
       };
@@ -94,62 +88,27 @@ const AdminDashboard = () => {
             <p className={styles.statLabel}>Officials</p>
           </div>
         </div>
-
-        <div className={styles.statCard}>
-          <div className={styles.statIcon}>👨‍⚕️</div>
-          <div className={styles.statInfo}>
-            <h3 className={styles.statNumber}>{loading ? '...' : stats.totalDoctors}</h3>
-            <p className={styles.statLabel}>Doctors</p>
-          </div>
-        </div>
       </div>
 
       {/* Quick Actions */}
-      <div className={styles.actionsSection}>
-        <h3 className={styles.sectionTitle}>Quick Actions</h3>
+      <div className={styles.actions}>
+        <h3 className={styles.actionsTitle}>Quick Actions</h3>
         <div className={styles.actionsGrid}>
           <Link to="/dashboard/users" className={styles.actionCard}>
-            <div className={styles.actionIcon}>👥</div>
-            <div className={styles.actionContent}>
+            <div className={styles.actionIcon}>👤</div>
+            <div className={styles.actionInfo}>
               <h4>Manage Users</h4>
-              <p>Create, edit, and manage user accounts</p>
+              <p>Add, edit, or remove user accounts.</p>
             </div>
           </Link>
           
           <Link to="/dashboard/reports" className={styles.actionCard}>
-            <div className={styles.actionIcon}>📊</div>
-            <div className={styles.actionContent}>
-              <h4>Reports & Analytics</h4>
-              <p>View system usage reports and performance</p>
+            <div className={styles.actionIcon}>📈</div>
+            <div className={styles.actionInfo}>
+              <h4>View Reports</h4>
+              <p>Access system analytics and reports.</p>
             </div>
           </Link>
-          
-          <Link to="/dashboard/schedule-settings" className={styles.actionCard}>
-            <div className={styles.actionIcon}>⚙️</div>
-            <div className={styles.actionContent}>
-              <h4>Schedule Settings</h4>
-              <p>Configure doctor schedules and clinic settings</p>
-            </div>
-          </Link>
-          
-          <Link to="/dashboard/logs" className={styles.actionCard}>
-            <div className={styles.actionIcon}>🗂️</div>
-            <div className={styles.actionContent}>
-              <h4>System Logs</h4>
-              <p>Monitor system activity and troubleshoot issues</p>
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className={styles.activitySection}>
-        <h3 className={styles.sectionTitle}>System Overview</h3>
-        <div className={styles.activityCard}>
-          <p>✅ System is running smoothly</p>
-          <p>📈 User activity is normal</p>
-          <p>🛡️ All security checks passed</p>
-          <p>💾 Database backup is up-to-date</p>
         </div>
       </div>
     </div>

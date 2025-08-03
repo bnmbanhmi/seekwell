@@ -8,12 +8,13 @@ import {UserRole} from '../types/UserType'; // Adjust the import path as necessa
 import BaseDashboard from '../components/layout/BaseDashboard';
 import DoctorDashboard from '../components/dashboards/DoctorDashboard';
 import PatientDashboard from '../components/dashboards/PatientDashboard';
-import CadreDashboard from '../components/dashboards/OfficialDashboard';
+import OfficialDashboard from '../components/dashboards/OfficialDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
 import UserManagement from '../components/admin/UserManagement';
 import ReportsAnalytics from '../components/admin/ReportsAnalytics';
 import AISkinAnalysisPage from './AISkinAnalysisPage';
 import AnalysisHistory from '../components/patients/AnalysisHistory';
+import UrgentCases from '../components/cases/UrgentCases';
 
 type Props = {
   role: UserRole;
@@ -29,7 +30,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,
       PATIENT: <PatientDashboard />,
-      OFFICIAL: <CadreDashboard />,
+      OFFICIAL: <OfficialDashboard />,
       ADMIN: <AdminDashboard />,
     };
 
@@ -54,12 +55,9 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
         <Route path="analysis-history" element={<AnalysisHistory />} />
 
-        {/* Official Routes */}
-        {/* <Route path="patient-monitoring" element={<PatientMonitoring />} /> */}
+        {/* Official & Doctor Routes */}
+        <Route path="urgent-cases" element={<UrgentCases />} />
         
-        {/* Doctor Routes */}
-        {/* <Route path="urgent-cases" element={<UrgentCases />} /> */}
-
       </Routes>
     </BaseDashboard>
   );
