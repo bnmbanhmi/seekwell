@@ -13,7 +13,7 @@ import AdminDashboard from '../components/dashboards/AdminDashboard';
 import UserManagement from '../components/admin/UserManagement';
 import ReportsAnalytics from '../components/admin/ReportsAnalytics';
 import AISkinAnalysisPage from './AISkinAnalysisPage';
-import MedicalHistory from '../components/medical/MedicalHistory'; // Keep for patient's history view
+import AnalysisHistory from '../components/patients/AnalysisHistory';
 
 type Props = {
   role: UserRole;
@@ -52,7 +52,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
 
         {/* Patient Routes */}
         <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
-        <Route path="analysis-history" element={<MedicalHistory />} />
+        <Route path="analysis-history" element={<AnalysisHistory />} />
 
         {/* Cadre Routes (to be refactored) */}
         {/* <Route path="patient-monitoring" element={<PatientMonitoring />} /> */}
