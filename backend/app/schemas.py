@@ -32,7 +32,6 @@ class UserUpdate(BaseModel):
 
 class UserSchema(UserBase):
     user_id: int
-    created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 # --- Password Recovery Schemas ---
