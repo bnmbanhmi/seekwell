@@ -91,6 +91,29 @@ def setup_database(reset=False):
 
     print("\n--- Database setup complete! ---")
 
+def migrate_user_roles():
+    """
+    Updates any users with the legacy 'LOCAL_CADRE' role to the new 'OFFICIAL' role.
+    Also ensures the 'OFFICIAL' enum value exists in the database.
+    """
+    print("\n🔄 Migrating legacy user roles...")
+    try:
+        with engine.connect() as connection:
+            # This is a two-step process:
+            # 1. Ensure the 'OFFICIAL' value exists in the enum type.
+            connection.execute(text("ALTER TYPE userrole ADD VALUE IF NOT EXISTS 'OFFICIAL'"))
+            
+            # 2. Update any existing rows that have the old value.
+            result = connection.execute(text("UPDATE users SET role = 'OFFICIAL' WHERE role = 'LOCAL_CADRE'"))
+            connection.commit()
+            
+            if result.rowcount > 0:
+                print(f"✅ Migrated {result.rowcount} users from 'LOCAL_CADRE' to 'OFFICIAL'.")
+            else:
+                print("ℹ️ No legacy 'LOCAL_CADRE' roles found to migrate.")
+    except Exception as e:
+        print(f"⚠️  Could not migrate user roles (this is expected if the type doesn't exist yet): {e}")
+
 def sync_user_role_enum():
     """
     Ensures the 'userrole' enum in the database matches the UserRole enum in the code.
@@ -160,6 +183,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     setup_database(reset=args.reset)
-    sync_user_role_enum() # Add this step to sync the enum before creating users
+    migrate_user_roles() # Run the migration to clean up old data
     if not args.no_mock:
         create_mock_users()
