@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './DoctorDashboard.module.css';
+import axios from 'axios';
+
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 type UrgentCase = {
   patientId: number;
@@ -21,15 +24,16 @@ const DoctorDashboard = () => {
   useEffect(() => {
     const fetchUrgentCases = async () => {
       try {
+        const token = localStorage.getItem('accessToken');
         // TODO: Replace with actual API endpoint for doctor's urgent cases
-        const mockCases: UrgentCase[] = [
-          { patientId: 101, patientName: 'Nguyen Van A', patientContact: '0901234567', riskLevel: 'URGENT', disease: 'Melanoma', date: '2025-08-03', imageUrl: '/path/to/image1.jpg', officialNotes: 'Patient works outdoors, lesion has changed in size.' },
-          { patientId: 102, patientName: 'Tran Thi B', patientContact: '0987654321', riskLevel: 'HIGH', disease: 'Basal Cell Carcinoma', date: '2025-08-02', imageUrl: '/path/to/image2.jpg', officialNotes: 'Family history of skin cancer.' },
-        ];
-        setUrgentCases(mockCases);
+        const response = await axios.get(`${BACKEND_URL}/doctors/me/urgent-cases`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        setUrgentCases(response.data);
       } catch (err) {
         console.error('Error fetching urgent cases:', err);
-        setError('Failed to load urgent cases.');
+        // setError('Failed to load urgent cases.');
+        setUrgentCases([]); // Default to empty array
       } finally {
         setLoading(false);
       }

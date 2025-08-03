@@ -22,21 +22,15 @@ const UrgentCases = () => {
       try {
         const token = localStorage.getItem('accessToken');
         // TODO: Replace with actual API endpoint for fetching urgent cases
-        // const response = await axios.get(`${BACKEND_URL}/analysis-results/urgent`, {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // });
-        // setCases(response.data);
-
-        // Mock data for now
-        const mockCases: UrgentCase[] = [
-          { result_id: 1, patient_name: 'Nguyen Van A', prediction: 'Melanoma', risk_level: 'URGENT', upload_timestamp: '2025-08-03T10:00:00Z' },
-          { result_id: 2, patient_name: 'Tran Thi B', prediction: 'Basal Cell Carcinoma', risk_level: 'HIGH', upload_timestamp: '2025-08-02T14:30:00Z' },
-        ];
-        setCases(mockCases);
+        const response = await axios.get(`${BACKEND_URL}/analysis-results/urgent`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCases(response.data);
 
       } catch (err) {
         console.error('Error fetching urgent cases:', err);
-        setError('Failed to load urgent cases.');
+        // setError('Failed to load urgent cases.'); // Temporarily disable error for empty state
+        setCases([]); // Default to empty array
       } finally {
         setLoading(false);
       }

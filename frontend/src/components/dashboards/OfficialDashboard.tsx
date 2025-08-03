@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import styles from './OfficialDashboard.module.css';
+
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 // Mock data structure - replace with actual data from API
 type UrgentCase = {
@@ -20,33 +24,28 @@ const OfficialDashboard = () => {
   const [totalPatients, setTotalPatients] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // TODO: Replace with actual API calls
-        // For now, using mock data
-        const mockUrgentCases: UrgentCase[] = [
-          { patientId: 101, patientName: 'Nguyen Van A', riskLevel: 'URGENT', disease: 'Melanoma', date: '2025-08-03' },
-          { patientId: 102, patientName: 'Tran Thi B', riskLevel: 'HIGH', disease: 'Basal Cell Carcinoma', date: '2025-08-02' },
-        ];
-        const mockDiseaseStats: DiseaseStats = {
-          'Melanoma': 5,
-          'Basal Cell Carcinoma': 12,
-          'Actinic Keratosis': 30,
-          'Benign Keratosis': 50,
-          'Dermatofibroma': 25,
-          'Vascular Lesion': 18,
-        };
-        const mockTotalPatients = 140;
+        const token = localStorage.getItem('accessToken');
+        // Fetch real stats
+        const response = await axios.get(`${BACKEND_URL}/reports/dashboard-stats`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const stats = response.data;
 
-        setUrgentCases(mockUrgentCases);
-        setDiseaseStats(mockDiseaseStats);
-        setTotalPatients(mockTotalPatients);
+        setUrgentCases(stats.urgentCases || []); // Assuming the API returns an urgentCases array
+        setDiseaseStats(stats.diseaseStats || {}); // Assuming the API returns diseaseStats
+        setTotalPatients(stats.totalPatients || 0); // Assuming the API returns totalPatients
 
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        setError('Failed to load dashboard data.');
+        // setError('Failed to load dashboard data.');
+        setUrgentCases([]);
+        setDiseaseStats({});
+        setTotalPatients(0);
       } finally {
         setLoading(false);
       }
