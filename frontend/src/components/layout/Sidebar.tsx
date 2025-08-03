@@ -21,7 +21,7 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Urgent Cases', path: '/dashboard/urgent-cases' },
   ],
-  LOCAL_CADRE: [
+  OFFICIAL: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Patient Monitoring', path: '/dashboard/patient-monitoring' },
     { label: 'Urgent Cases', path: '/dashboard/urgent-cases' },

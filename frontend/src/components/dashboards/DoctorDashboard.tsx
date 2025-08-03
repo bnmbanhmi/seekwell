@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './DoctorDashboard.module.css';
-import axios from 'axios';
-
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 type UrgentCase = {
   patientId: number;
@@ -17,7 +13,6 @@ type UrgentCase = {
 };
 
 const DoctorDashboard = () => {
-  const navigate = useNavigate();
   const [urgentCases, setUrgentCases] = useState<UrgentCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,7 +21,6 @@ const DoctorDashboard = () => {
   useEffect(() => {
     const fetchUrgentCases = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
         // TODO: Replace with actual API endpoint for doctor's urgent cases
         const mockCases: UrgentCase[] = [
           { patientId: 101, patientName: 'Nguyen Van A', patientContact: '0901234567', riskLevel: 'URGENT', disease: 'Melanoma', date: '2025-08-03', imageUrl: '/path/to/image1.jpg', officialNotes: 'Patient works outdoors, lesion has changed in size.' },

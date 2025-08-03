@@ -47,14 +47,14 @@ const UserManagement: React.FC = () => {
     email: '',
     full_name: '',
     password: '',
-    role: 'PATIENT'
+    role: UserRole.PATIENT
   });
   
   const [editForm, setEditForm] = useState<EditUserForm>({
     username: '',
     email: '',
     full_name: '',
-    role: 'PATIENT'
+    role: UserRole.PATIENT
   });
 
   // Fetch users on component mount
@@ -76,9 +76,9 @@ const UserManagement: React.FC = () => {
     } catch (err: any) {
       console.error('Error fetching users:', err);
       if (axios.isAxiosError(err) && err.response) {
-        setError(`Không thể tải danh sách người dùng: ${err.response.data.detail || err.message}`);
+        setError(`Failed to load users: ${err.response.data.detail || err.message}`);
       } else {
-        setError('Đã xảy ra lỗi không mong muốn khi tải danh sách người dùng.');
+        setError('An unexpected error occurred while fetching users.');
       }
     } finally {
       setLoading(false);
@@ -96,22 +96,22 @@ const UserManagement: React.FC = () => {
         },
       });
       
-      toast.success('Tạo người dùng thành công!');
+      toast.success('User created successfully!');
       setShowCreateModal(false);
       setCreateForm({
         username: '',
         email: '',
         full_name: '',
         password: '',
-        role: 'PATIENT'
+        role: UserRole.PATIENT
       });
       fetchUsers(); // Refresh the user list
     } catch (err: any) {
       console.error('Error creating user:', err);
       if (axios.isAxiosError(err) && err.response) {
-        toast.error(`Tạo người dùng thất bại: ${err.response.data.detail || err.message}`);
+        toast.error(`Failed to create user: ${err.response.data.detail || err.message}`);
       } else {
-        toast.error('Đã xảy ra lỗi không mong muốn khi tạo người dùng.');
+        toast.error('An unexpected error occurred while creating the user.');
       }
     }
   };
@@ -129,22 +129,22 @@ const UserManagement: React.FC = () => {
         },
       });
       
-      toast.success('Cập nhật người dùng thành công!');
+      toast.success('User updated successfully!');
       setShowEditModal(false);
       setUserToEdit(null);
       fetchUsers(); // Refresh the user list
     } catch (err: any) {
       console.error('Error updating user:', err);
       if (axios.isAxiosError(err) && err.response) {
-        toast.error(`Cập nhật người dùng thất bại: ${err.response.data.detail || err.message}`);
+        toast.error(`Failed to update user: ${err.response.data.detail || err.message}`);
       } else {
-        toast.error('Đã xảy ra lỗi không mong muốn khi cập nhật người dùng.');
+        toast.error('An unexpected error occurred while updating the user.');
       }
     }
   };
 
   const handleDeleteUser = async (userId: number, username: string) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa người dùng "${username}"? Hành động này không thể hoàn tác.`)) {
+    if (!window.confirm(`Are you sure you want to delete the user "${username}"? This action cannot be undone.`)) {
       return;
     }
     
@@ -156,14 +156,14 @@ const UserManagement: React.FC = () => {
         },
       });
       
-      toast.success('Xóa người dùng thành công!');
+      toast.success('User deleted successfully!');
       fetchUsers(); // Refresh the user list
     } catch (err: any) {
       console.error('Error deleting user:', err);
       if (axios.isAxiosError(err) && err.response) {
-        toast.error(`Xóa người dùng thất bại: ${err.response.data.detail || err.message}`);
+        toast.error(`Failed to delete user: ${err.response.data.detail || err.message}`);
       } else {
-        toast.error('Đã xảy ra lỗi không mong muốn khi xóa người dùng.');
+        toast.error('An unexpected error occurred while deleting the user.');
       }
     }
   };
@@ -190,10 +190,10 @@ const UserManagement: React.FC = () => {
 
   const getRoleBadgeClass = (role: UserRole) => {
     switch (role) {
-      case 'ADMIN': return styles.roleAdmin;
-      case 'DOCTOR': return styles.roleDoctor;
-      case 'LOCAL_CADRE': return styles.roleStaff;
-      case 'PATIENT': return styles.rolePatient;
+      case UserRole.ADMIN: return styles.roleAdmin;
+      case UserRole.DOCTOR: return styles.roleDoctor;
+      case UserRole.OFFICIAL: return styles.roleStaff; // Using 'roleStaff' style for 'OFFICIAL'
+      case UserRole.PATIENT: return styles.rolePatient;
       default: return styles.roleDefault;
     }
   };

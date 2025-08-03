@@ -87,35 +87,23 @@ How can I assist you today? 🌟`;
 
 What would you like to know today? 💚`;
 
-            case 'LOCAL_CADRE':
-                return `🌟 Welcome, Community Health Bridge! I'm here to support your vital role as the first mile of healthcare.
+            case 'OFFICIAL':
+                return `🌟 Welcome, Health Official! I'm here to support your vital work.
 
 🤝 **I can assist with:**
-- **Bridge AI insights to care** - Translate complex AI results into culturally appropriate guidance
-- **Cultural health guidance** - Provide community-sensitive health education and support
-- **Doctor-community connections** - Facilitate seamless communication between specialists and patients
-- **First mile care coordination** - Coordinate initial care pathways and referrals
-- **Community trust building** - Tools to build confidence in AI-assisted healthcare
-- **Mobile coordination** tools for offline community outreach
+- Understanding AI analysis results.
+- Guidance on how to handle urgent cases.
+- Information on connecting with doctors for case reviews.
 
-🌍 **Your Mission:** You're the crucial bridge between advanced AI technology and culturally sensitive community care. You ensure that AI-driven insights lead to real-world, appropriate healthcare for your community.
-
-🎯 **Cultural Bridge Impact:** Your understanding of local customs, language, and beliefs transforms complex medical insights into actionable, trusted guidance that resonates with your community.
-
-How can I support your bridge-building work today? 🌟`;
+How can I support you today? 🌟`;
 
             case 'DOCTOR':
-                return `👩‍⚕️ Welcome, Doctor! I'm your SeekWell clinical support assistant.
+                return `👩‍⚕️ Welcome, Doctor! I'm your clinical support assistant.
 
 🏥 **I can help with:**
-- **Clinical decision support** for AI-flagged cases
-- **Patient referral management** from community cadres
-- **EMR documentation** and case tracking
-- **Health center coordination** and resource allocation
-- **Professional development** resources and updates
-- **Quality assurance** for community health programs
-
-🔬 **Clinical Context:** You're receiving pre-screened cases from our AI system and community health cadres, allowing you to focus on complex diagnoses and treatment planning.
+- Reviewing urgent cases flagged by the AI.
+- Accessing patient analysis history.
+- Understanding the AI model's performance.
 
 What clinical support do you need today? 🩺`;
 
@@ -168,7 +156,7 @@ What would you like to manage today? 🛠️`;
                     
                     if (userRole === 'PATIENT') {
                         endpoint = '/chat/patient';
-                    } else if (userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE' || userRole === 'ADMIN') {
+                    } else if (userRole === 'DOCTOR' || userRole === 'OFFICIAL' || userRole === 'ADMIN') {
                         endpoint = '/chat/staff';
                     }
                     // If no specific role match, will use public endpoint
