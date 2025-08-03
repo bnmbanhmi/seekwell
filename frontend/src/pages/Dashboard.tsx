@@ -8,7 +8,7 @@ import {UserRole} from '../types/UserType'; // Adjust the import path as necessa
 import BaseDashboard from '../components/layout/BaseDashboard';
 import DoctorDashboard from '../components/dashboards/DoctorDashboard';
 import PatientDashboard from '../components/dashboards/PatientDashboard';
-import StaffDashboard from '../components/dashboards/StaffDashboard';
+import CadreDashboard from '../components/dashboards/CadreDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
 import UserManagement from '../components/admin/UserManagement';
 import ReportsAnalytics from '../components/admin/ReportsAnalytics';
@@ -29,7 +29,7 @@ const Dashboard: React.FC<Props> = ({ role }) => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,
       PATIENT: <PatientDashboard />,
-      LOCAL_CADRE: <StaffDashboard />,
+      LOCAL_CADRE: <CadreDashboard />,
       ADMIN: <AdminDashboard />,
     };
 
