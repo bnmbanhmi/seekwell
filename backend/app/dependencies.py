@@ -63,12 +63,12 @@ async def get_current_active_doctor(current_user: models.User = Depends(get_curr
         )
     return current_user
 
-async def get_current_active_local_cadre(current_user: models.User = Depends(get_current_user)) -> models.User:
+async def get_current_active_official(current_user: models.User = Depends(get_current_user)) -> models.User:
     # Explicitly compare enum values
-    if current_user.role.value != models.UserRole.LOCAL_CADRE.value:
+    if current_user.role.value != models.UserRole.OFFICIAL.value:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation not permitted for this user role. Requires LOCAL_CADRE role."
+            detail="Operation not permitted for this user role. Requires OFFICIAL role."
         )
     return current_user
 
@@ -91,23 +91,24 @@ async def get_current_doctor_or_admin(current_user: models.User = Depends(get_cu
         )
     return current_user
 
-# Dependency for users who are Local Cadre or Admin or Doctor
-async def get_staff_doctor_or_admin(current_user: models.User = Depends(get_current_user)) -> models.User:
+# Dependency for users who are Official, Admin or Doctor
+async def get_official_doctor_or_admin(current_user: models.User = Depends(get_current_user)) -> models.User:
     # Explicitly compare enum values
-    if current_user.role.value not in [models.UserRole.LOCAL_CADRE.value, models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value]:
+    if current_user.role.value not in [models.UserRole.OFFICIAL.value, models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation requires LOCAL_CADRE, DOCTOR, or ADMIN role."
+            detail="Operation requires OFFICIAL, DOCTOR, or ADMIN role."
         )
     return current_user
 
-async def get_current_local_cadre_or_admin(
-    current_user: models.User = Depends(get_current_active_user)
-):
-    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.LOCAL_CADRE.value]:
+# Dependency for users who are either Official or Admin
+async def get_current_official_or_admin(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
+    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.OFFICIAL.value]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation requires Admin or Local Cadre role."
+            detail="Operation requires Admin or Official role."
         )
     return current_user
 
@@ -116,38 +117,27 @@ async def get_current_patient_or_doctor_or_admin(
 ):
     # Allows a patient to access their own data, or a doctor their assigned patient, or admin anyone.
     # Specific checks for patient ID matching will be in the route itself.
-    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value, models.UserRole.PATIENT.value, models.UserRole.LOCAL_CADRE.value]: # Added Local Cadre for broader access where applicable
+    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value, models.UserRole.PATIENT.value, models.UserRole.OFFICIAL.value]: # Added Official for broader access where applicable
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation requires Admin, Doctor, Local Cadre, or Patient role with appropriate permissions."
+            detail="Operation requires Admin, Doctor, Official, or Patient role with appropriate permissions."
         )
     return current_user
 
 async def get_current_clinic_staff_or_admin(
     current_user: models.User = Depends(get_current_active_user)
 ):
-    """Allow clinic staff (doctors, local cadres) or admin access"""
-    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value, models.UserRole.LOCAL_CADRE.value]:
+    """Allow clinic staff (doctors, officials) or admin access"""
+    if current_user.role.value not in [models.UserRole.ADMIN.value, models.UserRole.DOCTOR.value, models.UserRole.OFFICIAL.value]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation requires Admin, Doctor, or Local Cadre role."
+            detail="Operation requires Admin, Doctor, or Official role."
         )
     return current_user
 
-# Additional dependencies for AI module
-async def get_current_doctor(current_user: models.User = Depends(get_current_user)) -> models.Doctor:
-    """Get the current doctor from a user, ensuring they have the DOCTOR role."""
-    if current_user.role.value != models.UserRole.DOCTOR.value:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operation requires DOCTOR role."
-        )
-    # Return the doctor profile associated with this user
-    if not current_user.doctor_profile:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Doctor profile not found for this user."
-        )
-    return current_user.doctor_profile
-
-# Ensure all UserRole members are imported if not already
+# This function is now obsolete as the Doctor model has been removed.
+# The DOCTOR role on the User model is used instead.
+# async def get_current_doctor(current_user: models.User = Depends(get_current_user)) -> models.Doctor:
+#     if not hasattr(current_user, 'doctor_profile') or current_user.doctor_profile is None:
+#         raise HTTPException(status_code=404, detail="Doctor profile not found for this user")
+#     return current_user.doctor_profile

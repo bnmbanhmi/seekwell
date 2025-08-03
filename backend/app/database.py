@@ -18,19 +18,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserRole(str, enum.Enum):
     PATIENT = "PATIENT"
     DOCTOR = "DOCTOR"
-    LOCAL_CADRE = "LOCAL_CADRE"
+    OFFICIAL = "OFFICIAL"
     ADMIN = "ADMIN"
 
 class Gender(str, enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
-    OTHER = "Other"
-
-class Class(str, enum.Enum):
-    # 'Assisted', 'Normal', 'Free', 'Other'
-    ASSISTED = "Assisted"
-    NORMAL = "Normal"
-    FREE = "Free"
     OTHER = "Other"
 
 def get_db():
