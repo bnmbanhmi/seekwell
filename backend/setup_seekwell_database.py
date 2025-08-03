@@ -91,6 +91,60 @@ def setup_database(reset=False):
 
     print("\n--- Database setup complete! ---")
 
+def sync_user_role_enum():
+    """
+    Ensures the 'userrole' enum in the database matches the UserRole enum in the code.
+    """
+    print("\n🔄 Synchronizing UserRole enum with the database...")
+    try:
+        with engine.connect() as connection:
+            # This command adds the 'OFFICIAL' value to the enum if it doesn't already exist.
+            # It's a safe way to update the enum without causing errors if it's already been updated.
+            connection.execute(text("ALTER TYPE userrole ADD VALUE IF NOT EXISTS 'OFFICIAL'"))
+            connection.commit()
+            print("✅ UserRole enum synchronized.")
+    except Exception as e:
+        # If the enum type doesn't exist at all, it will be created by create_all, so we can ignore errors here.
+        print(f"ℹ️  Could not alter UserRole enum (this is expected on first run): {e}")
+
+
+def create_mock_users():
+    """
+    Creates a set of mock users for testing purposes.
+    """
+    print("\n👥 Creating mock users for testing...")
+    db = SessionLocal()
+    try:
+        mock_users = [
+            # Doctors
+            {"username": "drsantos", "email": "dermatologist@seekwell.health", "password": "DermExpert2025", "full_name": "Dr. Maria Santos", "role": UserRole.DOCTOR},
+            {"username": "drchen", "email": "oncologist@seekwell.health", "password": "OncoSpecialist2025", "full_name": "Dr. James Chen", "role": UserRole.DOCTOR},
+            {"username": "drsharma", "email": "pathologist@seekwell.health", "password": "PathExpert2025", "full_name": "Dr. Priya Sharma", "role": UserRole.DOCTOR},
+            # Officials
+            {"username": "official_th", "email": "official.thailand@seekwell.health", "password": "OfficialThailand2025", "full_name": "Thai Official", "role": UserRole.OFFICIAL},
+            {"username": "official_id", "email": "official.indonesia@seekwell.health", "password": "OfficialIndonesia2025", "full_name": "Indonesian Official", "role": UserRole.OFFICIAL},
+            {"username": "official_ph", "email": "official.philippines@seekwell.health", "password": "OfficialPhilippines2025", "full_name": "Filipino Official", "role": UserRole.OFFICIAL},
+            {"username": "official_vn", "email": "official.vietnam@seekwell.health", "password": "OfficialVietnam2025", "full_name": "Vietnamese Official", "role": UserRole.OFFICIAL},
+            # Patients
+            {"username": "patient1", "email": "patient1@example.com", "password": "password123", "full_name": "Patient One", "role": UserRole.PATIENT},
+            {"username": "patient2", "email": "patient2@example.com", "password": "password123", "full_name": "Patient Two", "role": UserRole.PATIENT},
+            {"username": "patient3", "email": "patient3@example.com", "password": "password123", "full_name": "Patient Three", "role": UserRole.PATIENT},
+        ]
+
+        for user_data in mock_users:
+            user = crud.get_user_by_username(db, username=user_data["username"])
+            if not user:
+                user_in = schemas.UserCreate(**user_data)
+                crud.create_user(db, user=user_in)
+                print(f"✅ Mock user '{user_data['username']}' created.")
+            else:
+                print(f"ℹ️ Mock user '{user_data['username']}' already exists. Skipping.")
+
+    except Exception as e:
+        print(f"❌ Error creating mock users: {e}")
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SeekWell Database Setup Script.")
     parser.add_argument(
@@ -98,6 +152,14 @@ if __name__ == "__main__":
         action="store_true",
         help="Drop and recreate all tables. DANGER: This will delete all data."
     )
+    parser.add_argument(
+        "--no-mock",
+        action="store_true",
+        help="Skip creating mock users."
+    )
     args = parser.parse_args()
 
     setup_database(reset=args.reset)
+    sync_user_role_enum() # Add this step to sync the enum before creating users
+    if not args.no_mock:
+        create_mock_users()

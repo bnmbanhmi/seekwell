@@ -68,7 +68,13 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
         # Create a patient profile if the user is a patient
         if user.role == UserRole.PATIENT:
             # The patient profile is linked via relationship, so we can create it directly
-            db_patient = models.Patient(patient_id=db_user.user_id)
+            db_patient = models.Patient(
+                patient_id=db_user.user_id,
+                full_name=db_user.full_name,
+                date_of_birth=date(1900, 1, 1),
+                gender=Gender.OTHER,
+                class_role="NORMAL" # Add default for the stubborn legacy column
+            )
             db.add(db_patient)
 
         db.commit()

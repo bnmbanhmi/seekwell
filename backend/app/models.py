@@ -24,12 +24,12 @@ class User(Base):
 class Patient(Base):
     __tablename__ = "patients"
     patient_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
-    # Personal details are now in the User model (full_name).
-    # We can add more patient-specific, non-identifying info here if needed.
-    date_of_birth = Column(Date)
-    gender = Column(Enum(Gender))
-    address = Column(String(255))
-    phone_number = Column(String(20), unique=True)
+    full_name = Column(String(255), nullable=False) # Re-adding full_name to resolve creation error
+    date_of_birth = Column(Date, nullable=True) # Make nullable
+    gender = Column(Enum(Gender), nullable=True) # Make nullable
+    address = Column(String(255), nullable=True)
+    phone_number = Column(String(20), unique=True, nullable=True)
+    class_role = Column(String(50), nullable=True) # Concession to the stubborn legacy schema
 
     user = relationship("User", back_populates="patient_profile")
     analysis_results = relationship("AnalysisResult", back_populates="patient", cascade="all, delete-orphan")
