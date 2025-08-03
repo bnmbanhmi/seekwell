@@ -63,27 +63,27 @@ def setup_database(reset=False):
     print("\n👤 Creating initial admin user...")
     db = SessionLocal()
     try:
-        admin_username = os.getenv("ADMIN_USERNAME", "admin")
         admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
         admin_password = os.getenv("ADMIN_PASSWORD", "adminpassword")
 
-        if not all([admin_username, admin_email, admin_password]):
-            print("❌ Admin credentials (ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD) not found in .env file. Skipping admin creation.")
+        if not all([admin_email, admin_password]):
+            print("❌ Admin credentials (ADMIN_EMAIL, ADMIN_PASSWORD) not found in .env file. Skipping admin creation.")
             return
 
-        admin = crud.get_user_by_username(db, username=admin_username)
+        # Use email as the username for the admin account to align with login logic
+        admin = crud.get_user_by_email(db, email=admin_email)
         if not admin:
             admin_in = schemas.UserCreate(
-                username=admin_username,
+                username=admin_email, # Use email for username
                 email=admin_email,
                 password=admin_password,
                 full_name="Admin User",
                 role=UserRole.ADMIN
             )
             crud.create_user(db, user=admin_in)
-            print(f"✅ Admin user '{admin_username}' created.")
+            print(f"✅ Admin user '{admin_email}' created.")
         else:
-            print(f"ℹ️ Admin user '{admin_username}' already exists. Skipping.")
+            print(f"ℹ️ Admin user '{admin_email}' already exists. Skipping.")
     except Exception as e:
         print(f"❌ Error creating admin user: {e}")
     finally:

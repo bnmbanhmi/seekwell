@@ -201,7 +201,7 @@ const UserManagement: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Đang tải danh sách người dùng...</div>
+        <div className={styles.loading}>Loading user list...</div>
       </div>
     );
   }
@@ -209,12 +209,12 @@ const UserManagement: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Quản lý người dùng</h2>
+        <h2 className={styles.title}>User Management</h2>
         <button 
           className={styles.createButton}
           onClick={() => setShowCreateModal(true)}
         >
-          Tạo người dùng mới
+          Create New User
         </button>
       </div>
 
@@ -227,7 +227,7 @@ const UserManagement: React.FC = () => {
         <div className={styles.searchContainer}>
           <input
             type="text"
-            placeholder="Tìm kiếm người dùng theo tên đăng nhập, email hoặc họ tên..."
+            placeholder="Search users by username, email, or full name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles.searchInput}
@@ -239,11 +239,11 @@ const UserManagement: React.FC = () => {
             onChange={(e) => setSelectedRole(e.target.value as UserRole | 'ALL')}
             className={styles.roleFilter}
           >
-            <option value="ALL">Tất cả vai trò</option>
-            <option value="PATIENT">Bệnh nhân</option>
-            <option value="DOCTOR">Bác sĩ</option>
-            <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
-            <option value="ADMIN">Quản trị viên</option>
+            <option value="ALL">All Roles</option>
+            <option value="PATIENT">Patient</option>
+            <option value="DOCTOR">Doctor</option>
+            <option value="OFFICIAL">Official</option>
+            <option value="ADMIN">Admin</option>
           </select>
         </div>
       </div>
@@ -253,12 +253,12 @@ const UserManagement: React.FC = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Mã ID</th>
-              <th>Tên đăng nhập</th>
+              <th>ID</th>
+              <th>Username</th>
               <th>Email</th>
-              <th>Họ và tên</th>
-              <th>Vai trò</th>
-              <th>Thao tác</th>
+              <th>Full Name</th>
+              <th>Role</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -280,13 +280,13 @@ const UserManagement: React.FC = () => {
                         className={styles.editButton}
                         onClick={() => openEditModal(user)}
                       >
-                        Chỉnh sửa
+                        Edit
                       </button>
                       <button
                         className={styles.deleteButton}
                         onClick={() => handleDeleteUser(user.user_id, user.username)}
                       >
-                        Xóa
+                        Delete
                       </button>
                     </div>
                   </td>
@@ -295,7 +295,7 @@ const UserManagement: React.FC = () => {
             ) : (
               <tr>
                 <td colSpan={6} className={styles.noData}>
-                  Không tìm thấy người dùng nào phù hợp với tiêu chí.
+                  No users found matching the criteria.
                 </td>
               </tr>
             )}
@@ -308,7 +308,7 @@ const UserManagement: React.FC = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3>Tạo người dùng mới</h3>
+              <h3>Create New User</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowCreateModal(false)}
@@ -318,7 +318,7 @@ const UserManagement: React.FC = () => {
             </div>
             <form onSubmit={handleCreateUser} className={styles.form}>
               <div className={styles.formGroup}>
-                <label htmlFor="create-username">Tên đăng nhập:</label>
+                <label htmlFor="create-username">Username:</label>
                 <input
                   id="create-username"
                   type="text"
@@ -340,7 +340,7 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="create-fullname">Họ và tên:</label>
+                <label htmlFor="create-fullname">Full Name:</label>
                 <input
                   id="create-fullname"
                   type="text"
@@ -351,7 +351,7 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="create-password">Mật khẩu:</label>
+                <label htmlFor="create-password">Password:</label>
                 <input
                   id="create-password"
                   type="password"
@@ -362,25 +362,25 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="create-role">Vai trò:</label>
+                <label htmlFor="create-role">Role:</label>
                 <select
                   id="create-role"
                   value={createForm.role}
                   onChange={(e) => setCreateForm({...createForm, role: e.target.value as UserRole})}
                   className={styles.select}
                 >
-                  <option value="PATIENT">Bệnh nhân</option>
-                  <option value="DOCTOR">Bác sĩ</option>
-                  <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
-                  <option value="ADMIN">Quản trị viên</option>
+                  <option value="PATIENT">Patient</option>
+                  <option value="DOCTOR">Doctor</option>
+                  <option value="OFFICIAL">Official</option>
+                  <option value="ADMIN">Admin</option>
                 </select>
               </div>
               <div className={styles.modalActions}>
                 <button type="button" onClick={() => setShowCreateModal(false)} className={styles.cancelButton}>
-                  Hủy
+                  Cancel
                 </button>
                 <button type="submit" className={styles.submitButton}>
-                  Tạo người dùng
+                  Create User
                 </button>
               </div>
             </form>
@@ -393,7 +393,7 @@ const UserManagement: React.FC = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3>Chỉnh sửa người dùng: {userToEdit.username}</h3>
+              <h3>Edit User: {userToEdit.username}</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowEditModal(false)}
@@ -403,7 +403,7 @@ const UserManagement: React.FC = () => {
             </div>
             <form onSubmit={handleEditUser} className={styles.form}>
               <div className={styles.formGroup}>
-                <label htmlFor="edit-username">Tên đăng nhập:</label>
+                <label htmlFor="edit-username">Username:</label>
                 <input
                   id="edit-username"
                   type="text"
@@ -425,7 +425,7 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="edit-fullname">Họ và tên:</label>
+                <label htmlFor="edit-fullname">Full Name:</label>
                 <input
                   id="edit-fullname"
                   type="text"
@@ -436,25 +436,25 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="edit-role">Vai trò:</label>
+                <label htmlFor="edit-role">Role:</label>
                 <select
                   id="edit-role"
                   value={editForm.role}
                   onChange={(e) => setEditForm({...editForm, role: e.target.value as UserRole})}
                   className={styles.select}
                 >
-                  <option value="PATIENT">Bệnh nhân</option>
-                  <option value="DOCTOR">Bác sĩ</option>
-                  <option value="LOCAL_CADRE">Cán bộ y tế địa phương</option>
-                  <option value="ADMIN">Quản trị viên</option>
+                  <option value="PATIENT">Patient</option>
+                  <option value="DOCTOR">Doctor</option>
+                  <option value="OFFICIAL">Official</option>
+                  <option value="ADMIN">Admin</option>
                 </select>
               </div>
               <div className={styles.modalActions}>
                 <button type="button" onClick={() => setShowEditModal(false)} className={styles.cancelButton}>
-                  Hủy
+                  Cancel
                 </button>
                 <button type="submit" className={styles.submitButton}>
-                  Cập nhật người dùng
+                  Update User
                 </button>
               </div>
             </form>
