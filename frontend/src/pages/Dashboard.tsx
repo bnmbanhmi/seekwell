@@ -10,28 +10,10 @@ import DoctorDashboard from '../components/dashboards/DoctorDashboard';
 import PatientDashboard from '../components/dashboards/PatientDashboard';
 import StaffDashboard from '../components/dashboards/StaffDashboard';
 import AdminDashboard from '../components/dashboards/AdminDashboard';
-import BookAppointment from '../components/appointment/BookAppointment';
-import ScheduleAppointment from '../components/appointment/ScheduleAppointment';
-import HighRiskConsultation from '../components/appointment/HighRiskConsultation';
-import PatientSearch from '../components/patients/PatientSearch';
-import MyAppointment from '../components/appointment/ViewAppointment';
-import DoctorSchedule from '../components/appointment/DoctorSchedule';
-import CreateEMR from '../components/EMR/CreateEMR';
 import UserManagement from '../components/admin/UserManagement';
 import ReportsAnalytics from '../components/admin/ReportsAnalytics';
-import SystemLogs from '../components/admin/SystemLogs';
-import ScheduleSettings from '../components/admin/ScheduleSettings';
-import MedicalHistory from '../components/medical/MedicalHistory';
-import MedicalReportsManagement from '../components/medical/MedicalReportsManagement';
-import Prescriptions from '../components/medical/Prescriptions';
-import CheckInOut from '../components/staff/CheckInOut';
-import CommunityHealthVisits from '../components/community/CommunityHealthVisits';
-import CommunityHealthEMR from '../components/EMR/CommunityHealthEMR';
-import CulturalGuidance from '../components/cadre/CulturalGuidance';
 import AISkinAnalysisPage from './AISkinAnalysisPage';
-import CommunityHealthAnalytics from '../components/analytics/CommunityHealthAnalytics';
-import MobileCHWInterface from '../components/mobile/MobileCHWInterface';
-import Phase3IntegrationPage from './Phase3IntegrationPage';
+import MedicalHistory from '../components/medical/MedicalHistory'; // Keep for patient's history view
 
 type Props = {
   role: UserRole;
@@ -63,29 +45,21 @@ const Dashboard: React.FC<Props> = ({ role }) => {
     <BaseDashboard role={role}>
       <Routes>
         <Route path="/" element={renderDashboard()} />
-        <Route path="appointments/book" element={<BookAppointment />} />
-        <Route path="appointments/high-risk" element={<HighRiskConsultation />} />
-        <Route path="appointments/schedule" element={<ScheduleAppointment />} />
-        <Route path="patients" element={<PatientSearch />} />
-        <Route path="appointments" element={<MyAppointment />} />
-        <Route path="schedule" element={<DoctorSchedule />} />
-        <Route path="medical-history" element={<MedicalHistory />} />
-        <Route path="records" element={<MedicalHistory />} />
-        <Route path="medical-reports" element={<MedicalReportsManagement />} />
-        <Route path="prescriptions" element={<Prescriptions />} />
-        <Route path="create_records" element={<CreateEMR />} />
+        
+        {/* Admin Routes */}
         <Route path="users" element={<UserManagement />} />
         <Route path="reports" element={<ReportsAnalytics />} />
-        <Route path="logs" element={<SystemLogs />} />
-        <Route path="schedule-settings" element={<ScheduleSettings />} />
-        <Route path="checkin" element={<CheckInOut />} />
-        <Route path="community-health" element={<CommunityHealthVisits />} />
-        <Route path="community-emr" element={<CommunityHealthEMR />} />
-        <Route path="cultural-guidance" element={<CulturalGuidance />} />
-        <Route path="analytics" element={<CommunityHealthAnalytics />} />
-        <Route path="mobile-chw" element={<MobileCHWInterface />} />
-        <Route path="phase3-integration" element={<Phase3IntegrationPage />} />
+
+        {/* Patient Routes */}
         <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
+        <Route path="analysis-history" element={<MedicalHistory />} />
+
+        {/* Cadre Routes (to be refactored) */}
+        {/* <Route path="patient-monitoring" element={<PatientMonitoring />} /> */}
+        
+        {/* Doctor Routes (to be refactored) */}
+        {/* <Route path="urgent-cases" element={<UrgentCases />} /> */}
+
       </Routes>
     </BaseDashboard>
   );
