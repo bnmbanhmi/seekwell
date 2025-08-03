@@ -34,7 +34,7 @@
 
 /* Main Container */
 .container {
-  padding: var(--spacing-5);
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   background-color: var(--secondary-50);
@@ -44,7 +44,7 @@
 
 /* Header */
 .header {
-  margin-bottom: var(--spacing-10);
+  margin-bottom: 2rem;
   text-align: left; /* Fixed: was center-aligned */
   padding: var(--spacing-8) 0;
   background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
@@ -58,7 +58,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: var(--font-size-4xl);
+  font-size: 1.8rem;
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--spacing-4) 0;
   line-height: var(--line-height-tight);
@@ -66,7 +66,7 @@
 }
 
 .subtitle {
-  color: var(--secondary-600);
+  color: #666;
   font-size: var(--font-size-xl);
   margin: 0;
   font-weight: var(--font-weight-normal);
@@ -77,7 +77,7 @@
 /* Loading State */
 .loading {
   text-align: center;
-  padding: var(--spacing-20) var(--spacing-5);
+  padding: 2rem;
   font-size: var(--font-size-xl);
   color: var(--secondary-500);
   background: var(--white);
@@ -382,6 +382,91 @@
   color: var(--secondary-600);
   font-size: var(--font-size-lg);
   margin: 0;
+}
+
+/* Case Queue Styles */
+.caseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.caseCard {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 5px solid;
+}
+
+.caseCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.caseCard h4 {
+  margin-top: 0;
+}
+
+.caseCard p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.high {
+  border-left-color: #f44336; /* Red */
+}
+
+.urgent {
+  border-left-color: #9c27b0; /* Purple */
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.imageContainer {
+  margin: 1rem 0;
+}
+
+.modalActions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modalActions button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modalActions .confirmButton {
+  background-color: #007bff;
+  color: white;
 }
 
 /* Responsive Design */
