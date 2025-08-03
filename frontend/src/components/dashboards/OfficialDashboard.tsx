@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import styles from './CadreDashboard.module.css';
-
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
+import styles from './OfficialDashboard.module.css';
 
 // Mock data structure - replace with actual data from API
 type UrgentCase = {
@@ -18,8 +14,7 @@ type DiseaseStats = {
   [key: string]: number;
 };
 
-const CadreDashboard = () => {
-  const navigate = useNavigate();
+const OfficialDashboard = () => {
   const [urgentCases, setUrgentCases] = useState<UrgentCase[]>([]);
   const [diseaseStats, setDiseaseStats] = useState<DiseaseStats>({});
   const [totalPatients, setTotalPatients] = useState(0);
@@ -29,7 +24,6 @@ const CadreDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
         // TODO: Replace with actual API calls
         // For now, using mock data
         const mockUrgentCases: UrgentCase[] = [
@@ -120,4 +114,4 @@ const CadreDashboard = () => {
   );
 };
 
-export default CadreDashboard;
+export default OfficialDashboard;
