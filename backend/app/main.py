@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status # Add status and HTTPException
 from fastapi.middleware.cors import CORSMiddleware # Add this import
 from contextlib import asynccontextmanager
-from sqlalchemy.orm import Session # Add Session
 
 from .database import engine, create_db_and_tables, get_db # Import create_db_and_tables and get_db
 from .config import settings  # Import settings
-from .routers import auth, users, chat, patients, appointments, doctors, hospitals, password, reports, ai_prediction, skin_lesions, cadre, community, analytics, mobile_chw
+from .routers import auth, users, chat, patients, password, reports, ai_prediction
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,20 +64,12 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(users.router, prefix="/users", tags=["Users"]) # Assuming a users router exists
-app.include_router(chat.router, prefix="/chat", tags=["Chat"]) # Assuming a chat router exists
-app.include_router(patients.router, prefix="/patients", tags=["Patients"]) # Include the patients router
-app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"]) # Include the appointments router
-app.include_router(doctors.router, prefix="/doctors", tags=["Doctors"])
-app.include_router(hospitals.router, prefix="/community-health-centers", tags=["Community Health Centers"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(chat.router, prefix="/chat", tags=["Chat"])
+app.include_router(patients.router, prefix="/patients", tags=["Patients"])
 app.include_router(password.router, prefix="/password", tags=["Password"])
-app.include_router(reports.router, prefix="/medical_reports", tags=["Medical Reports"]) # Include the reports router
-app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"]) # Include the AI prediction router
-app.include_router(skin_lesions.router, prefix="/skin-lesions", tags=["Skin Lesion Analysis"]) # Include the new skin lesions router
-app.include_router(cadre.router, prefix="/cadre", tags=["Community Health Cadre"]) # SeekWell cadre workflow
-app.include_router(community.router, prefix="/community", tags=["Community Health"]) # SeekWell community metrics
-app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"]) # Community health analytics
-app.include_router(mobile_chw.router, prefix="/mobile-chw", tags=["Mobile CHW Interface"]) # Mobile CHW interface
+app.include_router(reports.router, prefix="/reports", tags=["Reports & Analytics"])
+app.include_router(ai_prediction.router, prefix="/ai", tags=["AI Prediction"])
 
 
 @app.get("/", tags=["Root"])
