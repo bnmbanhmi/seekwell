@@ -35,7 +35,8 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
 
   const handleProfile = () => {
     setMenuOpen(false);
-    navigate('/profile');
+    // Navigate to dashboard profile if we're in dashboard context
+    navigate('/dashboard/profile');
   };
 
   const handleLogout = () => {

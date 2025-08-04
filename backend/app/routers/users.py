@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import crud, schemas, models
 from app.database import get_db, UserRole
-from app.dependencies import get_current_active_user, get_current_active_admin
+from app.dependencies import get_current_active_user, get_current_active_admin, get_current_official_or_admin
 from typing import List, Union
 
 router = APIRouter(
@@ -47,13 +47,34 @@ async def read_users_me(
     # For all other roles (ADMIN, DOCTOR, OFFICIAL), return the basic user info.
     return current_user
 
-@router.get("/", response_model=List[schemas.UserSchema], dependencies=[Depends(get_current_active_admin)])
+@router.put("/me", response_model=Union[schemas.UserSchema, schemas.PatientSchema])
+async def update_users_me(
+    user_update: schemas.UserUpdate,
+    current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update the profile for the currently authenticated user.
+    """
+    updated_user = crud.update_user(db, user_id=current_user.user_id, user_update=user_update)
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Return patient profile if user is a patient
+    if updated_user.role == UserRole.PATIENT:
+        patient = crud.get_patient(db, patient_id=updated_user.user_id)
+        if patient:
+            return patient
+    
+    return updated_user
+
+@router.get("/", response_model=List[schemas.UserSchema], dependencies=[Depends(get_current_official_or_admin)])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    # Admin can retrieve a list of all users.
+    # Admin and Official can retrieve a list of all users.
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
-@router.get("/{user_id}", response_model=schemas.UserSchema, dependencies=[Depends(get_current_active_admin)])
+@router.get("/{user_id}", response_model=schemas.UserSchema, dependencies=[Depends(get_current_official_or_admin)])
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:

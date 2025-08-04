@@ -1,36 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import OfficialAnalyticsService, { UrgentCase } from '../../services/OfficialAnalyticsService';
 import styles from './UrgentCases.module.css';
-
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
-
-type UrgentCase = {
-  result_id: number;
-  patient_name: string;
-  prediction: string;
-  risk_level: 'HIGH' | 'URGENT';
-  upload_timestamp: string;
-};
 
 const UrgentCases = () => {
   const [cases, setCases] = useState<UrgentCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUrgentCases = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        // TODO: Replace with actual API endpoint for fetching urgent cases
-        const response = await axios.get(`${BACKEND_URL}/analysis-results/urgent`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCases(response.data);
+        setLoading(true);
+        
+        // Get urgent cases from localStorage analysis data
+        const urgentCases = await OfficialAnalyticsService.getUrgentCasesFromStorage();
+        setCases(urgentCases);
 
       } catch (err) {
         console.error('Error fetching urgent cases:', err);
-        // setError('Failed to load urgent cases.'); // Temporarily disable error for empty state
-        setCases([]); // Default to empty array
+        setCases([]);
       } finally {
         setLoading(false);
       }
@@ -38,6 +28,20 @@ const UrgentCases = () => {
 
     fetchUrgentCases();
   }, []);
+
+  const handleCaseClick = (patientId: number) => {
+    navigate(`/dashboard/patient-monitoring/${patientId}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   if (loading) {
     return <div className={styles.loading}>Loading Urgent Cases...</div>;
@@ -49,37 +53,52 @@ const UrgentCases = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Urgent Cases</h2>
-      <div className={styles.caseList}>
-        {cases.length === 0 ? (
-          <p>No urgent cases at this time.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>AI Prediction</th>
-                <th>Risk Level</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cases.map((c) => (
-                <tr key={c.result_id} className={styles[c.risk_level.toLowerCase()]}>
-                  <td>{c.patient_name}</td>
-                  <td>{c.prediction}</td>
-                  <td><span className={styles.riskLabel}>{c.risk_level}</span></td>
-                  <td>{new Date(c.upload_timestamp).toLocaleString()}</td>
-                  <td>
-                    <button className={styles.actionButton}>View Details</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className={styles.header}>
+        <h2 className={styles.title}>Urgent Cases ({cases.length})</h2>
+        <p className={styles.subtitle}>High-risk skin analysis cases requiring immediate attention</p>
       </div>
+
+      {cases.length === 0 ? (
+        <div className={styles.noData}>
+          <h3>No Urgent Cases</h3>
+          <p>There are currently no high-risk cases that require immediate attention.</p>
+        </div>
+      ) : (
+        <div className={styles.casesList}>
+          {cases.map((urgentCase, index) => (
+            <div 
+              key={`${urgentCase.patientId}-${urgentCase.date}-${index}`} 
+              className={styles.caseCard}
+              onClick={() => handleCaseClick(urgentCase.patientId)}
+            >
+              <div className={styles.caseHeader}>
+                <h4>{urgentCase.patientName || `Patient ${urgentCase.patientId}`}</h4>
+                <span className={styles.riskBadge}>
+                  {urgentCase.riskLevel} Risk
+                </span>
+              </div>
+              
+              <div className={styles.caseDetails}>
+                <p><strong>Disease:</strong> {urgentCase.disease}</p>
+                <p><strong>Confidence:</strong> {(urgentCase.confidence * 100).toFixed(1)}%</p>
+                <p><strong>Date:</strong> {formatDate(urgentCase.date)}</p>
+              </div>
+
+              <div className={styles.caseActions}>
+                <button 
+                  className={styles.viewButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCaseClick(urgentCase.patientId);
+                  }}
+                >
+                  View Patient Details
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -79,6 +79,16 @@ function App() {
                 </ProtectedRoute>
             }
           />
+          {/* Standalone Profile Route */}
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          
           {/* Redirect root to login or dashboard based on auth state */}
           <Route 
             path="/" 
@@ -86,14 +96,6 @@ function App() {
           />
           {/* You can add a 404 page here if needed */}
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
         </Routes>
         
         {/* Add Chatbot Widget */}

@@ -27,6 +27,8 @@ interface UserProfileForm {
     doctor_name?: string;
     major?: string;
     hospital_id?: number | string;
+    // Patient fields
+    patient_id?: number;
 }
 
 const Profile: React.FC = () => {
@@ -47,13 +49,66 @@ const Profile: React.FC = () => {
         const fetchUserData = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
-                const response = await axios.get(`${BACKEND_URL}/users/me`, {
+                const role = localStorage.getItem('role');
+                
+                let endpoint = `${BACKEND_URL}/users/me`;
+                
+                // For patients, we might want to use a different approach
+                // but /users/me should work for all roles based on backend logic
+                
+                const response = await axios.get(endpoint, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setUserData(response.data);
-                console.log("User data fetched successfully:", response.data);
+                
+                const data = response.data;
+                console.log("Raw user data fetched:", data);
+                
+                // Transform data based on structure
+                let userData: UserProfileForm;
+                
+                if (role === 'PATIENT' && data.user) {
+                    // Patient data has nested user structure
+                    userData = {
+                        full_name: data.user.full_name || '',
+                        username: data.user.username || '',
+                        email: data.user.email || '',
+                        phone: data.phone_number || '',
+                        phone_number: data.phone_number || '',
+                        address: data.address || '',
+                        date_of_birth: data.date_of_birth || '',
+                        gender: data.gender || '',
+                        identification_id: data.identification_id || '',
+                        health_insurance_card_no: data.health_insurance_card_no || '',
+                        // Include patient_id for updates
+                        ...(data.patient_id && { patient_id: data.patient_id })
+                    };
+                } else {
+                    // Other users have direct structure
+                    userData = {
+                        full_name: data.full_name || '',
+                        username: data.username || '',
+                        email: data.email || '',
+                        phone: data.phone_number || data.phone || '',
+                        phone_number: data.phone_number || data.phone || '',
+                        address: data.address || '',
+                        date_of_birth: data.date_of_birth || '',
+                        gender: data.gender || '',
+                        // Doctor fields
+                        doctor_name: data.doctor_name || '',
+                        major: data.major || '',
+                        hospital_id: data.hospital_id || '',
+                        // Other possible fields
+                        ethnic_group: data.ethnic_group || '',
+                        identification_id: data.identification_id || '',
+                        job: data.job || '',
+                        class_role: data.class_role || ''
+                    };
+                }
+                
+                setUserData(userData);
+                console.log("Transformed user data:", userData);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
                     if (err.response.status === 401) {
@@ -101,15 +156,37 @@ const Profile: React.FC = () => {
         setError('');
         try {
             const token = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('role');
+            
             // Prepare payload: merge phone and phone_number, remove empty fields
             const payload: { [key: string]: any } = { ...formData };
             if (payload.phone && !payload.phone_number) payload.phone_number = payload.phone;
             delete payload.phone;
             if (!payload.password) delete payload.password;
             Object.keys(payload).forEach((k) => { if (payload[k] === '' || payload[k] === undefined) delete payload[k]; });
-            await axios.put(`${BACKEND_URL}/users/me`, payload, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            
+            // For patients, use patient-specific update endpoint
+            if (role === 'PATIENT' && 'patient_id' in userData) {
+                const patientId = (userData as any).patient_id;
+                await axios.put(`${BACKEND_URL}/patients/${patientId}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            } else {
+                // For other roles, use general user update endpoint
+                // Only send fields that UserUpdate schema accepts
+                const userUpdateFields = ['username', 'email', 'full_name'];
+                const filteredPayload = Object.keys(payload)
+                    .filter(key => userUpdateFields.includes(key))
+                    .reduce((obj: any, key) => {
+                        obj[key] = payload[key];
+                        return obj;
+                    }, {});
+                    
+                await axios.put(`${BACKEND_URL}/users/me`, filteredPayload, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            }
+            
             setUserData((prev) => ({ ...prev, ...payload }));
             toast.success('Profile updated successfully!');
             setEditMode(false);
@@ -330,7 +407,6 @@ const Profile: React.FC = () => {
 
     return (
         <div className={styles['profile-container']}>
-            <button onClick={() => navigate('/dashboard')} className={styles['profile-button']} style={{marginBottom: 16}}>Back to Dashboard</button>
             <h1 className={styles['profile-title']}>User Profile</h1>
             {error && <div className={styles['profile-error']}>{error}</div>}
             {editMode ? (

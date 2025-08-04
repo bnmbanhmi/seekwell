@@ -184,6 +184,21 @@ def get_analysis_results_by_patient(db: Session, patient_id: int) -> List[models
     """Retrieve all analysis results for a specific patient."""
     return db.query(models.AnalysisResult).filter(models.AnalysisResult.patient_id == patient_id).all()
 
+def update_patient(db: Session, patient_id: int, patient_update: schemas.PatientUpdate) -> Optional[models.Patient]:
+    """Update a patient's profile information."""
+    db_patient = db.query(models.Patient).filter(models.Patient.patient_id == patient_id).first()
+    if db_patient is None:
+        return None
+    
+    # Update patient fields
+    for field, value in patient_update.dict(exclude_unset=True).items():
+        if hasattr(db_patient, field):
+            setattr(db_patient, field, value)
+    
+    db.commit()
+    db.refresh(db_patient)
+    return db_patient
+
 # ============================================================================
 # CHAT MESSAGE CRUD OPERATIONS
 # ============================================================================

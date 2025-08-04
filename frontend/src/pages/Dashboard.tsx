@@ -15,6 +15,9 @@ import ReportsAnalytics from '../components/admin/ReportsAnalytics';
 import AISkinAnalysisPage from './AISkinAnalysisPage';
 import AnalysisHistory from '../components/patients/AnalysisHistory';
 import UrgentCases from '../components/cases/UrgentCases';
+import PatientMonitoring from '../components/patients/PatientMonitoring';
+import PatientDetail from '../components/patients/PatientDetail';
+import Profile from './Profile';
 
 type Props = {
   role: UserRole;
@@ -55,8 +58,13 @@ const Dashboard: React.FC<Props> = ({ role }) => {
         <Route path="ai-analysis" element={<AISkinAnalysisPage />} />
         <Route path="analysis-history" element={<AnalysisHistory />} />
 
+        {/* Profile Route - Available to all roles */}
+        <Route path="profile" element={<Profile />} />
+
         {/* Official & Doctor Routes */}
         <Route path="urgent-cases" element={<UrgentCases />} />
+        <Route path="patient-monitoring" element={<PatientMonitoring />} />
+        <Route path="patient-monitoring/:patientId" element={<PatientDetail />} />
         
       </Routes>
     </BaseDashboard>

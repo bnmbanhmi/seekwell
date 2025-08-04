@@ -16,20 +16,24 @@ const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'AI Skin Analysis', path: '/dashboard/ai-analysis' },
     { label: 'Analysis History', path: '/dashboard/analysis-history' },
+    { label: 'Profile', path: '/dashboard/profile' },
   ],
   DOCTOR: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Urgent Cases', path: '/dashboard/urgent-cases' },
+    { label: 'Profile', path: '/dashboard/profile' },
   ],
   OFFICIAL: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Patient Monitoring', path: '/dashboard/patient-monitoring' },
     { label: 'Urgent Cases', path: '/dashboard/urgent-cases' },
+    { label: 'Profile', path: '/dashboard/profile' },
   ],
   ADMIN: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'User Management', path: '/dashboard/users' },
     { label: 'Analytics', path: '/dashboard/reports' },
+    { label: 'Profile', path: '/dashboard/profile' },
   ],
 };
 

@@ -60,9 +60,9 @@ const OfficialDashboard = () => {
   }, []);
 
   const handleCaseClick = (patientId: number) => {
-    // TODO: Navigate to a detailed patient view for the official
+    // Navigate to patient monitoring page with specific patient selected
     console.log(`Navigating to details for patient ${patientId}`);
-    // navigate(`/dashboard/patients/${patientId}`);
+    navigate(`/dashboard/patient-monitoring/${patientId}`);
   };
 
   if (loading) return <div className={styles.loading}>Loading Dashboard...</div>;

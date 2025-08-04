@@ -1,0 +1,553 @@
+/* PatientMonitoring.module.css */
+.container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Patient List Container */
+.patientListContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.patientListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.patientListHeader h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.4rem;
+}
+
+.searchBar {
+  flex: 0 0 300px;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Patient Grid */
+.patientGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.patientCard {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.patientCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.patientInfo h4 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.patientInfo p {
+  margin: 5px 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.patientStats {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.stat small {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.urgentBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Loading and Error States */
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+}
+
+.loading {
+  color: #007bff;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #dc3545;
+  border-radius: 8px;
+  margin: 20px;
+}
+
+.noData {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.noData h3 {
+  margin-bottom: 10px;
+  color: #495057;
+}
+
+/* Legacy styles preserved for compatibility */
+.content {
+  display: flex;
+  gap: 30px;
+  height: calc(100vh - 200px);
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.patientCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.patientCard {
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 140px;
+}
+
+.patientCard:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.patientCard.selected {
+  border-color: #007bff;
+  background-color: #f8f9ff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.patientInfo h4 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.patientInfo p {
+  margin: 3px 0;
+  color: #6c757d;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.patientStats {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat span {
+  display: block;
+  font-weight: 700;
+  color: #007bff;
+  font-size: 1.1rem;
+}
+
+.stat small {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.urgentBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Patient Detail Panel */
+.patientDetail {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.patientHeader {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.patientProfile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.patientBasicInfo h3 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.patientBasicInfo p {
+  margin: 4px 0;
+  color: #6c757d;
+}
+
+.patientOverview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.overviewCard {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.overviewCard h4 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  color: #007bff;
+}
+
+.overviewCard p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Case Cards */
+.casesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.caseCard {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.caseImage {
+  flex: 0 0 100px;
+}
+
+.caseImage img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.caseDetails {
+  flex: 1;
+}
+
+.caseHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.caseHeader h5 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.riskBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.caseDetails p {
+  margin: 6px 0;
+  color: #6c757d;
+}
+
+.recommendations {
+  margin-top: 12px;
+}
+
+.recommendations ul {
+  margin: 8px 0 0 20px;
+  color: #6c757d;
+}
+
+.recommendations li {
+  margin: 4px 0;
+}
+
+/* History List */
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historyCard {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+}
+
+.historyImage {
+  flex: 0 0 60px;
+}
+
+.historyImage img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.historyDetails {
+  flex: 1;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.historyHeader h6 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.historyDetails p {
+  margin: 2px 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.noSelection {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.noSelection h3 {
+  margin: 0 0 12px 0;
+  color: #adb5bd;
+}
+
+.noData {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.loading {
+  color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .content {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .patientList {
+    flex: none;
+    max-height: 400px;
+  }
+  
+  .patientOverview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .patientProfile {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .patientOverview {
+    grid-template-columns: 1fr;
+  }
+  
+  .caseCard {
+    flex-direction: column;
+  }
+  
+  .caseImage {
+    flex: none;
+    align-self: center;
+  }
+}

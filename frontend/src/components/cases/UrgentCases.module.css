@@ -1,53 +1,155 @@
 /* UrgentCases.module.css */
 .container {
-    padding: 2rem;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+.noData {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.noData h3 {
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+.noData p {
+  color: #adb5bd;
+}
+
+.casesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.caseCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 4px solid #dc3545;
+}
+
+.caseCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.caseHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.caseHeader h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.riskBadge {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.caseDetails {
+  margin-bottom: 16px;
+}
+
+.caseDetails p {
+  margin: 6px 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.caseActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viewButton {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.viewButton:hover {
+  background: #0056b3;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.loading {
+  color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
   }
   
   .title {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+    font-size: 2rem;
   }
   
-  .caseList table {
-    width: 100%;
-    border-collapse: collapse;
+  .casesList {
+    grid-template-columns: 1fr;
   }
   
-  .caseList th, .caseList td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+  .caseHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
-  
-  .caseList th {
-    background-color: #f9f9f9;
-  }
-  
-  .riskLabel {
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    color: white;
-    font-weight: bold;
-    font-size: 0.8rem;
-  }
-  
-  .high .riskLabel {
-    background-color: #f44336; /* Red */
-  }
-  
-  .urgent .riskLabel {
-    background-color: #9c27b0; /* Purple */
-  }
-  
-  .actionButton {
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
+}
   
   .actionButton:hover {
     background-color: #0056b3;
