@@ -89,10 +89,10 @@ function App() {
             }
           />
           
-          {/* Redirect root to login or dashboard based on auth state */}
+          {/* Redirect root to login page */}
           <Route 
             path="/" 
-            element={localStorage.getItem('accessToken') ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+            element={<Navigate to="/login" replace />}
           />
           {/* You can add a 404 page here if needed */}
           <Route path="*" element={<Navigate to="/" replace />} />
