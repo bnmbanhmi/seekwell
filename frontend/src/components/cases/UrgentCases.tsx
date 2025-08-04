@@ -14,7 +14,7 @@ const UrgentCases = () => {
       try {
         setLoading(true);
         
-        // Get urgent cases from localStorage analysis data
+        // Get urgent cases from localStorage analysis data with real patient names
         const urgentCases = await OfficialAnalyticsService.getUrgentCasesFromStorage();
         setCases(urgentCases);
 

@@ -1,5 +1,6 @@
 // Service to aggregate analysis data across all users for officials/admins
 import HuggingFaceAIService from './HuggingFaceAIService';
+import PatientMonitoringService from './PatientMonitoringService';
 import { AIAnalysisResult } from '../types/AIAnalysisTypes';
 
 export interface UrgentCase {
@@ -17,10 +18,9 @@ export interface DiseaseStats {
 
 export class OfficialAnalyticsService {
   /**
-   * Get all urgent cases from localStorage across all users
-   * Note: This is a workaround until we implement centralized storage
+   * Get all urgent cases from localStorage across all users with real patient names
    */
-  static getUrgentCasesFromStorage(): UrgentCase[] {
+  static async getUrgentCasesFromStorage(): Promise<UrgentCase[]> {
     const urgentCases: UrgentCase[] = [];
     
     try {
@@ -40,13 +40,24 @@ export class OfficialAnalyticsService {
               analysis.risk_assessment?.risk_level === 'HIGH'
             );
             
+            // Get real patient name from backend
+            let patientName = `Patient ${userId}`;
+            try {
+              const patientInfo = await PatientMonitoringService.getPatientInfo(parseInt(userId, 10));
+              if (patientInfo && patientInfo.full_name) {
+                patientName = patientInfo.full_name;
+              }
+            } catch (error) {
+              console.log(`Could not fetch name for patient ${userId}, using default`);
+            }
+            
             // Convert to UrgentCase format
             userUrgentCases.forEach(analysis => {
               const topPrediction = analysis.top_prediction || analysis.predictions?.[0];
               
               urgentCases.push({
                 patientId: parseInt(userId, 10),
-                patientName: `Patient ${userId}`, // We don't have names in localStorage
+                patientName: patientName,
                 riskLevel: analysis.risk_assessment.risk_level as 'HIGH' | 'URGENT',
                 disease: topPrediction?.label || 'Unknown',
                 date: analysis.analysis?.analysis_timestamp || analysis.timestamp || new Date().toISOString(),
@@ -130,7 +141,7 @@ export class OfficialAnalyticsService {
    * Get comprehensive dashboard data for officials
    */
   static async getOfficialDashboardData(backendStats?: any) {
-    const urgentCases = this.getUrgentCasesFromStorage();
+    const urgentCases = await this.getUrgentCasesFromStorage();
     const diseaseStats = this.getDiseaseStatsFromStorage();
     const totalAnalyses = this.getTotalAnalysesCount();
     
