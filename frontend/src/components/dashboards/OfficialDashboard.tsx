@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import OfficialAnalyticsService, { UrgentCase, DiseaseStats } from '../../services/OfficialAnalyticsService';
 import styles from './OfficialDashboard.module.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
-
-// Mock data structure - replace with actual data from API
-type UrgentCase = {
-  patientId: number;
-  patientName: string;
-  riskLevel: 'HIGH' | 'URGENT';
-  disease: string;
-  date: string;
-};
-
-type DiseaseStats = {
-  [key: string]: number;
-};
 
 const OfficialDashboard = () => {
   const [urgentCases, setUrgentCases] = useState<UrgentCase[]>([]);
@@ -29,23 +17,40 @@ const OfficialDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem('accessToken');
-        // Fetch real stats
+        
+        // Fetch backend stats (patient counts, etc.)
         const response = await axios.get(`${BACKEND_URL}/reports/dashboard-stats`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        const stats = response.data;
+        const backendStats = response.data;
 
-        setUrgentCases(stats.urgentCases || []); // Assuming the API returns an urgentCases array
-        setDiseaseStats(stats.diseaseStats || {}); // Assuming the API returns diseaseStats
-        setTotalPatients(stats.totalPatients || 0); // Assuming the API returns totalPatients
+        // Get comprehensive dashboard data including localStorage analysis data
+        const dashboardData = await OfficialAnalyticsService.getOfficialDashboardData(backendStats);
+
+        setUrgentCases(dashboardData.urgentCases || []);
+        setDiseaseStats(dashboardData.diseaseStats || {});
+        setTotalPatients(dashboardData.totalPatients || 0);
+        
+        console.log('Official Dashboard Data:', dashboardData);
 
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        // setError('Failed to load dashboard data.');
-        setUrgentCases([]);
-        setDiseaseStats({});
-        setTotalPatients(0);
+        setError('Failed to load dashboard data.');
+        
+        // Fallback: try to get localStorage data even if backend fails
+        try {
+          const fallbackData = await OfficialAnalyticsService.getOfficialDashboardData();
+          setUrgentCases(fallbackData.urgentCases || []);
+          setDiseaseStats(fallbackData.diseaseStats || {});
+          setTotalPatients(0); // Can't get patient count without backend
+        } catch (fallbackErr) {
+          console.error('Fallback data loading failed:', fallbackErr);
+          setUrgentCases([]);
+          setDiseaseStats({});
+          setTotalPatients(0);
+        }
       } finally {
         setLoading(false);
       }
@@ -88,10 +93,10 @@ const OfficialDashboard = () => {
           <h3>Urgent Cases</h3>
           <div className={styles.caseList}>
             {urgentCases.length > 0 ? urgentCases.map(c => (
-              <div key={c.patientId} className={styles.caseItem} onClick={() => handleCaseClick(c.patientId)}>
-                <p><strong>{c.patientName}</strong></p>
-                <p>{c.disease} ({c.riskLevel})</p>
-                <p>{c.date}</p>
+              <div key={`${c.patientId}-${c.date}`} className={styles.caseItem} onClick={() => handleCaseClick(c.patientId)}>
+                <p><strong>{c.patientName || `Patient ${c.patientId}`}</strong></p>
+                <p>{c.disease} ({c.riskLevel}) - {(c.confidence * 100).toFixed(1)}% confidence</p>
+                <p>{new Date(c.date).toLocaleDateString()}</p>
               </div>
             )) : <p>No urgent cases at this time.</p>}
           </div>

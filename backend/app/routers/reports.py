@@ -14,14 +14,23 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
     """
     Get high-level statistics for the admin and official dashboards.
     """
-    total_users = len(crud.get_users(db, limit=10000)) # A simple way to get total count
-    officials = [user for user in crud.get_users(db, limit=10000) if user.role == UserRole.OFFICIAL]
+    all_users = crud.get_users(db, limit=10000)
     
-    # TODO: Implement logic to count actual urgent cases
-    urgent_cases_count = 5 # Mock data
-
+    # Count patients specifically (not all users)
+    patients = [user for user in all_users if user.role == UserRole.PATIENT]
+    officials = [user for user in all_users if user.role == UserRole.OFFICIAL]
+    doctors = [user for user in all_users if user.role == UserRole.DOCTOR]
+    admins = [user for user in all_users if user.role == UserRole.ADMIN]
+    
     return {
-        "totalUsers": total_users,
-        "totalOfficials": len(officials),
-        "urgentCases": urgent_cases_count
+        "totalUsers": len(all_users),      # For admin dashboard - monitor all users
+        "totalPatients": len(patients),    # For official dashboard - track patients specifically
+        "totalOfficials": len(officials), 
+        "totalDoctors": len(doctors),
+        "totalAdmins": len(admins),
+        # Note: Urgent cases will be aggregated from frontend localStorage
+        # since AI analysis results are currently stored there
+        "urgentCasesCount": 0,  # Placeholder - will be calculated by frontend
+        "urgentCases": [],      # Placeholder - will be populated by frontend
+        "diseaseStats": {}      # Placeholder - will be calculated by frontend
     }

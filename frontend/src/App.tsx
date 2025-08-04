@@ -8,6 +8,7 @@ import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetP
 import RegisterPage from './components/RegisterPage';
 import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrapper
 import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
+import DebugAnalysisHistory from './components/debug/DebugAnalysisHistory'; // Import debug component
 import { Analytics } from "@vercel/analytics/react"
 import Profile from './pages/Profile'; 
 
@@ -65,7 +66,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/register" element={<RegisterPage />} /> 
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/debug" element={<DebugAnalysisHistory />} />
           {/* <Route path="/testdashboard" element={<DashboardWrapper />} /> */}
           <Route 
             path="/dashboard/*" 

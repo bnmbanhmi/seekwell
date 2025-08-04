@@ -627,38 +627,95 @@ class HuggingFaceAIService {
   // Static methods for maintaining compatibility with existing code
 
   /**
-   * Save analysis to local storage (keeping for compatibility)
+   * Save analysis to local storage (per user)
    */
-  static saveAnalysisToHistory(result: AIAnalysisResult): void {
+  static saveAnalysisToHistory(result: AIAnalysisResult, userId?: number): void {
     try {
-      const history = this.getAnalysisHistory();
+      // Get current user ID from localStorage if not provided
+      const currentUserId = userId || this.getCurrentUserId();
+      if (!currentUserId) {
+        console.warn('No user ID available, cannot save analysis');
+        return;
+      }
+
+      const history = this.getAnalysisHistory(currentUserId);
       const newEntry = {
         ...result,
         id: Date.now(),
-        saved_at: new Date().toISOString()
+        saved_at: new Date().toISOString(),
+        user_id: currentUserId
       };
       
       history.unshift(newEntry);
       
-      // Keep only last 50 analyses
+      // Keep only last 50 analyses per user
       const limitedHistory = history.slice(0, 50);
       
-      localStorage.setItem('seekwell_analysis_history', JSON.stringify(limitedHistory));
+      localStorage.setItem(`seekwell_analysis_history_${currentUserId}`, JSON.stringify(limitedHistory));
     } catch (error) {
       console.warn('Failed to save analysis to history:', error);
     }
   }
 
   /**
-   * Get analysis history from local storage
+   * Get analysis history from local storage (per user)
    */
-  static getAnalysisHistory(): any[] {
+  static getAnalysisHistory(userId?: number): any[] {
     try {
-      const history = localStorage.getItem('seekwell_analysis_history');
+      // Get current user ID from localStorage if not provided
+      const currentUserId = userId || this.getCurrentUserId();
+      if (!currentUserId) {
+        console.warn('No user ID available, returning empty history');
+        return [];
+      }
+
+      const history = localStorage.getItem(`seekwell_analysis_history_${currentUserId}`);
       return history ? JSON.parse(history) : [];
     } catch (error) {
       console.warn('Failed to get analysis history:', error);
       return [];
+    }
+  }
+
+  /**
+   * Get current user ID from localStorage
+   */
+  private static getCurrentUserId(): number | null {
+    try {
+      // Primary: get from user_id stored during login
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        return parseInt(userId, 10);
+      }
+      
+      // Fallback: try to get from user object if available
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.id || null;
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('Failed to get current user ID:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear analysis history for current user
+   */
+  static clearAnalysisHistory(userId?: number): void {
+    try {
+      const currentUserId = userId || this.getCurrentUserId();
+      if (!currentUserId) {
+        console.warn('No user ID available, cannot clear history');
+        return;
+      }
+      
+      localStorage.removeItem(`seekwell_analysis_history_${currentUserId}`);
+    } catch (error) {
+      console.warn('Failed to clear analysis history:', error);
     }
   }
 }

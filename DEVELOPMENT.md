@@ -39,6 +39,9 @@ pip install -r requirements.txt
 # Run the database setup script (initial setup)
 # This will create tables and a default admin user.
 python setup_seekwell_database.py
+
+# Start the backend server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### **2. Frontend Setup**

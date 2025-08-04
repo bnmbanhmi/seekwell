@@ -18,8 +18,6 @@ import {
 import {
   Visibility,
   Refresh,
-  Warning,
-  CheckCircle,
   Info,
 } from '@mui/icons-material';
 import { AIAnalysisResult, RISK_LEVEL_COLORS } from '../../types/AIAnalysisTypes';
@@ -67,7 +65,7 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
           No Analysis History
         </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Your skin lesion analyses will appear here once you start uploading images.
+          Your skin analyses will appear here once you start uploading images.
         </Typography>
         <Button onClick={onRefresh} variant="outlined" sx={{ mt: 2 }}>
           Refresh
@@ -76,45 +74,25 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
     );
   }
 
-  // Group by risk level for quick overview
+  // Show urgent cases alert
   const urgentAnalyses = history.filter(h => h.risk_assessment?.risk_level === 'URGENT');
-  const highRiskAnalyses = history.filter(h => h.risk_assessment?.risk_level === 'HIGH');
-  const needingReview = history.filter(h => h.risk_assessment?.needs_professional_review);
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h6">Analysis History</Typography>
+        <Typography variant="h6">My Analysis History</Typography>
         <Button onClick={onRefresh} startIcon={<Refresh />} variant="outlined" size="small">
           Refresh
         </Button>
       </Box>
 
-      {/* Quick Stats */}
-      {(urgentAnalyses.length > 0 || highRiskAnalyses.length > 0 || needingReview.length > 0) && (
-        <Box sx={{ mb: 3 }}>
-          {urgentAnalyses.length > 0 && (
-            <Alert severity="error" sx={{ mb: 1 }}>
-              <Typography variant="body2">
-                <strong>{urgentAnalyses.length}</strong> urgent case(s) requiring immediate attention
-              </Typography>
-            </Alert>
-          )}
-          {highRiskAnalyses.length > 0 && (
-            <Alert severity="warning" sx={{ mb: 1 }}>
-              <Typography variant="body2">
-                <strong>{highRiskAnalyses.length}</strong> high-risk case(s) need follow-up
-              </Typography>
-            </Alert>
-          )}
-          {needingReview.length > 0 && (
-            <Alert severity="info" sx={{ mb: 1 }}>
-              <Typography variant="body2">
-                <strong>{needingReview.length}</strong> case(s) pending professional review
-              </Typography>
-            </Alert>
-          )}
-        </Box>
+      {/* Urgent Cases Alert */}
+      {urgentAnalyses.length > 0 && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="body2">
+            <strong>{urgentAnalyses.length}</strong> urgent case(s) detected. A local health cadre will contact you about next steps.
+          </Typography>
+        </Alert>
       )}
 
       {/* Analysis List */}
@@ -122,7 +100,7 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
         <CardContent>
           <List>
             {history.map((analysis, index) => {
-              const topPrediction = analysis.top_prediction || analysis.predictions[0];
+              const topPrediction = analysis.top_prediction || analysis.predictions?.[0];
               const riskLevel = analysis.risk_assessment?.risk_level || 'UNCERTAIN';
               const timestamp = analysis.analysis?.analysis_timestamp || analysis.timestamp;
 
@@ -144,21 +122,12 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
                               fontWeight: 'bold',
                             }}
                           />
-                          {analysis.risk_assessment?.needs_professional_review && (
-                            <Chip
-                              label="Review Needed"
-                              size="small"
-                              color="warning"
-                              variant="outlined"
-                            />
-                          )}
                         </Box>
                       }
                       secondary={
                         <Box sx={{ mt: 1 }}>
                           <Typography variant="body2" color="text.secondary">
-                            Confidence: {topPrediction?.percentage?.toFixed(1) || 0}% • 
-                            Body Region: {analysis.analysis?.body_region || 'Not specified'}
+                            Confidence: {topPrediction?.percentage?.toFixed(1) || topPrediction?.confidence?.toFixed(1) || 0}%
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {timestamp ? formatDate(timestamp) : 'Unknown date'}
@@ -195,16 +164,6 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
           label={`Urgent: ${urgentAnalyses.length}`}
           variant={urgentAnalyses.length > 0 ? 'filled' : 'outlined'}
           color="error"
-        />
-        <Chip
-          label={`High Risk: ${highRiskAnalyses.length}`}
-          variant={highRiskAnalyses.length > 0 ? 'filled' : 'outlined'}
-          color="warning"
-        />
-        <Chip
-          label={`Pending Review: ${needingReview.length}`}
-          variant={needingReview.length > 0 ? 'filled' : 'outlined'}
-          color="info"
         />
       </Box>
     </Box>

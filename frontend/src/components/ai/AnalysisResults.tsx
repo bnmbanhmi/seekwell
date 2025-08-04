@@ -12,31 +12,22 @@ import {
   ListItemText,
   LinearProgress,
   Paper,
-  Divider,
-  Button,
   Grid,
 } from '@mui/material';
 import {
   Warning,
   CheckCircle,
   Info,
-  LocalHospital,
-  Schedule,
   TrendingUp,
-  Visibility,
 } from '@mui/icons-material';
 import { AIAnalysisResult, RISK_LEVEL_COLORS } from '../../types/AIAnalysisTypes';
 
 interface AnalysisResultsProps {
   result: AIAnalysisResult;
-  onScheduleFollowUp?: (result: AIAnalysisResult) => void;
-  onRequestReview?: (result: AIAnalysisResult) => void;
 }
 
 export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   result,
-  onScheduleFollowUp,
-  onRequestReview,
 }) => {
   if (!result.success) {
     return (
@@ -49,7 +40,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
 
   const topPrediction = result.top_prediction || result.predictions[0];
   const riskLevel = result.risk_assessment.risk_level;
-  const confidence = result.risk_assessment.confidence_score;
 
   const getRiskColor = (risk: string) => {
     return RISK_LEVEL_COLORS[risk as keyof typeof RISK_LEVEL_COLORS] || '#9e9e9e';
@@ -73,13 +63,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const getUrgencyMessage = (risk: string) => {
     switch (risk) {
       case 'URGENT':
-        return 'Immediate medical attention required';
+        return 'Immediate attention required - A local health cadre will contact you';
       case 'HIGH':
-        return 'Schedule dermatologist appointment soon';
+        return 'High risk detected - Please monitor closely';
       case 'MEDIUM':
-        return 'Monitor and consider professional consultation';
+        return 'Medium risk - Continue monitoring';
       case 'LOW':
-        return 'Routine monitoring recommended';
+        return 'Low risk - Routine monitoring recommended';
       default:
         return 'Professional review recommended';
     }
@@ -121,7 +111,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   </Typography>
                   <Chip 
                     label={`${topPrediction.percentage.toFixed(1)}%`} 
-                    color={confidence > 0.7 ? 'success' : confidence > 0.5 ? 'warning' : 'error'}
+                    color={topPrediction.percentage > 70 ? 'success' : topPrediction.percentage > 50 ? 'warning' : 'error'}
                     variant="filled"
                   />
                 </Box>
@@ -130,9 +120,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   value={topPrediction.percentage} 
                   sx={{ height: 8, borderRadius: 4 }}
                 />
-                <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-                  Confidence: {result.risk_assessment.confidence_level}
-                </Typography>
               </Paper>
 
               {/* All Predictions */}
@@ -162,9 +149,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           {/* Recommendations */}
           <Card elevation={3}>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LocalHospital color="primary" />
-                Medical Recommendations
+              <Typography variant="h6" gutterBottom>
+                Recommendations
               </Typography>
               
               <List>
@@ -178,101 +164,44 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 ))}
               </List>
 
-              {/* Follow-up Information */}
-              {result.workflow && (
-                <Box sx={{ mt: 2, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Next Steps:
+              {/* Next Steps Information */}
+              {riskLevel === 'URGENT' && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  <Typography variant="body2" fontWeight="bold">
+                    URGENT: A local health cadre will contact you about next steps and may arrange a doctor consultation if needed.
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    • Follow-up recommended in {result.workflow.estimated_follow_up_days} days
+                </Alert>
+              )}
+
+              {riskLevel === 'HIGH' && (
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  <Typography variant="body2">
+                    HIGH RISK: Please monitor this area closely and contact a healthcare provider if any changes occur.
                   </Typography>
-                  {result.workflow.needs_cadre_review && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      • Local health cadre review requested
-                    </Typography>
-                  )}
-                  {result.workflow.needs_doctor_review && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      • Doctor consultation recommended
-                    </Typography>
-                  )}
-                </Box>
+                </Alert>
               )}
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Action Panel */}
+        {/* Info Panel */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={2}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Actions
+                Analysis Details
               </Typography>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {result.risk_assessment.needs_urgent_attention && (
-                  <Alert severity="error">
-                    <Typography variant="body2" fontWeight="bold">
-                      URGENT: Contact medical provider immediately
-                    </Typography>
-                  </Alert>
-                )}
-
-                {/* High-Risk Consultation Button for Urgent/High cases */}
-                {(riskLevel === 'URGENT' || riskLevel === 'HIGH') && (
-                  <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<LocalHospital />}
-                    onClick={() => onScheduleFollowUp?.(result)}
-                    fullWidth
-                    sx={{ fontWeight: 'bold' }}
-                  >
-                    {riskLevel === 'URGENT' ? 'Book urgent consultation now' : 'Book priority consultation'}
-                  </Button>
-                )}
-
-                {result.risk_assessment.needs_professional_review && (
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    startIcon={<Visibility />}
-                    onClick={() => onRequestReview?.(result)}
-                    fullWidth
-                  >
-                    Request Professional Review
-                  </Button>
-                )}
-
-                {/* Regular follow-up for Medium/Low risk */}
-                {(riskLevel === 'MEDIUM' || riskLevel === 'LOW') && (
-                  <Button
-                    variant="outlined"
-                    startIcon={<Schedule />}
-                    onClick={() => onScheduleFollowUp?.(result)}
-                    fullWidth
-                  >
-                    Schedule Follow-up
-                  </Button>
-                )}
-
-                <Divider />
-
-                {/* Analysis Metadata */}
                 <Box>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    Analysis Details:
+                  <Typography variant="body2">
+                    <strong>Analysis Date:</strong> {new Date(result.analysis?.analysis_timestamp || Date.now()).toLocaleString()}
                   </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
+                  <Typography variant="body2">
                     <strong>Body Region:</strong> {result.analysis?.body_region || 'Not specified'}
                   </Typography>
                   <Typography variant="body2">
-                    <strong>Analysis Time:</strong> {new Date(result.analysis?.analysis_timestamp || Date.now()).toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Patient ID:</strong> {result.patient_id || 'N/A'}
+                    <strong>Confidence:</strong> {result.risk_assessment.confidence_level || 'N/A'}
                   </Typography>
                 </Box>
 
