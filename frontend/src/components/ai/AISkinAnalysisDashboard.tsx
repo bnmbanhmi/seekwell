@@ -31,17 +31,19 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 
 interface AISkinAnalysisDashboardProps {
   patientId: number;
+  initialTab?: number;
 }
 
 export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = ({
   patientId,
+  initialTab = 0,
 }) => {
   const [currentResult, setCurrentResult] = useState<AIAnalysisResult | null>(null);
   const [analysisHistory, setAnalysisHistory] = useState<AIAnalysisResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(initialTab);
 
   // Load analysis history on component mount
   useEffect(() => {
