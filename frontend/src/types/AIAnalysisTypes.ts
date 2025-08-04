@@ -23,10 +23,21 @@ export interface WorkflowInfo {
   estimated_follow_up_days: number;
 }
 
+export interface NoteEntry {
+  id: string;
+  content: string;
+  author: string;
+  author_role: 'PATIENT' | 'LOCAL_CADRE' | 'DOCTOR' | 'ADMIN';
+  timestamp: string;
+  author_id?: number;
+}
+
 export interface AnalysisMetadata {
   predicted_class: string;
   confidence: number;
   body_region?: string;
+  notes?: string; // Original patient notes for backward compatibility
+  note_history?: NoteEntry[]; // New structured notes history
   analysis_timestamp: string;
 }
 

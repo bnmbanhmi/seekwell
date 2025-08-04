@@ -295,3 +295,210 @@
     align-self: center;
   }
 }
+
+/* New styles for full classifications and patient notes */
+.fullClassifications {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.classificationsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.classificationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.classLabel {
+  font-weight: 500;
+  color: #495057;
+}
+
+.classPercentage {
+  font-weight: 600;
+  color: #007bff;
+}
+
+.patientNotes {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #fff3cd;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.notesContent {
+  margin: 8px 0 0 0;
+  font-style: italic;
+  color: #495057;
+  line-height: 1.5;
+}
+
+.historyClassifications {
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.classificationsPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.classificationPreview {
+  padding: 4px 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.moreClassifications {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.historyNotes {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #fff3cd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.historyNotes p {
+  margin: 0;
+  color: #495057;
+}
+
+/* Enhanced Notes History Styles */
+.notesHistory {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.noteEntry {
+  margin: 10px 0;
+  padding: 12px;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.noteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.noteAuthor {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.noteTimestamp {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.noteContent {
+  color: #495057;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+/* Add Note Section */
+.addNoteSection {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #e7f3ff;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.noteTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin: 10px 0;
+}
+
+.noteTextarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.addNoteButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.addNoteButton:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.addNoteButton:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Note Preview Styles */
+.notePreview {
+  display: flex;
+  gap: 8px;
+  margin: 5px 0;
+  font-size: 0.8rem;
+}
+
+.noteAuthorSmall {
+  font-weight: 600;
+  color: #007bff;
+  flex-shrink: 0;
+}
+
+.noteContentSmall {
+  color: #495057;
+  flex: 1;
+}
+
+.moreNotes {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-style: italic;
+  margin: 5px 0 0 0;
+}

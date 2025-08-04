@@ -98,7 +98,24 @@
 
 .caseActions {
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
+}
+
+.notesButton {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notesButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .viewButton {
@@ -143,11 +160,17 @@
   .casesList {
     grid-template-columns: 1fr;
   }
-  
-  .caseHeader {
+
+  .caseActions {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .notesButton,
+  .viewButton {
+    width: 100%;
+    padding: 10px 16px;
   }
 }
   

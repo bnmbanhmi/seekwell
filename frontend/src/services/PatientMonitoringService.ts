@@ -28,6 +28,23 @@ export interface AnalysisResult {
   };
   timestamp: string;
   date: string;
+  // Extended data for full analysis display
+  fullPredictions?: Array<{
+    label: string;
+    confidence: number;
+    percentage: number;
+  }>;
+  patientNotes?: string;
+  noteHistory?: Array<{
+    id: string;
+    content: string;
+    author: string;
+    author_role: string;
+    timestamp: string;
+    author_id?: number;
+  }>;
+  bodyRegion?: string;
+  analysisMetadata?: any;
 }
 
 export interface PatientMonitoringData {
@@ -148,11 +165,17 @@ class PatientMonitoringService {
             disease: topPrediction?.label || 'Unknown',
             confidence: topPrediction?.confidence || topPrediction?.percentage || 0,
             riskLevel: mappedRiskLevel,
-            recommendations: analysis.risk_assessment?.recommendations || [],
+            recommendations: analysis.recommendations || [],
             description: topPrediction?.label || 'No description available'
           },
           timestamp: analysis.analysis?.analysis_timestamp || analysis.timestamp || new Date().toISOString(),
-          date: analysis.analysis?.analysis_timestamp || analysis.timestamp || new Date().toISOString()
+          date: analysis.analysis?.analysis_timestamp || analysis.timestamp || new Date().toISOString(),
+          // Extended data for full analysis display
+          fullPredictions: analysis.predictions || [],
+          patientNotes: analysis.analysis?.notes || analysis.notes || analysis.patient_notes,
+          noteHistory: this.buildNoteHistory(analysis),
+          bodyRegion: analysis.analysis?.body_region || analysis.body_region,
+          analysisMetadata: analysis
         };
       });
     } catch (error) {
@@ -255,6 +278,134 @@ class PatientMonitoringService {
     } catch (error) {
       console.error('Error getting patients with analysis data:', error);
       return [];
+    }
+  }
+
+  /**
+   * Build note history from analysis data, including original patient notes
+   */
+  private buildNoteHistory(analysis: any): Array<{
+    id: string;
+    content: string;
+    author: string;
+    author_role: string;
+    timestamp: string;
+    author_id?: number;
+  }> {
+    const noteHistory: Array<{
+      id: string;
+      content: string;
+      author: string;
+      author_role: string;
+      timestamp: string;
+      author_id?: number;
+    }> = [];
+
+    // Add original patient notes if they exist
+    const originalNotes = analysis.analysis?.notes || analysis.notes || analysis.patient_notes;
+    if (originalNotes) {
+      noteHistory.push({
+        id: `original_${analysis.id || Date.now()}`,
+        content: originalNotes,
+        author: 'Patient',
+        author_role: 'PATIENT',
+        timestamp: analysis.analysis?.analysis_timestamp || analysis.timestamp || new Date().toISOString(),
+        author_id: parseInt(analysis.patient_id || analysis.userId || '0')
+      });
+    }
+
+    // Add structured note history if it exists
+    if (analysis.analysis?.note_history && Array.isArray(analysis.analysis.note_history)) {
+      noteHistory.push(...analysis.analysis.note_history);
+    }
+
+    // Sort by timestamp (oldest first)
+    return noteHistory.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  }
+
+  /**
+   * Add a new note to an analysis
+   */
+  async addNoteToAnalysis(
+    patientId: string, 
+    analysisId: string, 
+    noteContent: string
+  ): Promise<boolean> {
+    try {
+      // Get current user info
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get existing analysis history
+      const history = this.getPatientAnalysisHistory(patientId);
+      const analysisIndex = history.findIndex(a => a.id === analysisId);
+      
+      if (analysisIndex === -1) {
+        throw new Error('Analysis not found');
+      }
+
+      // Create new note entry
+      const newNote = {
+        id: `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        content: noteContent.trim(),
+        author: currentUser.name,
+        author_role: currentUser.role,
+        timestamp: new Date().toISOString(),
+        author_id: currentUser.id
+      };
+
+      // Get the analysis metadata
+      const analysis = history[analysisIndex].analysisMetadata;
+      
+      // Initialize note_history if it doesn't exist
+      if (!analysis.analysis) {
+        analysis.analysis = {};
+      }
+      if (!analysis.analysis.note_history) {
+        analysis.analysis.note_history = [];
+      }
+
+      // Add the new note
+      analysis.analysis.note_history.push(newNote);
+
+      // Update the analysis in history
+      history[analysisIndex].analysisMetadata = analysis;
+      history[analysisIndex].noteHistory = this.buildNoteHistory(analysis);
+
+      // Save updated history back to localStorage
+      const historyKey = `seekwell_analysis_history_${patientId}`;
+      localStorage.setItem(historyKey, JSON.stringify(history));
+
+      return true;
+    } catch (error) {
+      console.error('Error adding note to analysis:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get current user information from localStorage
+   */
+  private getCurrentUser(): { id: number; name: string; role: string } | null {
+    try {
+      const userStr = localStorage.getItem('user');
+      const role = localStorage.getItem('role');
+      const userId = localStorage.getItem('user_id');
+
+      if (userStr && role) {
+        const user = JSON.parse(userStr);
+        return {
+          id: parseInt(userId || user.id || '0'),
+          name: user.full_name || user.username || 'Unknown User',
+          role: role
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return null;
     }
   }
 }

@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import PatientMonitoringService, { PatientMonitoringData } from '../../services/PatientMonitoringService';
+import PatientMonitoringService, { AnalysisResult, PatientMonitoringData } from '../../services/PatientMonitoringService';
 import styles from './PatientDetail.module.css';
 
 const PatientDetail: React.FC = () => {
   const [patientData, setPatientData] = useState<PatientMonitoringData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisResult | null>(null);
+  const [newNote, setNewNote] = useState('');
+  const [addingNote, setAddingNote] = useState(false);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  
   const { patientId } = useParams<{ patientId: string }>();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Get current user role for note permissions
+    const role = localStorage.getItem('role');
+    setCurrentUserRole(role);
+
     const fetchPatientData = async () => {
       if (!patientId) {
         setError('Patient ID is required');
@@ -20,16 +29,18 @@ const PatientDetail: React.FC = () => {
 
       try {
         setLoading(true);
+        setError(null);
+        
         const data = await PatientMonitoringService.getPatientMonitoringData(parseInt(patientId));
         
-        if (data) {
-          setPatientData(data);
+        if (!data) {
+          setError('Patient not found or no data available');
         } else {
-          setError('Patient not found');
+          setPatientData(data);
         }
       } catch (err) {
         console.error('Error fetching patient data:', err);
-        setError('Failed to load patient data. Please try again.');
+        setError('Failed to load patient data');
       } finally {
         setLoading(false);
       }
@@ -37,6 +48,54 @@ const PatientDetail: React.FC = () => {
 
     fetchPatientData();
   }, [patientId]);
+
+  const handleAddNote = async (analysisId: string) => {
+    if (!newNote.trim() || !patientId) return;
+
+    setAddingNote(true);
+    try {
+      const success = await PatientMonitoringService.addNoteToAnalysis(patientId, analysisId, newNote);
+      
+      if (success) {
+        // Refresh patient data to show the new note
+        const data = await PatientMonitoringService.getPatientMonitoringData(parseInt(patientId));
+        if (data) {
+          setPatientData(data);
+          // Update selected analysis if it's the one we added a note to
+          if (selectedAnalysis && selectedAnalysis.id === analysisId) {
+            const updatedAnalysis = data.analysisHistory.find(a => a.id === analysisId);
+            if (updatedAnalysis) {
+              setSelectedAnalysis(updatedAnalysis);
+            }
+          }
+        }
+        setNewNote('');
+      } else {
+        alert('Failed to add note. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error adding note:', error);
+      alert('Error adding note. Please try again.');
+    } finally {
+      setAddingNote(false);
+    }
+  };
+
+  const canAddNotes = currentUserRole && ['LOCAL_CADRE', 'DOCTOR', 'ADMIN'].includes(currentUserRole);
+
+  const formatDateTime = (timestamp: string) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    const roleNames: { [key: string]: string } = {
+      'PATIENT': 'Patient',
+      'LOCAL_CADRE': 'Health Cadre',
+      'DOCTOR': 'Doctor',
+      'ADMIN': 'Administrator'
+    };
+    return roleNames[role] || role;
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -137,8 +196,71 @@ const PatientDetail: React.FC = () => {
                         {analysis.result?.riskLevel || 'Low'} Risk
                       </span>
                     </div>
-                    <p><strong>Confidence:</strong> {analysis.result?.confidence ? (analysis.result.confidence * 100).toFixed(1) : '0'}%</p>
+                    <p><strong>Top Prediction Confidence:</strong> {analysis.result?.confidence ? (analysis.result.confidence * 100).toFixed(1) : '0'}%</p>
+                    
+                    {/* Full Classification Results */}
+                    {analysis.fullPredictions && analysis.fullPredictions.length > 0 && (
+                      <div className={styles.fullClassifications}>
+                        <p><strong>Full Classification Results:</strong></p>
+                        <div className={styles.classificationsGrid}>
+                          {analysis.fullPredictions.map((prediction, idx) => (
+                            <div key={idx} className={styles.classificationItem}>
+                              <span className={styles.classLabel}>{prediction.label.replace(/^[A-Z]{3,4}\s*\-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}:</span>
+                              <span className={styles.classPercentage}>{prediction.percentage ? prediction.percentage.toFixed(2) : (prediction.confidence * 100).toFixed(2)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
                     <p><strong>Date:</strong> {formatDate(analysis.date)}</p>
+                    {analysis.bodyRegion && (
+                      <p><strong>Body Region:</strong> {analysis.bodyRegion}</p>
+                    )}
+                    
+                    {/* Enhanced Notes History */}
+                    {analysis.noteHistory && analysis.noteHistory.length > 0 && (
+                      <div className={styles.notesHistory}>
+                        <h5><strong>📝 Notes History:</strong></h5>
+                        {analysis.noteHistory.map((note, noteIndex) => (
+                          <div key={note.id} className={styles.noteEntry}>
+                            <div className={styles.noteHeader}>
+                              <span className={styles.noteAuthor}>
+                                {getRoleDisplayName(note.author_role)}: {note.author}
+                              </span>
+                              <span className={styles.noteTimestamp}>
+                                {formatDateTime(note.timestamp)}
+                              </span>
+                            </div>
+                            <div className={styles.noteContent}>
+                              {note.content}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add Note Section for Officials/Doctors */}
+                    {canAddNotes && (
+                      <div className={styles.addNoteSection}>
+                        <h5><strong>✍️ Add Professional Note:</strong></h5>
+                        <textarea
+                          className={styles.noteTextarea}
+                          value={newNote}
+                          onChange={(e) => setNewNote(e.target.value)}
+                          placeholder={`Add your ${getRoleDisplayName(currentUserRole || '')} notes here...`}
+                          rows={3}
+                        />
+                        <button
+                          className={styles.addNoteButton}
+                          onClick={() => handleAddNote(analysis.id)}
+                          disabled={!newNote.trim() || addingNote}
+                        >
+                          {addingNote ? 'Adding...' : 'Add Note'}
+                        </button>
+                      </div>
+                    )}
+                    
                     <p><strong>Description:</strong> {analysis.result?.description || 'No description available'}</p>
                     
                     {analysis.result?.recommendations && analysis.result.recommendations.length > 0 && (
@@ -180,6 +302,43 @@ const PatientDetail: React.FC = () => {
                     </div>
                     <p>{analysis.result?.confidence ? (analysis.result.confidence * 100).toFixed(1) : '0'}% confidence</p>
                     <p>{formatDate(analysis.date)}</p>
+                    
+                    {/* Full Classification Results Preview */}
+                    {analysis.fullPredictions && analysis.fullPredictions.length > 0 && (
+                      <div className={styles.historyClassifications}>
+                        <p><strong>All Classifications:</strong></p>
+                        <div className={styles.classificationsPreview}>
+                          {analysis.fullPredictions.slice(0, 3).map((prediction, idx) => (
+                            <span key={idx} className={styles.classificationPreview}>
+                              {prediction.label.replace(/^[A-Z]{3,4}\s*\-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}: {prediction.percentage ? prediction.percentage.toFixed(1) : (prediction.confidence * 100).toFixed(1)}%
+                            </span>
+                          ))}
+                          {analysis.fullPredictions.length > 3 && (
+                            <span className={styles.moreClassifications}>+{analysis.fullPredictions.length - 3} more</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Notes Preview */}
+                    {analysis.noteHistory && analysis.noteHistory.length > 0 && (
+                      <div className={styles.historyNotes}>
+                        <p><strong>Notes ({analysis.noteHistory.length}):</strong></p>
+                        {analysis.noteHistory.slice(-2).map((note) => (
+                          <div key={note.id} className={styles.notePreview}>
+                            <span className={styles.noteAuthorSmall}>
+                              {getRoleDisplayName(note.author_role)}:
+                            </span>
+                            <span className={styles.noteContentSmall}>
+                              {note.content.length > 60 ? `${note.content.substring(0, 60)}...` : note.content}
+                            </span>
+                          </div>
+                        ))}
+                        {analysis.noteHistory.length > 2 && (
+                          <p className={styles.moreNotes}>+ {analysis.noteHistory.length - 2} more notes</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

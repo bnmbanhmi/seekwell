@@ -250,41 +250,58 @@ class HuggingFaceAIService {
 
       console.log('📊 Raw AI Result:', resultText);
 
-      // Parse the result text to extract classification information
-      const { predictedClass, confidence } = this.parseResultText(resultText);
+      // Parse the result text to extract all classification information
+      const { allPredictions, topPrediction } = this.parseResultTextFull(resultText);
       
-      // Create prediction result
-      const prediction = {
-        class_id: this.getClassId(predictedClass),
-        label: predictedClass,
-        confidence: confidence,
-        percentage: confidence * 100
+      // Generate all prediction objects
+      const predictions = allPredictions.map((pred: { class: string; confidence: number; shortName: string }) => ({
+        class_id: this.getClassId(pred.class),
+        label: pred.class,
+        confidence: pred.confidence,
+        percentage: pred.confidence * 100
+      }));
+
+      // Use the top prediction for analysis
+      const topPredictionObj = {
+        class_id: this.getClassId(topPrediction.class),
+        label: topPrediction.class,
+        confidence: topPrediction.confidence,
+        percentage: topPrediction.confidence * 100
       };
 
       // Determine risk level based on predicted class
-      const riskLevel = this.getRiskLevel(predictedClass);
+      const riskLevel = this.getRiskLevel(topPrediction.class);
       
       // Generate recommendations
-      const recommendations = this.getRecommendations(predictedClass, riskLevel);
+      const recommendations = this.getRecommendations(topPrediction.class, riskLevel);
 
       return {
         success: true,
-        predictions: [prediction],
-        top_prediction: prediction,
+        predictions: predictions, // All predictions with percentages
+        top_prediction: topPredictionObj,
         analysis: {
-          predicted_class: predictedClass,
-          confidence: confidence,
+          predicted_class: topPrediction.class,
+          confidence: topPrediction.confidence,
           body_region: analysisData.body_region,
+          notes: analysisData.notes,
+          note_history: analysisData.notes ? [{
+            id: `initial_${Date.now()}`,
+            content: analysisData.notes,
+            author: 'Patient',
+            author_role: 'PATIENT' as const,
+            timestamp: new Date().toISOString(),
+            author_id: HuggingFaceAIService.getCurrentUserId() || undefined
+          }] : [],
           analysis_timestamp: new Date().toISOString()
         },
         risk_assessment: {
           risk_level: riskLevel,
-          confidence_level: this.getConfidenceLevel(confidence),
+          confidence_level: this.getConfidenceLevel(topPrediction.confidence),
           needs_professional_review: this.needsProfessionalReview(riskLevel),
           needs_urgent_attention: riskLevel === 'URGENT',
           base_risk: riskLevel,
-          confidence_score: confidence,
-          predicted_class: predictedClass
+          confidence_score: topPrediction.confidence,
+          predicted_class: topPrediction.class
         },
         recommendations: recommendations,
         workflow: {
@@ -300,6 +317,89 @@ class HuggingFaceAIService {
       console.error('Error parsing API response:', error);
       throw new Error('Failed to parse AI analysis results');
     }
+  }
+
+  /**
+   * Parse the result text to extract all predicted classes and return both all predictions and top prediction
+   */
+  private parseResultTextFull(resultText: string): { 
+    allPredictions: { class: string; confidence: number; shortName: string }[], 
+    topPrediction: { class: string; confidence: number; shortName: string }
+  } {
+    // Skin lesion class mappings
+    const skinLesionClasses = {
+      'ACK': 'Actinic keratoses',
+      'BCC': 'Basal cell carcinoma', 
+      'MEL': 'Melanoma',
+      'NEV': 'Nevus/Mole',
+      'SCC': 'Squamous cell carcinoma',
+      'SEK': 'Seborrheic keratosis'
+    };
+    
+    console.log('🔍 Parsing result text for all predictions:', resultText);
+    
+    // Extract all classifications with their confidence scores
+    const classifications: { class: string; confidence: number; shortName: string }[] = [];
+    
+    // Parse each line for pattern like "ACK: 3.61%"
+    const lines = resultText.split('\n');
+    for (const line of lines) {
+      const match = line.match(/([A-Z]{3,4}):\s*(\d+\.?\d*)%/);
+      if (match) {
+        const shortName = match[1];
+        const confidence = parseFloat(match[2]) / 100;
+        const longName = skinLesionClasses[shortName as keyof typeof skinLesionClasses];
+        
+        if (longName) {
+          classifications.push({
+            class: longName,
+            confidence: confidence,
+            shortName: shortName
+          });
+          console.log(`📊 Found classification: ${shortName} (${longName}) - ${(confidence * 100).toFixed(2)}%`);
+        }
+      }
+    }
+    
+    // Find the classification with the highest confidence
+    if (classifications.length > 0) {
+      const topClassification = classifications.reduce((prev, current) => 
+        current.confidence > prev.confidence ? current : prev
+      );
+      
+      console.log(`🎯 Top prediction: ${topClassification.shortName} (${topClassification.class}) - ${(topClassification.confidence * 100).toFixed(2)}%`);
+      
+      return {
+        allPredictions: classifications,
+        topPrediction: topClassification
+      };
+    }
+    
+    // Fallback: if no structured data found, use the old logic
+    console.warn('⚠️ No structured classifications found, using fallback parsing');
+    let predictedClass = 'Unknown';
+    let confidence = 0.5;
+
+    // Check for class names (both short and long forms)
+    for (const [shortName, longName] of Object.entries(skinLesionClasses)) {
+      if (resultText.toLowerCase().includes(shortName.toLowerCase()) || 
+          resultText.toLowerCase().includes(longName.toLowerCase())) {
+        predictedClass = longName;
+        break;
+      }
+    }
+
+    // Try to extract confidence percentage
+    const confidenceMatch = resultText.match(/(\d+\.?\d*)%/);
+    if (confidenceMatch) {
+      confidence = parseFloat(confidenceMatch[1]) / 100;
+    }
+
+    const fallbackPrediction = { class: predictedClass, confidence, shortName: 'UNK' };
+    return { 
+      allPredictions: [fallbackPrediction], 
+      topPrediction: fallbackPrediction 
+    };
   }
 
   /**

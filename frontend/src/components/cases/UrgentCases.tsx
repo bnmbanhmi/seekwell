@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OfficialAnalyticsService, { UrgentCase } from '../../services/OfficialAnalyticsService';
+import UrgentCaseNotes from './UrgentCaseNotes';
 import styles from './UrgentCases.module.css';
 
 const UrgentCases = () => {
   const [cases, setCases] = useState<UrgentCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedCase, setSelectedCase] = useState<UrgentCase | null>(null);
+  const [notesModalOpen, setNotesModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +34,17 @@ const UrgentCases = () => {
 
   const handleCaseClick = (patientId: number) => {
     navigate(`/dashboard/patient-monitoring/${patientId}`);
+  };
+
+  const handleNotesClick = (urgentCase: UrgentCase, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedCase(urgentCase);
+    setNotesModalOpen(true);
+  };
+
+  const closeNotesModal = () => {
+    setNotesModalOpen(false);
+    setSelectedCase(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -86,6 +100,12 @@ const UrgentCases = () => {
 
               <div className={styles.caseActions}>
                 <button 
+                  className={styles.notesButton}
+                  onClick={(e) => handleNotesClick(urgentCase, e)}
+                >
+                  View/Add Notes
+                </button>
+                <button 
                   className={styles.viewButton}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -98,6 +118,15 @@ const UrgentCases = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Notes Modal */}
+      {selectedCase && (
+        <UrgentCaseNotes 
+          urgentCase={selectedCase}
+          isOpen={notesModalOpen}
+          onClose={closeNotesModal}
+        />
       )}
     </div>
   );
