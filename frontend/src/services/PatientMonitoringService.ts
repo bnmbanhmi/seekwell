@@ -42,6 +42,7 @@ export interface AnalysisResult {
     author_role: string;
     timestamp: string;
     author_id?: number;
+    edited_at?: string;
   }>;
   bodyRegion?: string;
   analysisMetadata?: any;
@@ -381,6 +382,130 @@ class PatientMonitoringService {
       return true;
     } catch (error) {
       console.error('Error adding note to analysis:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Edit an existing note in an analysis
+   */
+  async editNoteInAnalysis(
+    patientId: string, 
+    analysisId: string, 
+    noteId: string,
+    newContent: string
+  ): Promise<boolean> {
+    try {
+      // Get current user info
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get existing analysis history
+      const history = this.getPatientAnalysisHistory(patientId);
+      const analysisIndex = history.findIndex(a => a.id === analysisId);
+      
+      if (analysisIndex === -1) {
+        throw new Error('Analysis not found');
+      }
+
+      // Get the analysis metadata
+      const analysis = history[analysisIndex].analysisMetadata;
+      
+      if (!analysis.analysis?.note_history) {
+        throw new Error('Note history not found');
+      }
+
+      // Find the note to edit
+      const noteIndex = analysis.analysis.note_history.findIndex((note: any) => note.id === noteId);
+      if (noteIndex === -1) {
+        throw new Error('Note not found');
+      }
+
+      const noteToEdit = analysis.analysis.note_history[noteIndex];
+
+      // Check if current user can edit this note (only the author can edit)
+      if (noteToEdit.author_id !== currentUser.id && currentUser.role !== 'ADMIN') {
+        throw new Error('You can only edit your own notes');
+      }
+
+      // Update the note content and add edit timestamp
+      noteToEdit.content = newContent.trim();
+      noteToEdit.edited_at = new Date().toISOString();
+
+      // Update the analysis in history
+      history[analysisIndex].analysisMetadata = analysis;
+      history[analysisIndex].noteHistory = this.buildNoteHistory(analysis);
+
+      // Save updated history back to localStorage
+      const historyKey = `seekwell_analysis_history_${patientId}`;
+      localStorage.setItem(historyKey, JSON.stringify(history));
+
+      return true;
+    } catch (error) {
+      console.error('Error editing note:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Delete a note from an analysis
+   */
+  async deleteNoteFromAnalysis(
+    patientId: string, 
+    analysisId: string, 
+    noteId: string
+  ): Promise<boolean> {
+    try {
+      // Get current user info
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get existing analysis history
+      const history = this.getPatientAnalysisHistory(patientId);
+      const analysisIndex = history.findIndex(a => a.id === analysisId);
+      
+      if (analysisIndex === -1) {
+        throw new Error('Analysis not found');
+      }
+
+      // Get the analysis metadata
+      const analysis = history[analysisIndex].analysisMetadata;
+      
+      if (!analysis.analysis?.note_history) {
+        throw new Error('Note history not found');
+      }
+
+      // Find the note to delete
+      const noteIndex = analysis.analysis.note_history.findIndex((note: any) => note.id === noteId);
+      if (noteIndex === -1) {
+        throw new Error('Note not found');
+      }
+
+      const noteToDelete = analysis.analysis.note_history[noteIndex];
+
+      // Check if current user can delete this note (only the author or admin can delete)
+      if (noteToDelete.author_id !== currentUser.id && currentUser.role !== 'ADMIN') {
+        throw new Error('You can only delete your own notes');
+      }
+
+      // Remove the note
+      analysis.analysis.note_history.splice(noteIndex, 1);
+
+      // Update the analysis in history
+      history[analysisIndex].analysisMetadata = analysis;
+      history[analysisIndex].noteHistory = this.buildNoteHistory(analysis);
+
+      // Save updated history back to localStorage
+      const historyKey = `seekwell_analysis_history_${patientId}`;
+      localStorage.setItem(historyKey, JSON.stringify(history));
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting note:', error);
       return false;
     }
   }

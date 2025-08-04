@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UrgentCase } from '../../services/OfficialAnalyticsService';
 import PatientMonitoringService from '../../services/PatientMonitoringService';
 import styles from './UrgentCaseNotes.module.css';
@@ -10,6 +10,7 @@ interface NoteEntry {
   author_role: string;
   timestamp: string;
   author_id?: number;
+  edited_at?: string;
 }
 
 interface UrgentCaseNotesProps {
@@ -24,19 +25,13 @@ const UrgentCaseNotes: React.FC<UrgentCaseNotesProps> = ({ urgentCase, isOpen, o
   const [loading, setLoading] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  
+  // Note editing states
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteContent, setEditingNoteContent] = useState('');
+  const [editingNote, setEditingNote] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Get current user role for note permissions
-      const role = localStorage.getItem('role');
-      setCurrentUserRole(role);
-      
-      // Load existing notes for this urgent case
-      loadUrgentCaseNotes();
-    }
-  }, [isOpen, urgentCase]);
-
-  const loadUrgentCaseNotes = async () => {
+  const loadUrgentCaseNotes = useCallback(async () => {
     setLoading(true);
     try {
       // Get all notes for this patient
@@ -59,7 +54,18 @@ const UrgentCaseNotes: React.FC<UrgentCaseNotesProps> = ({ urgentCase, isOpen, o
     } finally {
       setLoading(false);
     }
-  };
+  }, [urgentCase.patientId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Get current user role for note permissions
+      const role = localStorage.getItem('role');
+      setCurrentUserRole(role);
+      
+      // Load existing notes for this urgent case
+      loadUrgentCaseNotes();
+    }
+  }, [isOpen, loadUrgentCaseNotes]);
 
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
@@ -91,8 +97,93 @@ const UrgentCaseNotes: React.FC<UrgentCaseNotesProps> = ({ urgentCase, isOpen, o
     }
   };
 
+  const handleEditNote = async (noteId: string) => {
+    if (!editingNoteContent.trim()) return;
+    
+    setEditingNote(true);
+    try {
+      const patientData = await PatientMonitoringService.getPatientMonitoringData(urgentCase.patientId);
+      if (patientData && patientData.analysisHistory.length > 0) {
+        // Find the analysis that contains this note
+        let targetAnalysis = null;
+        for (const analysis of patientData.analysisHistory) {
+          if (analysis.noteHistory?.some(note => note.id === noteId)) {
+            targetAnalysis = analysis;
+            break;
+          }
+        }
+        
+        if (targetAnalysis) {
+          const success = await PatientMonitoringService.editNoteInAnalysis(
+            urgentCase.patientId.toString(), 
+            targetAnalysis.id, 
+            noteId, 
+            editingNoteContent
+          );
+          
+          if (success) {
+            await loadUrgentCaseNotes();
+            setEditingNoteId(null);
+            setEditingNoteContent('');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error editing note:', error);
+    } finally {
+      setEditingNote(false);
+    }
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    
+    try {
+      const patientData = await PatientMonitoringService.getPatientMonitoringData(urgentCase.patientId);
+      if (patientData && patientData.analysisHistory.length > 0) {
+        // Find the analysis that contains this note
+        let targetAnalysis = null;
+        for (const analysis of patientData.analysisHistory) {
+          if (analysis.noteHistory?.some(note => note.id === noteId)) {
+            targetAnalysis = analysis;
+            break;
+          }
+        }
+        
+        if (targetAnalysis) {
+          const success = await PatientMonitoringService.deleteNoteFromAnalysis(
+            urgentCase.patientId.toString(), 
+            targetAnalysis.id, 
+            noteId
+          );
+          
+          if (success) {
+            await loadUrgentCaseNotes();
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  };
+
+  const startEditingNote = (noteId: string, currentContent: string) => {
+    setEditingNoteId(noteId);
+    setEditingNoteContent(currentContent);
+  };
+
+  const cancelEditingNote = () => {
+    setEditingNoteId(null);
+    setEditingNoteContent('');
+  };
+
+  const canEditNote = (note: NoteEntry) => {
+    const currentUserId = parseInt(localStorage.getItem('user_id') || '0');
+    return currentUserRole === 'ADMIN' || note.author_id === currentUserId;
+  };
+
   const canAddNote = () => {
-    return currentUserRole === 'LOCAL_CADRE' || 
+    return currentUserRole === 'OFFICIAL' || 
            currentUserRole === 'DOCTOR' || 
            currentUserRole === 'ADMIN';
   };
@@ -109,7 +200,7 @@ const UrgentCaseNotes: React.FC<UrgentCaseNotesProps> = ({ urgentCase, isOpen, o
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case 'LOCAL_CADRE': return 'Local Cadre';
+      case 'OFFICIAL': return 'Health Official';
       case 'DOCTOR': return 'Doctor';
       case 'ADMIN': return 'Administrator';
       default: return role;
@@ -181,14 +272,65 @@ const UrgentCaseNotes: React.FC<UrgentCaseNotesProps> = ({ urgentCase, isOpen, o
                         <span className={styles.roleTag}>
                           {getRoleDisplayName(note.author_role)}
                         </span>
+                        {note.edited_at && (
+                          <span className={styles.editedIndicator}> (edited)</span>
+                        )}
                       </div>
-                      <span className={styles.noteTimestamp}>
-                        {formatNoteDate(note.timestamp)}
-                      </span>
+                      <div className={styles.noteActions}>
+                        <span className={styles.noteTimestamp}>
+                          {formatNoteDate(note.timestamp)}
+                        </span>
+                        {canEditNote(note) && note.author_role !== 'PATIENT' && (
+                          <div className={styles.noteButtons}>
+                            <button
+                              className={styles.editNoteBtn}
+                              onClick={() => startEditingNote(note.id, note.content)}
+                              title="Edit note"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className={styles.deleteNoteBtn}
+                              onClick={() => handleDeleteNote(note.id)}
+                              title="Delete note"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className={styles.noteContent}>
-                      {note.content}
-                    </div>
+                    
+                    {editingNoteId === note.id ? (
+                      <div className={styles.editNoteSection}>
+                        <textarea
+                          className={styles.editNoteTextarea}
+                          value={editingNoteContent}
+                          onChange={(e) => setEditingNoteContent(e.target.value)}
+                          rows={3}
+                        />
+                        <div className={styles.editNoteActions}>
+                          <button
+                            className={styles.saveNoteBtn}
+                            onClick={() => handleEditNote(note.id)}
+                            disabled={editingNote}
+                          >
+                            {editingNote ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            className={styles.cancelNoteBtn}
+                            onClick={cancelEditingNote}
+                            disabled={editingNote}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={styles.noteContent}>
+                        {note.content}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

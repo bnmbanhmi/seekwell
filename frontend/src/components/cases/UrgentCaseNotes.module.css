@@ -217,6 +217,43 @@
   gap: 8px;
 }
 
+.noteActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.noteButtons {
+  display: flex;
+  gap: 5px;
+}
+
+.editNoteBtn,
+.deleteNoteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.editNoteBtn:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.deleteNoteBtn:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.editedIndicator {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+  margin-left: 8px;
+}
+
 .noteAuthor {
   display: flex;
   align-items: center;
@@ -250,6 +287,71 @@
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+/* Edit Note Section */
+.editNoteSection {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.editNoteTextarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.editNoteTextarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.editNoteActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.saveNoteBtn,
+.cancelNoteBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveNoteBtn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.saveNoteBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1c7a6b 100%);
+}
+
+.saveNoteBtn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancelNoteBtn {
+  background: #6c757d;
+  color: white;
+}
+
+.cancelNoteBtn:hover:not(:disabled) {
+  background: #5a6268;
 }
 
 /* Responsive Design */

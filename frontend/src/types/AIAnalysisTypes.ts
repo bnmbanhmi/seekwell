@@ -27,7 +27,7 @@ export interface NoteEntry {
   id: string;
   content: string;
   author: string;
-  author_role: 'PATIENT' | 'LOCAL_CADRE' | 'DOCTOR' | 'ADMIN';
+  author_role: 'PATIENT' | 'OFFICIAL' | 'DOCTOR' | 'ADMIN';
   timestamp: string;
   author_id?: number;
 }

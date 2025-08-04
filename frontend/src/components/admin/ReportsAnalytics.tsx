@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import styles from './ReportsAnalytics.module.css';
@@ -51,7 +51,7 @@ const ReportsAnalytics: React.FC = () => {
     fetchReportData();
   }, [selectedPeriod]);
 
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
       
@@ -71,7 +71,7 @@ const ReportsAnalytics: React.FC = () => {
       const patientsResponse = await axios.get(`${BACKEND_URL}/patients/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const patients = patientsResponse.data;
+      // Note: patients data available in patientsResponse.data if needed for future features
 
       // Calculate statistics
       const today = new Date().toISOString().split('T')[0];
@@ -80,7 +80,7 @@ const ReportsAnalytics: React.FC = () => {
         totalUsers: users.length,
         totalPatients: users.filter((user: any) => user.role === 'PATIENT').length,
         totalDoctors: users.filter((user: any) => user.role === 'DOCTOR').length,
-        totalStaff: users.filter((user: any) => user.role === 'LOCAL_CADRE').length,
+        totalStaff: users.filter((user: any) => user.role === 'OFFICIAL').length,
         totalAppointments: appointments.length,
         todayAppointments: appointments.filter((apt: any) => apt.appointment_day === today).length,
         weeklyAppointments: appointments.filter((apt: any) => apt.appointment_day >= oneWeekAgo).length,
@@ -99,10 +99,14 @@ const ReportsAnalytics: React.FC = () => {
       console.error('Error fetching report data:', err);
       setError('Không thể tải dữ liệu báo cáo');
       toast.error('Không thể tải dữ liệu báo cáo');
-    } finally {
+        } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    fetchReportData();
+  }, [fetchReportData]);
 
   const generateTrendData = (data: any[], dateField: string) => {
     const trendMap = new Map<string, number>();

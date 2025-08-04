@@ -321,16 +321,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 ))}
               </TextField>
 
-              <TextField
+                <TextField
                 label="Additional Notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 multiline
                 rows={3}
                 fullWidth
-                placeholder="Any additional information about the lesion (optional)"
+                placeholder="Any additional information about the lesion (optional)&#x000A;Include a link to the image (in Google Drive or other cloud storage, set to anyone can view) for the doctor to review"
                 helperText="Describe any symptoms, changes, or concerns"
-              />
+                />
 
               {/* Analysis Progress */}
               {uploadProgress.status !== 'idle' && (

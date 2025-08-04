@@ -12,6 +12,11 @@ const PatientDetail: React.FC = () => {
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   
+  // Note editing states
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteContent, setEditingNoteContent] = useState('');
+  const [editingNote, setEditingNote] = useState(false);
+  
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
 
@@ -81,7 +86,88 @@ const PatientDetail: React.FC = () => {
     }
   };
 
-  const canAddNotes = currentUserRole && ['LOCAL_CADRE', 'DOCTOR', 'ADMIN'].includes(currentUserRole);
+  const canAddNotes = currentUserRole && ['OFFICIAL', 'DOCTOR', 'ADMIN'].includes(currentUserRole);
+
+  const handleEditNote = async (noteId: string) => {
+    if (!editingNoteContent.trim() || !selectedAnalysis) return;
+    
+    setEditingNote(true);
+    try {
+      const success = await PatientMonitoringService.editNoteInAnalysis(
+        patientId!, 
+        selectedAnalysis.id, 
+        noteId, 
+        editingNoteContent
+      );
+      
+      if (success) {
+        // Refresh patient data to show the updated note
+        const data = await PatientMonitoringService.getPatientMonitoringData(parseInt(patientId!));
+        if (data) {
+          setPatientData(data);
+          const updatedAnalysis = data.analysisHistory.find(a => a.id === selectedAnalysis.id);
+          if (updatedAnalysis) {
+            setSelectedAnalysis(updatedAnalysis);
+          }
+        }
+        setEditingNoteId(null);
+        setEditingNoteContent('');
+      } else {
+        alert('Failed to edit note. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error editing note:', error);
+      alert('Error editing note. Please try again.');
+    } finally {
+      setEditingNote(false);
+    }
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    if (!selectedAnalysis) return;
+    
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    
+    try {
+      const success = await PatientMonitoringService.deleteNoteFromAnalysis(
+        patientId!, 
+        selectedAnalysis.id, 
+        noteId
+      );
+      
+      if (success) {
+        // Refresh patient data to show the updated notes
+        const data = await PatientMonitoringService.getPatientMonitoringData(parseInt(patientId!));
+        if (data) {
+          setPatientData(data);
+          const updatedAnalysis = data.analysisHistory.find(a => a.id === selectedAnalysis.id);
+          if (updatedAnalysis) {
+            setSelectedAnalysis(updatedAnalysis);
+          }
+        }
+      } else {
+        alert('Failed to delete note. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      alert('Error deleting note. Please try again.');
+    }
+  };
+
+  const startEditingNote = (noteId: string, currentContent: string) => {
+    setEditingNoteId(noteId);
+    setEditingNoteContent(currentContent);
+  };
+
+  const cancelEditingNote = () => {
+    setEditingNoteId(null);
+    setEditingNoteContent('');
+  };
+
+  const canEditNote = (note: any) => {
+    const currentUserId = parseInt(localStorage.getItem('user_id') || '0');
+    return currentUserRole === 'ADMIN' || note.author_id === currentUserId;
+  };
 
   const formatDateTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
@@ -90,7 +176,7 @@ const PatientDetail: React.FC = () => {
   const getRoleDisplayName = (role: string) => {
     const roleNames: { [key: string]: string } = {
       'PATIENT': 'Patient',
-      'LOCAL_CADRE': 'Health Cadre',
+      'OFFICIAL': 'Health Official',
       'DOCTOR': 'Doctor',
       'ADMIN': 'Administrator'
     };
@@ -205,7 +291,7 @@ const PatientDetail: React.FC = () => {
                         <div className={styles.classificationsGrid}>
                           {analysis.fullPredictions.map((prediction, idx) => (
                             <div key={idx} className={styles.classificationItem}>
-                              <span className={styles.classLabel}>{prediction.label.replace(/^[A-Z]{3,4}\s*\-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}:</span>
+                              <span className={styles.classLabel}>{prediction.label.replace(/^[A-Z]{3,4}\s*-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}:</span>
                               <span className={styles.classPercentage}>{prediction.percentage ? prediction.percentage.toFixed(2) : (prediction.confidence * 100).toFixed(2)}%</span>
                             </div>
                           ))}
@@ -227,14 +313,65 @@ const PatientDetail: React.FC = () => {
                             <div className={styles.noteHeader}>
                               <span className={styles.noteAuthor}>
                                 {getRoleDisplayName(note.author_role)}: {note.author}
+                                {note.edited_at && (
+                                  <span className={styles.editedIndicator}> (edited)</span>
+                                )}
                               </span>
-                              <span className={styles.noteTimestamp}>
-                                {formatDateTime(note.timestamp)}
-                              </span>
+                              <div className={styles.noteActions}>
+                                <span className={styles.noteTimestamp}>
+                                  {formatDateTime(note.timestamp)}
+                                </span>
+                                {canEditNote(note) && note.author_role !== 'PATIENT' && (
+                                  <div className={styles.noteButtons}>
+                                    <button
+                                      className={styles.editNoteBtn}
+                                      onClick={() => startEditingNote(note.id, note.content)}
+                                      title="Edit note"
+                                    >
+                                      ✏️
+                                    </button>
+                                    <button
+                                      className={styles.deleteNoteBtn}
+                                      onClick={() => handleDeleteNote(note.id)}
+                                      title="Delete note"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div className={styles.noteContent}>
-                              {note.content}
-                            </div>
+                            
+                            {editingNoteId === note.id ? (
+                              <div className={styles.editNoteSection}>
+                                <textarea
+                                  className={styles.editNoteTextarea}
+                                  value={editingNoteContent}
+                                  onChange={(e) => setEditingNoteContent(e.target.value)}
+                                  rows={3}
+                                />
+                                <div className={styles.editNoteActions}>
+                                  <button
+                                    className={styles.saveNoteBtn}
+                                    onClick={() => handleEditNote(note.id)}
+                                    disabled={editingNote}
+                                  >
+                                    {editingNote ? 'Saving...' : 'Save'}
+                                  </button>
+                                  <button
+                                    className={styles.cancelNoteBtn}
+                                    onClick={cancelEditingNote}
+                                    disabled={editingNote}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className={styles.noteContent}>
+                                {note.content}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -310,7 +447,7 @@ const PatientDetail: React.FC = () => {
                         <div className={styles.classificationsPreview}>
                           {analysis.fullPredictions.slice(0, 3).map((prediction, idx) => (
                             <span key={idx} className={styles.classificationPreview}>
-                              {prediction.label.replace(/^[A-Z]{3,4}\s*\-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}: {prediction.percentage ? prediction.percentage.toFixed(1) : (prediction.confidence * 100).toFixed(1)}%
+                              {prediction.label.replace(/^[A-Z]{3,4}\s*-?\s*/, '').replace(/^\(([^)]+)\)/, '$1')}: {prediction.percentage ? prediction.percentage.toFixed(1) : (prediction.confidence * 100).toFixed(1)}%
                             </span>
                           ))}
                           {analysis.fullPredictions.length > 3 && (

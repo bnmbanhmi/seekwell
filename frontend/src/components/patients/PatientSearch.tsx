@@ -472,7 +472,7 @@ const PatientSearch: React.FC = () => {
                             >
                               Medical Records
                             </button>
-                            {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
+                            {(userRole === 'DOCTOR' || userRole === 'OFFICIAL') && (
                               <button
                                 className="create-emr-btn"
                                 onClick={() => navigateToCreateEMR(patient.patient_id)}
@@ -579,7 +579,7 @@ const PatientSearch: React.FC = () => {
                   >
                     📋 View Medical Records
                   </button>
-                  {(userRole === 'DOCTOR' || userRole === 'LOCAL_CADRE') && (
+                  {(userRole === 'DOCTOR' || userRole === 'OFFICIAL') && (
                     <button
                       className="modal-create-emr-btn"
                       onClick={() => {

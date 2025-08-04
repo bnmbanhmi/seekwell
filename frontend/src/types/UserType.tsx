@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type UserRole = 'PATIENT' | 'DOCTOR' | 'LOCAL_CADRE' | 'ADMIN';
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'OFFICIAL' | 'ADMIN';
 
 // export type Props = {
 //   role: UserRole;

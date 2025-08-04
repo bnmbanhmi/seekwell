@@ -12,7 +12,7 @@ interface NavigationItem {
 }
 
 interface MobileNavigationProps {
-  userRole: 'PATIENT' | 'DOCTOR' | 'LOCAL_CADRE' | 'ADMIN';
+  userRole: 'PATIENT' | 'DOCTOR' | 'OFFICIAL' | 'ADMIN';
 }
 
 const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
@@ -26,7 +26,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
         label: 'Dashboard',
         icon: '',
         path: '/dashboard',
-        roles: ['PATIENT', 'DOCTOR', 'LOCAL_CADRE', 'ADMIN']
+        roles: ['PATIENT', 'DOCTOR', 'OFFICIAL', 'ADMIN']
       }
     ];
 
@@ -84,7 +84,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
           path: '/dashboard/reports'
         }
       ],
-      LOCAL_CADRE: [
+      OFFICIAL: [
         {
           id: 'reviews',
           label: 'Reviews',
