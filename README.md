@@ -11,6 +11,3 @@ To provide accessible, early-stage skin disease screening for underserved commun
 
 ## 🚀 Getting Started
 For full setup and development instructions, please see [DEVELOPMENT.md](DEVELOPMENT.md).
-
----
-*This project is being actively refactored to simplify its architecture and focus on its core mission.*
