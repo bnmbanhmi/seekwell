@@ -1,102 +1,152 @@
-# SeekWell - Development Documentation
+# Development Guide
 
-## 🛠️ Core Architecture
+## Architecture
 
-### **Backend**
-- **Framework**: Python 3.11+ with FastAPI
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **Authentication**: JWT tokens with role-based access (Admin, Doctor, Official, Patient)
+**Backend:** FastAPI + PostgreSQL + SQLAlchemy + JWT  
+**Frontend:** React 19 + TypeScript + Material-UI  
+**AI:** HuggingFace Gradio (bnmbanhmi/seekwell-skin-cancer)
 
-### **Frontend**
-- **Framework**: React with TypeScript
-- **Styling**: Material-UI and Custom CSS
+## Setup
 
-### **AI / Machine Learning**
-- **Live Model**: `bnmbanhmi/seekwell-skin-cancer` on HuggingFace Spaces.
-- **Interface**: Gradio
-
----
-
-## 🚀 Getting Started
-
-### **Prerequisites**
-- Python 3.11+
-- Node.js and npm
-- PostgreSQL server running
-
-### **1. Backend Setup**
+### Backend
 ```bash
-# Navigate to the backend directory
 cd backend
-
-# Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
-# Run the database setup script (initial setup)
-# This will create tables and a default admin user.
-python setup_seekwell_database.py
-
-# Start the backend server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python setup_seekwell_database.py  # Creates DB + admin
+uvicorn app.main:app --reload
 ```
 
-### **2. Frontend Setup**
+### Frontend
 ```bash
-# Navigate to the frontend directory
 cd frontend
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm start
+npm install && npm start
 ```
 
----
+**DB:** seekwell_db with tables: users, patients, analysis_results, chat_messages  
+**Admin:** admin@seekwell.com / admin123
 
-## 🤖 AI Model Integration (HuggingFace)
+## Database Schema
 
-Connecting to the HuggingFace/Gradio API requires a specific configuration discovered through trial and error.
+**users:** id, username, email, hashed_password, role (PATIENT/DOCTOR/OFFICIAL/ADMIN), full_name, created_at
 
-### **Key Configuration Parameters**
-- **API Prefix**: The service requires the `/gradio_api` prefix for all API calls.
-- **Function Index**: The correct function to call is at `fn_index: 2`.
-- **Payload Format**: Image data must be sent in a specific `gradio.FileData` format.
+**patients:** user_id FK, date_of_birth, gender, phone_number, address, emr_summary
 
-### **Correct Frontend Payload Example**
-This is how to structure the `POST` request from the frontend to get a prediction.
+**analysis_results:** id, patient_id FK, image_url, ai_prediction JSON, risk_level (LOW/MEDIUM/HIGH/URGENT), doctor_notes, reviewed_by FK, created_at
+
+## API Endpoints
+
+**Auth:** POST /auth/register, POST /auth/token
+
+**Users:** GET /users/me, GET /users (Admin), PUT /users/{id} (Admin)
+
+**Patients:** GET /patients/search (Doctor/Official), GET /patients/{id}, POST /patients/{id}/ai-prediction, GET /patients/{id}/analysis-history
+
+**AI:** POST /ai/predict
+
+**Reports:** GET /reports/urgent-cases (Doctor/Official), GET /reports/analytics (Admin)
+
+## AI Integration (Critical)
+
+HuggingFace Gradio requires specific config:
 
 ```typescript
-// The base URL for the deployed HuggingFace Space
-const HF_SPACE_URL = "https://bnmbanhmi-seekwell-skin-cancer.hf.space";
-
-// Generate a random session hash for the request
+const HF_URL = "https://bnmbanhmi-seekwell-skin-cancer.hf.space";
 const sessionHash = Math.random().toString(36).substring(2);
 
-// Construct the full API endpoint
-const apiEndpoint = `${HF_SPACE_URL}/gradio_api/run/predict`;
+// Step 1: Send prediction
+await fetch(`${HF_URL}/gradio_api/run/predict`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    fn_index: 2,  // CRITICAL
+    session_hash: sessionHash,
+    data: [{
+      path: null,
+      url: `data:${file.type};base64,${base64}`,
+      size: file.size,
+      orig_name: file.name,
+      mime_type: file.type,
+      is_stream: false,
+      meta: { _type: "gradio.FileData" }  // CRITICAL
+    }]
+  })
+});
 
-// Create the payload with the correct structure
-const payload = {
-  fn_index: 2, // Critical: This index points to the correct prediction function
-  session_hash: sessionHash,
-  data: [{
-    // The image data, base64-encoded
-    path: null,
-    url: `data:${file.type};base64,${base64String}`,
-    size: file.size,
-    orig_name: file.name,
-    mime_type: file.type,
-    is_stream: false,
-    meta: { _type: "gradio.FileData" } // Critical: Required by Gradio
-  }],
-};
-
-// After sending the initial request, you must poll the queue endpoint
-// to get the result.
-const pollUrl = `${HF_SPACE_URL}/gradio_api/queue/data?session_hash=${sessionHash}`;
+// Step 2: Poll result
+const pollUrl = `${HF_URL}/gradio_api/queue/data?session_hash=${sessionHash}`;
 ```
+
+**Why:** `/gradio_api` prefix + `fn_index: 2` + `gradio.FileData` format required  
+**Files:** frontend/src/services/HuggingFaceAIService.ts, backend/app/routers/ai_prediction.py
+
+## Auth Flow
+
+1. User → POST /auth/token
+2. Backend validates → JWT (user_id + role)
+3. Frontend stores in localStorage
+4. Requests → Authorization: Bearer <token>
+5. Middleware validates → extracts user
+
+**Roles:** Patient (own data), Doctor/Official (all patients + notes), Admin (full access)
+
+## i18n (In Progress)
+
+**Structure:**
+```
+frontend/src/i18n/
+├── config.ts
+└── locales/
+    ├── en.json
+    └── vi.json
+```
+
+**Usage:**
+```typescript
+import { useTranslation } from 'react-i18next';
+const { t } = useTranslation();
+return <h1>{t('dashboard.title')}</h1>;
+```
+
+## Deployment
+
+**Frontend (Vercel):** Auto-deploy on push, env: REACT_APP_API_URL
+
+**Backend (Railway/Render):** Env: DATABASE_URL, SECRET_KEY, ALGORITHM (HS256), ACCESS_TOKEN_EXPIRE_MINUTES (30)
+
+**DB:** Managed PostgreSQL, run setup script once, enable backups
+
+## Testing
+
+**Backend:** `cd backend && pytest`  
+**Frontend:** `cd frontend && npm test`
+
+**Manual:**
+- Login/logout all roles
+- Image upload & prediction
+- Analysis history
+- Urgent cases
+- User management (Admin)
+- Language switching (post-i18n)
+
+## Common Issues
+
+**npm not found:** Install Node.js  
+**DB connection:** `pg_isready`  
+**AI fails:** Check HF Space online, fn_index: 2, gradio.FileData format  
+**JWT expired:** 30min default, re-login  
+**CORS:** Update main.py for production
+
+## Key Dependencies
+
+**Backend:** fastapi 0.115.12, sqlalchemy 2.0.36, psycopg2-binary 2.9.10, python-jose 3.3.0, passlib 1.7.4
+
+**Frontend:** react 19.1.0, typescript 4.9.5, @mui/material 7.1.1, axios 1.7.9, react-i18next 15.1.3
+
+## Resources
+
+- FastAPI: https://fastapi.tiangolo.com
+- React: https://react.dev
+- Material-UI: https://mui.com
+- HuggingFace: https://huggingface.co/spaces
+- PostgreSQL: https://postgresql.org/docs

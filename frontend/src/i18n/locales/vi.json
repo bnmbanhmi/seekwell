@@ -1,0 +1,383 @@
+{
+  "common": {
+    "welcome": "Chào mừng",
+    "logout": "Đăng xuất",
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "confirm": "Xác nhận",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "refresh": "Làm mới",
+    "view": "Xem",
+    "download": "Tải xuống",
+    "upload": "Tải lên"
+  },
+  "login": {
+    "title": "Chào Mừng Trở Lại",
+    "subtitle": "Đăng nhập để truy cập bảng điều khiển sức khỏe",
+    "username": "Email",
+    "password": "Mật khẩu",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "forgotPassword": "Quên mật khẩu?",
+    "submit": "Đăng Nhập",
+    "noAccount": "Chưa có tài khoản?",
+    "register": "Đăng Ký",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "errors": {
+      "invalidCredentials": "Thông tin đăng nhập không hợp lệ hoặc truy cập bị từ chối",
+      "serverError": "Đăng nhập thất bại. Đã xảy ra lỗi không mong muốn.",
+      "emailRequired": "Vui lòng nhập email",
+      "passwordRequired": "Vui lòng nhập mật khẩu"
+    },
+    "success": "Chào mừng đến với SeekWell! 🎉"
+  },
+  "register": {
+    "title": "Tạo Tài Khoản",
+    "subtitle": "Tham gia SeekWell để bắt đầu hành trình chăm sóc sức khỏe",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "fullName": "Họ và Tên",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận Mật khẩu",
+    "role": "Vai trò",
+    "submit": "Tạo Tài Khoản",
+    "creating": "Đang đăng ký...",
+    "hasAccount": "Đã có tài khoản?",
+    "login": "Đăng nhập ngay",
+    "security": "🔒 Thông tin của bạn được bảo vệ bằng mã hóa SSL",
+    "progress": {
+      "step": "Bước {{current}} / {{total}}"
+    },
+    "steps": {
+      "personal": {
+        "title": "Thông Tin Cá Nhân",
+        "subtitle": "Cho chúng tôi biết về bạn"
+      },
+      "account": {
+        "title": "Tài Khoản & Bảo Mật",
+        "subtitle": "Thiết lập email và mật khẩu bảo mật"
+      },
+      "confirm": {
+        "title": "Xác Nhận Thông Tin",
+        "subtitle": "Xem lại thông tin trước khi đăng ký"
+      }
+    },
+    "placeholders": {
+      "fullName": "Nguyễn Văn A",
+      "username": "tenbandangky",
+      "email": "ten@email.com",
+      "password": "Nhập mật khẩu mạnh"
+    },
+    "hints": {
+      "username": "Tên đăng nhập sẽ được sử dụng để đăng nhập vào ứng dụng"
+    },
+    "passwordChecks": {
+      "length": "Ít nhất 8 ký tự",
+      "uppercase": "Có chữ hoa",
+      "lowercase": "Có chữ thường",
+      "number": "Có số"
+    },
+    "summary": {
+      "fullName": "Họ và Tên",
+      "username": "Tên đăng nhập",
+      "email": "Email"
+    },
+    "terms": {
+      "agreement": "Bằng cách đăng ký, bạn đồng ý với",
+      "service": "Điều Khoản Dịch Vụ",
+      "privacy": "Chính Sách Bảo Mật",
+      "medical": "Quy Định Dữ Liệu Y Tế"
+    },
+    "demo": {
+      "title": "🚀 Dùng Thử SeekWell Ngay",
+      "description": "Không muốn tạo tài khoản ngay bây giờ? Sử dụng tài khoản demo bệnh nhân:",
+      "email": "📧 Email",
+      "password": "🔑 Mật khẩu",
+      "loginButton": "Đến Trang Đăng Nhập với Tài Khoản Demo",
+      "note": "💡 Tài khoản demo này cho phép bạn khám phá tất cả tính năng của SeekWell bao gồm phân tích da bằng AI"
+    },
+    "roles": {
+      "patient": "Bệnh nhân",
+      "doctor": "Bác sĩ",
+      "official": "Cán bộ",
+      "admin": "Quản trị viên"
+    },
+    "errors": {
+      "usernameRequired": "Vui lòng nhập tên đăng nhập",
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Định dạng email không hợp lệ",
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+      "passwordTooShort": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordMismatch": "Mật khẩu không khớp",
+      "fullNameRequired": "Vui lòng nhập họ tên",
+      "emailExists": "Email đã được đăng ký",
+      "usernameExists": "Tên đăng nhập đã tồn tại",
+      "allFieldsRequired": "Vui lòng điền đầy đủ thông tin bắt buộc.",
+      "passwordRequirements": "Mật khẩu không đáp ứng yêu cầu bảo mật.",
+      "registrationFailed": "Đăng ký thất bại. Vui lòng kiểm tra thông tin của bạn.",
+      "networkError": "Đăng ký thất bại. Vui lòng kiểm tra kết nối internet và thử lại.",
+      "personalInfoRequired": "Vui lòng điền đầy đủ thông tin cá nhân",
+      "accountInfoRequired": "Vui lòng điền đầy đủ thông tin tài khoản"
+    },
+    "success": "Tạo tài khoản thành công! Vui lòng đăng nhập."
+  },
+  "forgotPassword": {
+    "title": "Quên Mật Khẩu",
+    "subtitle": "Nhập email để nhận liên kết đặt lại mật khẩu",
+    "email": "Email",
+    "submit": "Gửi Liên Kết",
+    "backToLogin": "Quay lại Đăng nhập",
+    "success": "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn",
+    "errors": {
+      "emailRequired": "Vui lòng nhập email",
+      "emailNotFound": "Không tìm thấy email"
+    }
+  },
+  "resetPassword": {
+    "title": "Đặt Lại Mật Khẩu",
+    "subtitle": "Nhập mật khẩu mới của bạn",
+    "newPassword": "Mật Khẩu Mới",
+    "confirmPassword": "Xác Nhận Mật Khẩu Mới",
+    "submit": "Đặt Lại Mật Khẩu",
+    "success": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.",
+    "errors": {
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+      "passwordTooShort": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordMismatch": "Mật khẩu không khớp",
+      "invalidToken": "Mã đặt lại không hợp lệ hoặc đã hết hạn"
+    }
+  },
+  "dashboard": {
+    "welcome": "Chào mừng, {{name}}",
+    "patient": {
+      "title": "Bảng Điều Khiển Bệnh Nhân",
+      "aiAnalysis": "Phân Tích Da Bằng AI",
+      "myRecords": "Lịch Sử Phân Tích Của Tôi",
+      "profile": "Hồ Sơ Của Tôi",
+      "overview": "Tổng quan",
+      "totalScans": "Tổng Số Lần Quét",
+      "urgentCases": "Trường Hợp Khẩn Cấp",
+      "lastScan": "Lần Quét Gần Nhất",
+      "recentAnalyses": "Phân Tích Gần Đây"
+    },
+    "doctor": {
+      "title": "Bảng Điều Khiển Bác Sĩ",
+      "pendingReviews": "Đang Chờ Xét Duyệt",
+      "patientSearch": "Tìm Kiếm Bệnh Nhân",
+      "urgentCases": "Trường Hợp Khẩn Cấp",
+      "myReviews": "Đánh Giá Của Tôi",
+      "statistics": "Thống Kê"
+    },
+    "official": {
+      "title": "Bảng Điều Khiển Cán Bộ",
+      "urgentCases": "Trường Hợp Khẩn Cấp",
+      "monitoring": "Giám Sát Ca Bệnh",
+      "statistics": "Thống Kê Cộng Đồng",
+      "alerts": "Cảnh Báo"
+    },
+    "admin": {
+      "title": "Bảng Điều Khiển Quản Trị",
+      "userManagement": "Quản Lý Người Dùng",
+      "systemStats": "Thống Kê Hệ Thống",
+      "reports": "Báo Cáo & Phân Tích",
+      "settings": "Cài Đặt"
+    }
+  },
+  "aiAnalysis": {
+    "title": "Phân Tích Da Bằng AI",
+    "subtitle": "Tải lên ảnh tổn thương da của bạn để phân tích ngay lập tức",
+    "uploadPrompt": "Nhấp hoặc kéo thả để tải ảnh lên",
+    "uploadButton": "Chọn Ảnh",
+    "analyzing": "Đang phân tích ảnh của bạn...",
+    "pleaseWait": "Vui lòng đợi, quá trình này có thể mất vài giây",
+    "result": "Kết Quả Phân Tích",
+    "prediction": "Chẩn Đoán",
+    "confidence": "Độ Tin Cậy",
+    "riskLevel": "Mức Độ Rủi Ro",
+    "uploadDate": "Ngày Tải Lên",
+    "viewHistory": "Xem Lịch Sử",
+    "newAnalysis": "Phân Tích Mới",
+    "riskLevels": {
+      "urgent": "KHẨN CẤP",
+      "high": "CAO",
+      "medium": "TRUNG BÌNH",
+      "low": "THẤP"
+    },
+    "riskMessages": {
+      "urgent": "Cần chú ý khẩn cấp! Vui lòng tham khảo bác sĩ ngay lập tức.",
+      "high": "Phát hiện rủi ro cao. Vui lòng đặt lịch hẹn với bác sĩ sớm.",
+      "medium": "Rủi ro trung bình. Theo dõi và tham khảo bác sĩ nếu triệu chứng trở nên tồi tệ hơn.",
+      "low": "Rủi ro thấp. Tiếp tục theo dõi và duy trì kiểm tra định kỳ."
+    },
+    "errors": {
+      "noImage": "Vui lòng chọn một ảnh trước",
+      "uploadFailed": "Tải ảnh lên thất bại. Vui lòng thử lại.",
+      "analysisFailed": "Phân tích thất bại. Vui lòng thử lại.",
+      "invalidFormat": "Định dạng ảnh không hợp lệ. Vui lòng sử dụng JPG, PNG hoặc JPEG.",
+      "fileTooLarge": "Tệp quá lớn. Kích thước tối đa là 5MB."
+    },
+    "success": "Phân tích hoàn tất thành công!"
+  },
+  "analysisHistory": {
+    "title": "Lịch Sử Phân Tích",
+    "noRecords": "Không tìm thấy bản ghi phân tích",
+    "viewDetails": "Xem Chi Tiết",
+    "date": "Ngày",
+    "prediction": "Dự Đoán",
+    "confidence": "Độ Tin Cậy",
+    "status": "Trạng Thái",
+    "riskLevel": "Mức Độ Rủi Ro",
+    "doctorFeedback": "Phản Hồi Của Bác Sĩ",
+    "noDoctorFeedback": "Chưa có phản hồi từ bác sĩ",
+    "statuses": {
+      "pending": "Đang Chờ Xét Duyệt",
+      "forwarded": "Đã Chuyển Đến Bác Sĩ",
+      "reviewed": "Bác Sĩ Đã Xét Duyệt",
+      "closed": "Đã Đóng"
+    }
+  },
+  "profile": {
+    "title": "Hồ Sơ Của Tôi",
+    "personalInfo": "Thông Tin Cá Nhân",
+    "accountInfo": "Thông Tin Tài Khoản",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "fullName": "Họ và Tên",
+    "dateOfBirth": "Ngày Sinh",
+    "gender": "Giới Tính",
+    "address": "Địa Chỉ",
+    "phoneNumber": "Số Điện Thoại",
+    "role": "Vai Trò",
+    "memberSince": "Thành Viên Từ",
+    "edit": "Chỉnh Sửa Hồ Sơ",
+    "save": "Lưu Thay Đổi",
+    "cancel": "Hủy",
+    "genders": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác",
+      "preferNotToSay": "Không muốn nói"
+    },
+    "success": "Cập nhật hồ sơ thành công!",
+    "errors": {
+      "updateFailed": "Cập nhật hồ sơ thất bại. Vui lòng thử lại."
+    }
+  },
+  "userManagement": {
+    "title": "Quản Lý Người Dùng",
+    "createUser": "Tạo Người Dùng Mới",
+    "searchPlaceholder": "Tìm kiếm theo tên, email hoặc tên đăng nhập",
+    "totalUsers": "Tổng Số Người Dùng",
+    "activeUsers": "Người Dùng Hoạt Động",
+    "table": {
+      "id": "Mã",
+      "username": "Tên Đăng Nhập",
+      "email": "Email",
+      "fullName": "Họ và Tên",
+      "role": "Vai Trò",
+      "actions": "Hành Động"
+    },
+    "roles": {
+      "admin": "Quản trị viên",
+      "doctor": "Bác sĩ",
+      "official": "Cán bộ",
+      "patient": "Bệnh nhân"
+    },
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa người dùng này?",
+    "success": {
+      "created": "Tạo người dùng thành công!",
+      "deleted": "Xóa người dùng thành công!"
+    },
+    "errors": {
+      "createFailed": "Tạo người dùng thất bại",
+      "deleteFailed": "Xóa người dùng thất bại",
+      "loadFailed": "Tải danh sách người dùng thất bại"
+    }
+  },
+  "patientSearch": {
+    "title": "Tìm Kiếm Bệnh Nhân",
+    "searchPlaceholder": "Tìm kiếm theo tên hoặc mã bệnh nhân",
+    "noResults": "Không tìm thấy bệnh nhân",
+    "viewRecords": "Xem Hồ Sơ",
+    "patientInfo": "Thông Tin Bệnh Nhân",
+    "analysisHistory": "Lịch Sử Phân Tích",
+    "restrictedAccess": "Bạn chỉ có thể xem hồ sơ của mình"
+  },
+  "reports": {
+    "title": "Báo Cáo & Phân Tích",
+    "systemStats": "Thống Kê Hệ Thống",
+    "totalPatients": "Tổng Số Bệnh Nhân",
+    "totalDoctors": "Tổng Số Bác Sĩ",
+    "totalAnalyses": "Tổng Số Phân Tích",
+    "urgentCases": "Trường Hợp Khẩn Cấp",
+    "pendingReviews": "Đang Chờ Xét Duyệt",
+    "thisWeek": "Tuần Này",
+    "thisMonth": "Tháng Này",
+    "allTime": "Tất Cả",
+    "export": "Xuất Báo Cáo"
+  },
+  "urgentCases": {
+    "title": "Trường Hợp Khẩn Cấp",
+    "noCases": "Không có trường hợp khẩn cấp vào lúc này",
+    "patientName": "Tên Bệnh Nhân",
+    "prediction": "Dự Đoán",
+    "confidence": "Độ Tin Cậy",
+    "uploadDate": "Ngày Tải Lên",
+    "status": "Trạng Thái",
+    "assign": "Giao Cho Bác Sĩ",
+    "review": "Xét Duyệt Ca",
+    "markReviewed": "Đánh Dấu Đã Xét Duyệt"
+  },
+  "doctorReview": {
+    "title": "Xét Duyệt Ca Bệnh",
+    "patientInfo": "Thông Tin Bệnh Nhân",
+    "analysisResult": "Kết Quả Phân Tích",
+    "addFeedback": "Thêm Phản Hồi Của Bạn",
+    "feedbackPlaceholder": "Nhập phản hồi và khuyến nghị y tế của bạn...",
+    "updateStatus": "Cập Nhật Trạng Thái",
+    "submit": "Gửi Đánh Giá",
+    "success": "Gửi đánh giá thành công!",
+    "errors": {
+      "feedbackRequired": "Vui lòng nhập phản hồi của bạn",
+      "submitFailed": "Gửi đánh giá thất bại"
+    }
+  },
+  "chatbot": {
+    "title": "Trợ Lý Sức Khỏe",
+    "placeholder": "Nhập tin nhắn của bạn...",
+    "send": "Gửi",
+    "greeting": "Xin chào! Tôi là trợ lý sức khỏe SeekWell của bạn. Tôi có thể giúp gì cho bạn hôm nay?",
+    "thinking": "Đang suy nghĩ...",
+    "error": "Xin lỗi, tôi gặp lỗi. Vui lòng thử lại."
+  },
+  "navigation": {
+    "home": "Trang Chủ",
+    "dashboard": "Bảng Điều Khiển",
+    "analysis": "Phân Tích",
+    "patients": "Bệnh Nhân",
+    "users": "Người Dùng",
+    "reports": "Báo Cáo",
+    "profile": "Hồ Sơ",
+    "settings": "Cài Đặt",
+    "help": "Trợ Giúp",
+    "logout": "Đăng Xuất"
+  },
+  "appName": "SeekWell",
+  "tagline": "Trợ Lý Sức Khỏe Hỗ Trợ AI",
+  "footer": {
+    "copyright": "© 2025 SeekWell. Bảo lưu mọi quyền.",
+    "privacy": "Chính Sách Bảo Mật",
+    "terms": "Điều Khoản Dịch Vụ",
+    "contact": "Liên Hệ"
+  }
+}

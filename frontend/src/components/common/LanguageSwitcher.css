@@ -1,0 +1,40 @@
+.language-switcher-button {
+  min-width: 140px;
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.language-switcher-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.language-switcher-icon {
+  color: #1976d2;
+  transition: all 0.3s ease;
+}
+
+.language-switcher-icon:hover {
+  transform: rotate(15deg);
+  color: #115293;
+}
+
+.language-flag {
+  font-size: 1.2em;
+  margin-right: 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .language-switcher-button {
+    min-width: 100px;
+    font-size: 0.875rem;
+  }
+  
+  .language-flag {
+    font-size: 1em;
+    margin-right: 4px;
+  }
+}

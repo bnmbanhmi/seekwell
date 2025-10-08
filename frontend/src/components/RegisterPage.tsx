@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import styles from './RegisterPageMobile.module.css';
+import LanguageSwitcher from './common/LanguageSwitcher';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
-// Placeholder translation function
-const t = (key: string, params?: object) => {
-    if (params) {
-        let message = key;
-        for (const [paramKey, value] of Object.entries(params)) {
-            message = message.replace(`{{${paramKey}}}`, String(value));
-        }
-        return message;
-    }
-    return key;
-};
-
 const RegisterPage: React.FC = () => {
+    const { t } = useTranslation();
     const [username, setUsername] = useState('');
     const [mail, setMail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,13 +30,13 @@ const RegisterPage: React.FC = () => {
 
         // Validate all required fields
         if (!fullname || !username || !mail || !password) {
-            setError('Please fill in all required information.');
+            setError(t('register.errors.allFieldsRequired'));
             setLoading(false);
             return;
         }
 
         if (!passwordValidation.isValid) {
-            setError('Password does not meet security requirements.');
+            setError(t('register.errors.passwordRequirements'));
             setLoading(false);
             return;
         }
@@ -63,7 +54,7 @@ const RegisterPage: React.FC = () => {
             });
 
             if (response.status === 201 || response.status === 200) {
-                toast.success(t('Registration successful! You can now log in.'));
+                toast.success(t('register.success'));
                 setTimeout(() => {
                     navigate('/login');
                 }, 1000);
@@ -76,10 +67,10 @@ const RegisterPage: React.FC = () => {
                     // Join all error messages into a single string
                     setError(detail.map((e: any) => e.msg).join(' | '));
                 } else {
-                    setError(detail || 'Registration failed. Please check your information.');
+                    setError(detail || t('register.errors.registrationFailed'));
                 }
             } else {
-                setError('Registration failed. Please check your internet connection and try again.');
+                setError(t('register.errors.networkError'));
             }
             console.error("Register error:", err);
         } finally {
@@ -93,11 +84,11 @@ const RegisterPage: React.FC = () => {
 
     const nextStep = () => {
         if (currentStep === 1 && (!fullname || !username)) {
-            setError('Please fill in all personal information');
+            setError(t('register.errors.personalInfoRequired'));
             return;
         }
         if (currentStep === 2 && (!mail || !password)) {
-            setError('Please fill in all account information');
+            setError(t('register.errors.accountInfoRequired'));
             return;
         }
         setError('');
@@ -128,6 +119,11 @@ const RegisterPage: React.FC = () => {
 
     return (
         <div className={`${styles.container} safe-area-all`}>
+            {/* Language Switcher */}
+            <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
+                <LanguageSwitcher variant="icon" size="small" />
+            </div>
+            
             {/* SeekWell Branding Header */}
             <div className={styles.header}>
                 <div className={styles.brandSection}>
@@ -151,7 +147,7 @@ const RegisterPage: React.FC = () => {
                             style={{ width: `${(currentStep / 3) * 100}%` }}
                         ></div>
                     </div>
-                    <p className={styles.progressText}>Step {currentStep} of 3</p>
+                    <p className={styles.progressText}>{t('register.progress.step', { current: currentStep, total: 3 })}</p>
                 </div>
 
                 <div className={styles.stepContainer}>
@@ -159,12 +155,12 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>👤</span>
-                                Personal Information
+                                {t('register.steps.personal.title')}
                             </h2>
-                            <p className={styles.stepDescription}>Tell us about yourself</p>
+                            <p className={styles.stepDescription}>{t('register.steps.personal.subtitle')}</p>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="fullname" className={styles.label}>Full Name *</label>
+                                <label htmlFor="fullname" className={styles.label}>{t('register.fullName')} *</label>
                                 <input
                                     type="text"
                                     id="fullname"
@@ -172,12 +168,12 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setFullname(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="John Doe"
+                                    placeholder={t('register.placeholders.fullName')}
                                 />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="username" className={styles.label}>Username *</label>
+                                <label htmlFor="username" className={styles.label}>{t('register.username')} *</label>
                                 <input
                                     type="text"
                                     id="username"
@@ -185,9 +181,9 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="yourusername"
+                                    placeholder={t('register.placeholders.username')}
                                 />
-                                <p className={styles.inputHint}>Username will be used to log into the application</p>
+                                <p className={styles.inputHint}>{t('register.hints.username')}</p>
                             </div>
                         </div>
                     )}
@@ -196,12 +192,12 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>🔐</span>
-                                Account & Security
+                                {t('register.steps.account.title')}
                             </h2>
-                            <p className={styles.stepDescription}>Set up your email and secure password</p>
+                            <p className={styles.stepDescription}>{t('register.steps.account.subtitle')}</p>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="mail" className={styles.label}>Email *</label>
+                                <label htmlFor="mail" className={styles.label}>{t('register.email')} *</label>
                                 <input
                                     type="email"
                                     id="mail"
@@ -209,12 +205,12 @@ const RegisterPage: React.FC = () => {
                                     onChange={(e) => setMail(e.target.value)}
                                     required
                                     className={`${styles.input} touch-target`}
-                                    placeholder="name@email.com"
+                                    placeholder={t('register.placeholders.email')}
                                 />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="password" className={styles.label}>Password *</label>
+                                <label htmlFor="password" className={styles.label}>{t('register.password')} *</label>
                                 <div className={styles.passwordInput}>
                                     <input
                                         type={showPassword ? 'text' : 'password'}
@@ -223,13 +219,13 @@ const RegisterPage: React.FC = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         className={`${styles.input} touch-target`}
-                                        placeholder="Enter a strong password"
+                                        placeholder={t('register.placeholders.password')}
                                     />
                                     <button
                                         type="button"
                                         className={`${styles.passwordToggle} touch-target`}
                                         onClick={() => setShowPassword(!showPassword)}
-                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                        aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                                     >
                                         {showPassword ? '🙈' : '👁️'}
                                     </button>
@@ -240,16 +236,16 @@ const RegisterPage: React.FC = () => {
                                     <div className={styles.passwordStrength}>
                                         <div className={styles.strengthChecks}>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.minLength ? styles.valid : ''}`}>
-                                                {passwordValidation.minLength ? '✓' : '○'} At least 8 characters
+                                                {passwordValidation.minLength ? '✓' : '○'} {t('register.passwordChecks.length')}
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasUpper ? styles.valid : ''}`}>
-                                                {passwordValidation.hasUpper ? '✓' : '○'} Has uppercase letter
+                                                {passwordValidation.hasUpper ? '✓' : '○'} {t('register.passwordChecks.uppercase')}
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasLower ? styles.valid : ''}`}>
-                                                {passwordValidation.hasLower ? '✓' : '○'} Has lowercase letter
+                                                {passwordValidation.hasLower ? '✓' : '○'} {t('register.passwordChecks.lowercase')}
                                             </div>
                                             <div className={`${styles.strengthCheck} ${passwordValidation.hasNumber ? styles.valid : ''}`}>
-                                                {passwordValidation.hasNumber ? '✓' : '○'} Has number
+                                                {passwordValidation.hasNumber ? '✓' : '○'} {t('register.passwordChecks.number')}
                                             </div>
                                         </div>
                                     </div>
@@ -262,32 +258,32 @@ const RegisterPage: React.FC = () => {
                         <div className={styles.step}>
                             <h2 className={styles.stepTitle}>
                                 <span className={styles.stepIcon}>✨</span>
-                                Confirm Information
+                                {t('register.steps.confirm.title')}
                             </h2>
-                            <p className={styles.stepDescription}>Review your information before registration</p>
+                            <p className={styles.stepDescription}>{t('register.steps.confirm.subtitle')}</p>
 
                             <div className={styles.summaryCard}>
                                 <div className={styles.summaryItem}>
-                                    <span className={styles.summaryLabel}>Full Name:</span>
+                                    <span className={styles.summaryLabel}>{t('register.summary.fullName')}:</span>
                                     <span className={styles.summaryValue}>{fullname}</span>
                                 </div>
                                 <div className={styles.summaryItem}>
-                                    <span className={styles.summaryLabel}>Username:</span>
+                                    <span className={styles.summaryLabel}>{t('register.summary.username')}:</span>
                                     <span className={styles.summaryValue}>{username}</span>
                                 </div>
                                 <div className={styles.summaryItem}>
-                                    <span className={styles.summaryLabel}>Email:</span>
+                                    <span className={styles.summaryLabel}>{t('register.summary.email')}:</span>
                                     <span className={styles.summaryValue}>{mail}</span>
                                 </div>
                             </div>
 
                             <div className={styles.termsSection}>
                                 <div className={styles.termsText}>
-                                    <p>By registering, you agree to:</p>
+                                    <p>{t('register.terms.agreement')}:</p>
                                     <ul>
-                                        <li><button type="button" className={styles.termsLink}>Terms of Service</button></li>
-                                        <li><button type="button" className={styles.termsLink}>Privacy Policy</button></li>
-                                        <li><button type="button" className={styles.termsLink}>Medical Data Regulations</button></li>
+                                        <li><button type="button" className={styles.termsLink}>{t('register.terms.service')}</button></li>
+                                        <li><button type="button" className={styles.termsLink}>{t('register.terms.privacy')}</button></li>
+                                        <li><button type="button" className={styles.termsLink}>{t('register.terms.medical')}</button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -309,7 +305,7 @@ const RegisterPage: React.FC = () => {
                                 onClick={prevStep}
                                 className={`${styles.button} ${styles.buttonSecondary} touch-target`}
                             >
-                                ← Back
+                                {t('common.back')}
                             </button>
                         )}
 
@@ -319,7 +315,7 @@ const RegisterPage: React.FC = () => {
                                 onClick={nextStep}
                                 className={`${styles.button} ${styles.buttonPrimary} touch-target`}
                             >
-                                Next →
+                                {t('common.next')}
                             </button>
                         ) : (
                             <button
@@ -334,10 +330,10 @@ const RegisterPage: React.FC = () => {
                                 {loading ? (
                                     <>
                                         <span className={styles.spinner}></span>
-                                        Registering...
+                                        {t('register.creating')}
                                     </>
                                 ) : (
-                                    'Create Account'
+                                    t('register.submit')
                                 )}
                             </button>
                         )}
@@ -349,17 +345,17 @@ const RegisterPage: React.FC = () => {
             <div className={styles.footer}>
                 {/* Demo Account Section */}
                 <div className={styles.demoSection}>
-                    <h3 className={styles.demoTitle}>🚀 Try SeekWell Instantly</h3>
+                    <h3 className={styles.demoTitle}>{t('register.demo.title')}</h3>
                     <p className={styles.demoDescription}>
-                        Don't want to create an account right now? Use our demo patient account:
+                        {t('register.demo.description')}
                     </p>
                     <div className={styles.demoCredentials}>
                         <div className={styles.credentialItem}>
-                            <span className={styles.credentialLabel}>📧 Email:</span>
+                            <span className={styles.credentialLabel}>{t('register.demo.email')}:</span>
                             <span className={styles.credentialValue}>patient1@seekwell.health</span>
                         </div>
                         <div className={styles.credentialItem}>
-                            <span className={styles.credentialLabel}>🔑 Password:</span>
+                            <span className={styles.credentialLabel}>{t('register.demo.password')}:</span>
                             <span className={styles.credentialValue}>PatientDemo2025</span>
                         </div>
                     </div>
@@ -368,29 +364,29 @@ const RegisterPage: React.FC = () => {
                         onClick={() => navigate('/login')}
                         className={styles.demoButton}
                     >
-                        Go to Login with Demo Account
+                        {t('register.demo.loginButton')}
                     </button>
                     <p className={styles.demoNote}>
-                        💡 This demo account lets you explore all SeekWell features including AI skin analysis
+                        {t('register.demo.note')}
                     </p>
                 </div>
 
                 <div className={styles.footerDivider}></div>
 
                 <p className={styles.footerText}>
-                    Already have an account?{' '}
+                    {t('register.hasAccount')}{' '}
                     <button
                         type="button"
                         onClick={handleLogin}
                         className={styles.linkButton}
                     >
-                        Sign in now
+                        {t('register.login')}
                     </button>
                 </p>
                 
                 <div className={styles.securityInfo}>
                     <p className={styles.securityText}>
-                        🔒 Your information is protected with SSL encryption
+                        {t('register.security')}
                     </p>
                 </div>
             </div>

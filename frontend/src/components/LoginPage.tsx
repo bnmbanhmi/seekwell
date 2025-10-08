@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './LoginPageMobile.module.css';
 import { toast } from 'react-toastify';
 import { API_CONFIG } from '../config/api';
+import LanguageSwitcher from './common/LanguageSwitcher';
 
 const LoginPage: React.FC = () => {
+    const { t } = useTranslation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -34,20 +37,20 @@ const LoginPage: React.FC = () => {
                 localStorage.setItem('role', response.data.role);
                 localStorage.setItem('user_id', response.data.user_id);
                 
-                toast.success('Welcome to SeekWell! 🎉');
+                toast.success(t('login.success'));
                 navigate('/dashboard');
             }
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
                 const status = err.response.status;
                 if (status === 401 || status === 403) {
-                    setError('Invalid credentials or unauthorized access');
-                    toast.error('Login failed. Please check your credentials.');
+                    setError(t('login.errors.invalidCredentials'));
+                    toast.error(t('login.errors.invalidCredentials'));
                 } else {
-                    setError(`Login failed: ${err.response.data.detail || 'Server error'}`);
+                    setError(`${t('common.error')}: ${err.response.data.detail || t('login.errors.serverError')}`);
                 }
             } else {
-                setError('Login failed. An unexpected error occurred.');
+                setError(t('login.errors.serverError'));
             }
             console.error("Login error:", err);
         } finally {
@@ -62,24 +65,29 @@ const LoginPage: React.FC = () => {
     return (
         <div className={`${styles.container} mobile-container safe-area-top`}>
             <div className={styles.card}>
+                {/* Language Switcher */}
+                <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
+                    <LanguageSwitcher variant="icon" size="small" />
+                </div>
+                
                 {/* SeekWell Branding */}
                 <div className={styles.brandingSection}>
-                    <h1 className={`${styles.appName} mobile-heading-responsive`}>SeekWell</h1>
+                    <h1 className={`${styles.appName} mobile-heading-responsive`}>{t('appName')}</h1>
                     <p className={`${styles.tagline} mobile-text-responsive`}>
-                        AI-Powered Health Companion
+                        {t('tagline')}
                     </p>
                 </div>
 
                 <div className={styles.loginSection}>
-                    <h2 className={`${styles.heading} mobile-text-xl`}>Welcome Back</h2>
+                    <h2 className={`${styles.heading} mobile-text-xl`}>{t('login.title')}</h2>
                     <p className={`${styles.subHeading} mobile-text-sm`}>
-                        Sign in to access your health dashboard
+                        {t('login.subtitle')}
                     </p>
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.formGroup}>
                             <label htmlFor="username" className={`${styles.label} mobile-text-base`}>
-                                Email
+                                {t('login.username')}
                             </label>
                             <input
                                 type="text"
@@ -88,14 +96,14 @@ const LoginPage: React.FC = () => {
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
                                 className={`${styles.input} touch-target`}
-                                placeholder="Enter your email"
+                                placeholder={t('login.username')}
                                 autoComplete="email"
                             />
                         </div>
 
                         <div className={styles.formGroup}>
                             <label htmlFor="password" className={`${styles.label} mobile-text-base`}>
-                                Password
+                                {t('login.password')}
                             </label>
                             <div className={styles.passwordInputGroup}>
                                 <input
@@ -105,16 +113,16 @@ const LoginPage: React.FC = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     className={`${styles.input} ${styles.passwordInput} touch-target`}
-                                    placeholder="Enter your password"
+                                    placeholder={t('login.password')}
                                     autoComplete="current-password"
                                 />
                                 <button
                                     type="button"
                                     className={`${styles.passwordToggle} touch-target`}
                                     onClick={() => setShowPassword(!showPassword)}
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                                 >
-                                    {showPassword ? 'Hide' : 'Show'}
+                                    {showPassword ? t('login.hidePassword').split(' ')[0] : t('login.showPassword').split(' ')[0]}
                                 </button>
                             </div>
                         </div>
@@ -133,15 +141,15 @@ const LoginPage: React.FC = () => {
                             {loading ? (
                                 <>
                                     <span className={styles.spinner}></span>
-                                    Signing in...
+                                    {t('common.loading')}
                                 </>
                             ) : (
-                                'Sign In'
+                                t('login.submit')
                             )}
                         </button>
 
                         <div className={styles.divider}>
-                            <span className="mobile-text-sm">or</span>
+                            <span className="mobile-text-sm">{t('common.or') || 'or'}</span>
                         </div>
 
                         <button
@@ -149,7 +157,7 @@ const LoginPage: React.FC = () => {
                             onClick={handleRegister}
                             className={`${styles.button} ${styles.secondaryButton} mobile-button touch-target haptic-light`}
                         >
-                            Create Account
+                            {t('login.register')}
                         </button>
 
                         <div className={styles.forgotPassword}>
@@ -157,7 +165,7 @@ const LoginPage: React.FC = () => {
                                 to="/forgot-password" 
                                 className={`${styles.link} mobile-text-sm touch-target`}
                             >
-                                Forgot Password?
+                                {t('login.forgotPassword')}
                             </Link>
                         </div>
 
