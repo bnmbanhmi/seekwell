@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import './PatientSearch.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
@@ -44,6 +46,7 @@ interface PatientSearchResponse {
 }
 
 const PatientSearch: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useState<PatientSearchQuery>({
     limit: 10,
@@ -184,11 +187,16 @@ const PatientSearch: React.FC = () => {
   return (
     <div className="patient-search-container">
       <div className="search-header">
-        <h2>Tìm Kiếm Bệnh Nhân</h2>
-        <p className="role-info">
-          Đang tìm kiếm với vai trò: <strong>{userRole}</strong>
-          {userRole === 'PATIENT' && ' (You can only view your own records)'}
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2>{t('patientSearch.title')}</h2>
+            <p className="role-info">
+              {t('patientSearch.roleInfo')} <strong>{userRole}</strong>
+              {userRole === 'PATIENT' && ` ${t('patientSearch.ownRecordsOnly')}`}
+            </p>
+          </div>
+          <LanguageSwitcher />
+        </div>
       </div>
 
       {/* Search Form */}
@@ -196,19 +204,19 @@ const PatientSearch: React.FC = () => {
         <div className="basic-search">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="query">Tìm Kiếm Chung</label>
+              <label htmlFor="query">{t('patientSearch.generalSearch')}</label>
               <input
                 type="text"
                 id="query"
                 name="query"
                 value={searchParams.query || ''}
                 onChange={handleInputChange}
-                placeholder="Tìm kiếm theo tên, email, điện thoại hoặc địa chỉ..."
+                placeholder={t('patientSearch.generalPlaceholder')}
                 className="search-input"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="limit">Số kết quả mỗi trang</label>
+              <label htmlFor="limit">{t('patientSearch.resultsPerPage')}</label>
               <select
                 id="limit"
                 name="limit"
@@ -231,7 +239,7 @@ const PatientSearch: React.FC = () => {
           className="toggle-advanced"
           onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
         >
-          {showAdvancedSearch ? 'Ẩn' : 'Hiện'} Tìm Kiếm Nâng Cao
+          {showAdvancedSearch ? t('patientSearch.hide') : t('patientSearch.show')} {t('patientSearch.toggleAdvanced')}
         </button>
 
         {/* Advanced Search Fields */}
@@ -239,73 +247,73 @@ const PatientSearch: React.FC = () => {
           <div className="advanced-search">
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="full_name">Họ và Tên</label>
+                <label htmlFor="full_name">{t('patientSearch.fullName')}</label>
                 <input
                   type="text"
                   id="full_name"
                   name="full_name"
                   value={searchParams.full_name || ''}
                   onChange={handleInputChange}
-                  placeholder="Họ và tên bệnh nhân"
+                  placeholder={t('patientSearch.fullNamePlaceholder')}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">{t('patientSearch.email')}</label>
                 <input
                   type="email"
                   id="email"
                   name="email"
                   value={searchParams.email || ''}
                   onChange={handleInputChange}
-                  placeholder="Email bệnh nhân"
+                  placeholder={t('patientSearch.emailPlaceholder')}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="phone_number">Điện Thoại</label>
+                <label htmlFor="phone_number">{t('patientSearch.phone')}</label>
                 <input
                   type="text"
                   id="phone_number"
                   name="phone_number"
                   value={searchParams.phone_number || ''}
                   onChange={handleInputChange}
-                  placeholder="Số điện thoại"
+                  placeholder={t('patientSearch.phonePlaceholder')}
                 />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="patient_id">ID Bệnh Nhân</label>
+                <label htmlFor="patient_id">{t('patientSearch.patientId')}</label>
                 <input
                   type="number"
                   id="patient_id"
                   name="patient_id"
                   value={searchParams.patient_id || ''}
                   onChange={handleInputChange}
-                  placeholder="Số ID bệnh nhân"
+                  placeholder={t('patientSearch.patientIdPlaceholder')}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="age_min">Tuổi Tối Thiểu</label>
+                <label htmlFor="age_min">{t('patientSearch.ageMin')}</label>
                 <input
                   type="number"
                   id="age_min"
                   name="age_min"
                   value={searchParams.age_min || ''}
                   onChange={handleInputChange}
-                  placeholder="Tuổi tối thiểu"
+                  placeholder={t('patientSearch.ageMinPlaceholder')}
                   min="0"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="age_max">Tuổi Tối Đa</label>
+                <label htmlFor="age_max">{t('patientSearch.ageMax')}</label>
                 <input
                   type="number"
                   id="age_max"
                   name="age_max"
                   value={searchParams.age_max || ''}
                   onChange={handleInputChange}
-                  placeholder="Tuổi tối đa"
+                  placeholder={t('patientSearch.ageMaxPlaceholder')}
                   min="0"
                 />
               </div>
@@ -313,67 +321,67 @@ const PatientSearch: React.FC = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="gender">Giới Tính</label>
+                <label htmlFor="gender">{t('patientSearch.gender')}</label>
                 <select
                   id="gender"
                   name="gender"
                   value={searchParams.gender || ''}
                   onChange={handleInputChange}
                 >
-                  <option value="">Tất cả giới tính</option>
-                  <option value="male">Nam</option>
-                  <option value="female">Nữ</option>
-                  <option value="other">Khác</option>
+                  <option value="">{t('patientSearch.allGenders')}</option>
+                  <option value="male">{t('patientSearch.male')}</option>
+                  <option value="female">{t('patientSearch.female')}</option>
+                  <option value="other">{t('patientSearch.other')}</option>
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="identification_id">Số CMND/CCCD</label>
+                <label htmlFor="identification_id">{t('patientSearch.idCard')}</label>
                 <input
                   type="text"
                   id="identification_id"
                   name="identification_id"
                   value={searchParams.identification_id || ''}
                   onChange={handleInputChange}
-                  placeholder="Số CMND/CCCD"
+                  placeholder={t('patientSearch.idCardPlaceholder')}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="health_insurance_card_no">Thẻ BHYT</label>
+                <label htmlFor="health_insurance_card_no">{t('patientSearch.insuranceCard')}</label>
                 <input
                   type="text"
                   id="health_insurance_card_no"
                   name="health_insurance_card_no"
                   value={searchParams.health_insurance_card_no || ''}
                   onChange={handleInputChange}
-                  placeholder="Số thẻ bảo hiểm y tế"
+                  placeholder={t('patientSearch.insurancePlaceholder')}
                 />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="sort_by">Sắp Xếp Theo</label>
+                <label htmlFor="sort_by">{t('common.sortBy')}</label>
                 <select
                   id="sort_by"
                   name="sort_by"
                   value={searchParams.sort_by || 'full_name'}
                   onChange={handleInputChange}
                 >
-                  <option value="full_name">Họ và Tên</option>
-                  <option value="date_of_birth">Ngày Sinh</option>
-                  <option value="patient_id">ID Bệnh Nhân</option>
+                  <option value="full_name">{t('patientSearch.fullName')}</option>
+                  <option value="date_of_birth">{t('patientSearch.dateOfBirth')}</option>
+                  <option value="patient_id">{t('patientSearch.patientId')}</option>
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="sort_order">Thứ Tự Sắp Xếp</label>
+                <label htmlFor="sort_order">{t('common.sortOrder')}</label>
                 <select
                   id="sort_order"
                   name="sort_order"
                   value={searchParams.sort_order || 'asc'}
                   onChange={handleInputChange}
                 >
-                  <option value="asc">Tăng Dần</option>
-                  <option value="desc">Giảm Dần</option>
+                  <option value="asc">{t('common.ascending')}</option>
+                  <option value="desc">{t('common.descending')}</option>
                 </select>
               </div>
             </div>
@@ -388,7 +396,7 @@ const PatientSearch: React.FC = () => {
             onClick={() => handleSearch(1)}
             disabled={loading}
           >
-            {loading ? 'Đang tìm kiếm...' : 'Tìm Kiếm Bệnh Nhân'}
+            {loading ? t('patientSearch.searching') : t('patientSearch.searchButton')}
           </button>
           <button
             type="button"
@@ -396,7 +404,7 @@ const PatientSearch: React.FC = () => {
             onClick={clearSearch}
             disabled={loading}
           >
-            Xóa
+            {t('patientSearch.clearButton')}
           </button>
         </div>
       </div>
@@ -412,10 +420,10 @@ const PatientSearch: React.FC = () => {
       {searchResults && (
         <div className="search-results">
           <div className="results-header">
-            <h3>Kết Quả Tìm Kiếm</h3>
+            <h3>{t('patientSearch.results')}</h3>
             <p>
-              Tìm thấy {searchResults.total_count} bệnh nhân{searchResults.total_count !== 1 ? '' : ''} 
-              (Trang {searchResults.page} / {searchResults.total_pages})
+              {t('patientSearch.totalResults')} {searchResults.total_count} 
+              ({t('patientSearch.page')} {searchResults.page} {t('patientSearch.of')} {searchResults.total_pages})
             </p>
           </div>
 

@@ -19,7 +19,11 @@
     "refresh": "Refresh",
     "view": "View",
     "download": "Download",
-    "upload": "Upload"
+    "upload": "Upload",
+    "sortBy": "Sort By",
+    "sortOrder": "Sort Order",
+    "ascending": "Ascending",
+    "descending": "Descending"
   },
   "login": {
     "title": "Welcome Back",
@@ -136,11 +140,13 @@
     "subtitle": "Enter your email to receive a password reset link",
     "email": "Email",
     "submit": "Send Reset Link",
+    "sending": "Sending...",
     "backToLogin": "Back to Login",
     "success": "Password reset link sent to your email",
     "errors": {
       "emailRequired": "Email is required",
-      "emailNotFound": "Email not found"
+      "emailNotFound": "Email not found",
+      "sendFailed": "Failed to send reset link. Please try again."
     }
   },
   "resetPassword": {
@@ -149,18 +155,22 @@
     "newPassword": "New Password",
     "confirmPassword": "Confirm New Password",
     "submit": "Reset Password",
+    "resetting": "Resetting...",
+    "canLoginNow": "You can log in now.",
     "success": "Password reset successfully! Please sign in.",
     "errors": {
       "passwordRequired": "Password is required",
       "passwordTooShort": "Password must be at least 6 characters",
       "passwordMismatch": "Passwords do not match",
-      "invalidToken": "Invalid or expired reset token"
+      "invalidToken": "Invalid or expired reset token",
+      "resetFailed": "Failed to reset password. Please try again."
     }
   },
   "dashboard": {
     "welcome": "Welcome, {{name}}",
     "patient": {
       "title": "Patient Dashboard",
+      "subtitle": "Welcome to your personal skin health center.",
       "aiAnalysis": "AI Skin Analysis",
       "myRecords": "My Analysis History",
       "profile": "My Profile",
@@ -168,7 +178,13 @@
       "totalScans": "Total Scans",
       "urgentCases": "Urgent Cases",
       "lastScan": "Last Scan",
-      "recentAnalyses": "Recent Analyses"
+      "recentAnalyses": "Recent Analyses",
+      "newAnalysis": "New AI Skin Analysis",
+      "newAnalysisDesc": "Upload a photo to get an instant analysis of a skin lesion.",
+      "viewHistory": "View Analysis History",
+      "viewHistoryDesc": "Review your past results and track your skin's health over time.",
+      "whatsNext": "What's Next?",
+      "whatsNextDesc": "If the AI detects a high-risk lesion, you will be notified. An official may contact you to coordinate further steps with a doctor."
     },
     "doctor": {
       "title": "Doctor Dashboard",
@@ -176,17 +192,43 @@
       "patientSearch": "Patient Search",
       "urgentCases": "Urgent Cases",
       "myReviews": "My Reviews",
-      "statistics": "Statistics"
+      "statistics": "Statistics",
+      "reviewQueue": "Doctor's Review Queue",
+      "reviewQueueDesc": "Review high-risk cases flagged by the AI and forwarded by officials.",
+      "aiPrediction": "AI Prediction",
+      "risk": "Risk",
+      "reported": "Reported",
+      "noCases": "No urgent cases in your queue.",
+      "caseDetails": "Case Details",
+      "contact": "Contact",
+      "officialNotes": "Official's Notes",
+      "confirmDiagnosis": "Confirm Diagnosis & Contact Patient"
     },
     "official": {
-      "title": "Official Dashboard",
+      "title": "Official's Dashboard",
+      "subtitle": "Monitor community skin health and manage urgent cases.",
+      "totalPatients": "Total Patients",
       "urgentCases": "Urgent Cases",
+      "urgentCasesTitle": "Urgent Cases",
+      "patient": "Patient",
+      "confidence": "confidence",
+      "noCases": "No urgent cases at this time.",
+      "diseaseStats": "Disease Statistics",
       "monitoring": "Case Monitoring",
       "statistics": "Community Statistics",
       "alerts": "Alerts"
     },
     "admin": {
-      "title": "Admin Dashboard",
+      "title": "Administrator Dashboard",
+      "subtitle": "Manage users and monitor system activity.",
+      "totalUsers": "Total Users",
+      "urgentCases": "Urgent Cases",
+      "officials": "Officials",
+      "quickActions": "Quick Actions",
+      "manageUsers": "Manage Users",
+      "manageUsersDesc": "Add, edit, or remove user accounts.",
+      "viewReports": "View Reports",
+      "viewReportsDesc": "Access system analytics and reports.",
       "userManagement": "User Management",
       "systemStats": "System Statistics",
       "reports": "Reports & Analytics",
@@ -228,6 +270,15 @@
     },
     "success": "Analysis completed successfully!"
   },
+  "aiAnalysisPage": {
+    "title": "SeekWell AI Skin Analysis",
+    "subtitle": "Advanced AI-powered skin lesion detection and risk assessment",
+    "liveIntegration": "Live HuggingFace Integration!",
+    "integrationDesc": "This demo now connects directly to your HuggingFace Space: bnmbanhmi/seekwell-skin-cancer. Upload a skin lesion image to get real-time AI analysis from your trained model. The integration includes: image upload, live AI prediction, risk assessment, and result history tracking.",
+    "integrationGuide": "HuggingFace Space Integration",
+    "liveApiIntegration": "Live API Integration:",
+    "frontendConnection": "The frontend now connects directly to your deployed HuggingFace Space, providing real-time skin lesion analysis using your trained model!"
+  },
   "analysisHistory": {
     "title": "Analysis History",
     "noRecords": "No analysis records found",
@@ -247,21 +298,44 @@
     }
   },
   "profile": {
-    "title": "My Profile",
+    "title": "User Profile",
     "personalInfo": "Personal Information",
     "accountInfo": "Account Information",
+    "name": "Name",
     "username": "Username",
     "email": "Email",
     "fullName": "Full Name",
+    "phone": "Phone Number",
     "dateOfBirth": "Date of Birth",
-    "gender": "Gender",
     "address": "Address",
-    "phoneNumber": "Phone Number",
     "role": "Role",
     "memberSince": "Member Since",
-    "edit": "Edit Profile",
+    "specialty": "Specialty",
+    "hospitalId": "Hospital ID",
+    "ethnicity": "Ethnicity",
+    "healthInsurance": "Health Insurance Card No",
+    "idCard": "ID Card Number",
+    "occupation": "Occupation",
+    "newPassword": "New Password",
+    "editButton": "Edit Profile",
     "save": "Save Changes",
     "cancel": "Cancel",
+    "gender": {
+      "label": "Gender",
+      "select": "Select",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "preferNotToSay": "Prefer not to say"
+    },
+    "patientCategory": {
+      "label": "Patient Category",
+      "select": "Select",
+      "assisted": "Assisted",
+      "normal": "Normal",
+      "free": "Free",
+      "other": "Other"
+    },
     "genders": {
       "male": "Male",
       "female": "Female",
@@ -352,6 +426,23 @@
       "submitFailed": "Failed to submit review"
     }
   },
+  "mobileNav": {
+    "dashboard": "Dashboard",
+    "skinCheck": "Skin Check",
+    "history": "History",
+    "appointments": "Appointments",
+    "aiChat": "AI Chat",
+    "patients": "Patients",
+    "reviews": "Reviews",
+    "schedule": "Schedule",
+    "reports": "Reports",
+    "escalate": "Escalate",
+    "community": "Community",
+    "users": "Users",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "skinCaptureComingSoon": "🚀 Skin Lesion Capture coming in Phase 4!\n\nThis will include:\n• Camera integration\n• AI analysis\n• Body region selection\n• Risk assessment"
+  },
   "chatbot": {
     "title": "Health Assistant",
     "placeholder": "Type your message...",
@@ -378,6 +469,54 @@
     "copyright": "© 2025 SeekWell. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "contact": "Contact Us"
+        "contact": "Contact Us"
+  },
+  "patientSearch": {
+    "title": "Patient Search",
+    "roleInfo": "Searching as role:",
+    "ownRecordsOnly": "(You can only view your own records)",
+    "generalSearch": "General Search",
+    "generalPlaceholder": "Search by name, email, phone or address...",
+    "resultsPerPage": "Results per page",
+    "toggleAdvanced": "Advanced Search",
+    "show": "Show",
+    "hide": "Hide",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Patient full name",
+    "email": "Email",
+    "emailPlaceholder": "Patient email",
+    "phone": "Phone",
+    "phonePlaceholder": "Phone number",
+    "patientId": "Patient ID",
+    "patientIdPlaceholder": "Patient ID number",
+    "ageMin": "Minimum Age",
+    "ageMinPlaceholder": "Minimum age",
+    "ageMax": "Maximum Age",
+    "ageMaxPlaceholder": "Maximum age",
+    "gender": "Gender",
+    "allGenders": "All genders",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "idCard": "ID Card/CCCD",
+    "idCardPlaceholder": "ID card number",
+    "insuranceCard": "Health Insurance Card",
+    "insurancePlaceholder": "Insurance card number",
+    "searchButton": "Search",
+    "clearButton": "Clear",
+    "searching": "Searching...",
+    "noResults": "No patients found",
+    "results": "Search Results",
+    "totalResults": "Total results:",
+    "page": "Page",
+    "of": "of",
+    "viewProfile": "View Profile",
+    "createEMR": "Create EMR",
+    "patientDetails": "Patient Details",
+    "dateOfBirth": "Date of Birth",
+    "age": "Age",
+    "years": "years",
+    "close": "Close"
   }
 }
+```

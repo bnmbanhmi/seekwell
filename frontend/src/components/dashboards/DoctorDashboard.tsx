@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './DoctorDashboard.module.css';
 import axios from 'axios';
 
@@ -16,6 +17,7 @@ type UrgentCase = {
 };
 
 const DoctorDashboard = () => {
+  const { t } = useTranslation();
   const [urgentCases, setUrgentCases] = useState<UrgentCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -50,41 +52,41 @@ const DoctorDashboard = () => {
     setSelectedCase(null);
   };
 
-  if (loading) return <div className={styles.loading}>Loading Urgent Cases...</div>;
+  if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Doctor's Review Queue</h2>
-        <p className={styles.subtitle}>Review high-risk cases flagged by the AI and forwarded by officials.</p>
+        <h2 className={styles.title}>{t('dashboard.doctor.reviewQueue')}</h2>
+        <p className={styles.subtitle}>{t('dashboard.doctor.reviewQueueDesc')}</p>
       </div>
 
       <div className={styles.caseGrid}>
         {urgentCases.length > 0 ? urgentCases.map(c => (
           <div key={c.patientId} className={`${styles.caseCard} ${styles[c.riskLevel.toLowerCase()]}`} onClick={() => handleViewDetails(c)}>
             <h4>{c.patientName}</h4>
-            <p><strong>AI Prediction:</strong> {c.disease}</p>
-            <p><strong>Risk:</strong> {c.riskLevel}</p>
-            <p><strong>Reported:</strong> {c.date}</p>
+            <p><strong>{t('dashboard.doctor.aiPrediction')}:</strong> {c.disease}</p>
+            <p><strong>{t('dashboard.doctor.risk')}:</strong> {c.riskLevel}</p>
+            <p><strong>{t('dashboard.doctor.reported')}:</strong> {c.date}</p>
           </div>
-        )) : <p>No urgent cases in your queue.</p>}
+        )) : <p>{t('dashboard.doctor.noCases')}</p>}
       </div>
 
       {selectedCase && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h3>Case Details: {selectedCase.patientName}</h3>
-            <p><strong>Contact:</strong> {selectedCase.patientContact}</p>
-            <p><strong>AI Prediction:</strong> {selectedCase.disease} ({selectedCase.riskLevel})</p>
-            <p><strong>Official's Notes:</strong> {selectedCase.officialNotes}</p>
+            <h3>{t('dashboard.doctor.caseDetails')}: {selectedCase.patientName}</h3>
+            <p><strong>{t('dashboard.doctor.contact')}:</strong> {selectedCase.patientContact}</p>
+            <p><strong>{t('dashboard.doctor.aiPrediction')}:</strong> {selectedCase.disease} ({selectedCase.riskLevel})</p>
+            <p><strong>{t('dashboard.doctor.officialNotes')}:</strong> {selectedCase.officialNotes}</p>
             <div className={styles.imageContainer}>
               {/* In a real app, you'd have a proper image component */}
               <img src={selectedCase.imageUrl} alt="Skin Lesion" style={{ maxWidth: '100%', borderRadius: '8px' }} />
             </div>
             <div className={styles.modalActions}>
-              <button onClick={handleCloseModal}>Close</button>
-              <button className={styles.confirmButton}>Confirm Diagnosis & Contact Patient</button>
+              <button onClick={handleCloseModal}>{t('common.close')}</button>
+              <button className={styles.confirmButton}>{t('dashboard.doctor.confirmDiagnosis')}</button>
             </div>
           </div>
         </div>

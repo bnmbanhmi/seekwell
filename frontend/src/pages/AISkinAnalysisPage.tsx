@@ -1,7 +1,9 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Box, Typography, Container, Alert } from '@mui/material';
 import { AISkinAnalysisDashboard } from '../components/ai';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 /**
  * Demo page for AI Skin Analysis components
@@ -9,6 +11,7 @@ import { AISkinAnalysisDashboard } from '../components/ai';
  * Supports URL parameter ?tab=history to start with history tab
  */
 export const AISkinAnalysisPage: React.FC = () => {
+  const { t } = useTranslation();
   // In a real app, this would come from auth context or route params
   const mockPatientId = 1;
   
@@ -26,20 +29,20 @@ export const AISkinAnalysisPage: React.FC = () => {
   return (
     <Container maxWidth="xl">
       <Box sx={{ py: 4 }}>
-        <Typography variant="h3" gutterBottom align="center">
-          🩺 SeekWell AI Skin Analysis
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h3" gutterBottom>
+            🩺 {t('aiAnalysisPage.title')}
+          </Typography>
+          <LanguageSwitcher />
+        </Box>
         
         <Typography variant="h6" align="center" color="text.secondary" sx={{ mb: 4 }}>
-          Advanced AI-powered skin lesion detection and risk assessment
+          {t('aiAnalysisPage.subtitle')}
         </Typography>
 
         <Alert severity="info" sx={{ mb: 4 }}>
           <Typography variant="body2">
-            <strong>🚀 Live HuggingFace Integration!</strong> This demo now connects directly to your 
-            HuggingFace Space: <strong>bnmbanhmi/seekwell-skin-cancer</strong>. Upload a skin lesion 
-            image to get real-time AI analysis from your trained model. The integration includes:
-            image upload, live AI prediction, risk assessment, and result history tracking.
+            <strong>🚀 {t('aiAnalysisPage.liveIntegration')}</strong> {t('aiAnalysisPage.integrationDesc')}
           </Typography>
         </Alert>
 
@@ -49,10 +52,10 @@ export const AISkinAnalysisPage: React.FC = () => {
         {/* Integration Guide */}
         <Box sx={{ mt: 6, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
-            🛠️ HuggingFace Space Integration
+            🛠️ {t('aiAnalysisPage.integrationGuide')}
           </Typography>
           <Typography variant="body2" paragraph>
-            <strong>✅ Live API Integration:</strong>
+            <strong>✅ {t('aiAnalysisPage.liveApiIntegration')}</strong>
           </Typography>
           <Box component="pre" sx={{ fontSize: '0.875rem', overflow: 'auto', bgcolor: 'black', color: 'lime', p: 2, borderRadius: 1 }}>
 {`🌐 HuggingFace Space: bnmbanhmi/seekwell-skin-cancer
@@ -66,8 +69,7 @@ Components:
 └── AISkinAnalysisDashboard: Orchestrates workflow`}
           </Box>
           <Typography variant="body2" sx={{ mt: 2 }}>
-            The frontend now connects directly to your deployed HuggingFace Space, 
-            providing real-time skin lesion analysis using your trained model!
+            {t('aiAnalysisPage.frontendConnection')}
           </Typography>
         </Box>
       </Box>

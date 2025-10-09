@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import styles from './ForgotPasswordPage.module.css';
+import LanguageSwitcher from './common/LanguageSwitcher';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
 const ForgotPasswordPage: React.FC = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -23,9 +25,9 @@ const ForgotPasswordPage: React.FC = () => {
             setMessage(response.data.message);
         } catch (err: any) {
             if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.detail || 'Không thể gửi liên kết đặt lại. Vui lòng thử lại.');
+                setError(err.response.data.detail || t('forgotPassword.errors.sendFailed'));
             } else {
-                setError('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+                setError(t('common.error'));
             }
             console.error("Forgot password error:", err);
         }
@@ -34,10 +36,13 @@ const ForgotPasswordPage: React.FC = () => {
 
     return (
         <div className={styles.container}>
+            <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
+                <LanguageSwitcher variant="icon" size="small" />
+            </div>
             <div className={styles.card}>
-                <h2 className={styles.heading}>Quên mật khẩu</h2>
+                <h2 className={styles.heading}>{t('forgotPassword.title')}</h2>
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    <p className={styles.subHeading}>Nhập địa chỉ email của bạn để nhận liên kết đặt lại mật khẩu.</p>
+                    <p className={styles.subHeading}>{t('forgotPassword.subtitle')}</p>
 
                     
                     <input
@@ -47,17 +52,17 @@ const ForgotPasswordPage: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className={styles.input}
-                        placeholder="Nhập Email"
+                        placeholder={t('forgotPassword.email')}
                     />
 
                     {message && <p style={{ color: 'green', textAlign: 'center', margin: '0' }}>{message}</p>}
                     {error && <p style={{ color: 'red', textAlign: 'center', margin: '0' }}>{error}</p>}
                     <button type="submit" disabled={loading} className={styles.button} style={{ backgroundColor: '#007bff' }}>
-                        {loading ? 'Đang gửi...' : 'Gửi liên kết đặt lại'}
+                        {loading ? t('forgotPassword.sending') : t('forgotPassword.submit')}
                     </button>
                 </form>
                 <div style={{ marginTop: '16px' }}>
-                    <Link to="/login" style={{ color: '#007bff', textDecoration: 'none' }}>Quay lại Đăng nhập</Link>
+                    <Link to="/login" style={{ color: '#007bff', textDecoration: 'none' }}>{t('forgotPassword.backToLogin')}</Link>
                 </div>
             </div>
         </div>

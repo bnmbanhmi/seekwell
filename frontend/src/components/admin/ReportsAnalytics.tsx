@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import styles from './ReportsAnalytics.module.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
@@ -30,6 +32,7 @@ interface ReportData {
 }
 
 const ReportsAnalytics: React.FC = () => {
+  const { t } = useTranslation();
   const [reportData, setReportData] = useState<ReportData>({
     totalUsers: 0,
     totalPatients: 0,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './MobileNavigation.module.css';
 
 interface NavigationItem {
@@ -16,6 +17,7 @@ interface MobileNavigationProps {
 }
 
 const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,7 +25,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
     const baseItems: NavigationItem[] = [
       {
         id: 'dashboard',
-        label: 'Dashboard',
+        label: t('mobileNav.dashboard'),
         icon: '',
         path: '/dashboard',
         roles: ['PATIENT', 'DOCTOR', 'OFFICIAL', 'ADMIN']
@@ -34,26 +36,26 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
       PATIENT: [
         {
           id: 'skin-capture',
-          label: 'Skin Check',
+          label: t('mobileNav.skinCheck'),
           icon: '',
           path: '/dashboard/skin-capture',
           featured: true
         },
         {
           id: 'assessments',
-          label: 'History',
+          label: t('mobileNav.history'),
           icon: '',
           path: '/dashboard/skin-assessments'
         },
         {
           id: 'appointments',
-          label: 'Appointments',
+          label: t('mobileNav.appointments'),
           icon: '',
           path: '/dashboard/appointments'
         },
         {
           id: 'chat',
-          label: 'AI Chat',
+          label: t('mobileNav.aiChat'),
           icon: '',
           path: '/dashboard/chat'
         }
@@ -61,25 +63,25 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
       DOCTOR: [
         {
           id: 'patients',
-          label: 'Patients',
+          label: t('mobileNav.patients'),
           icon: '',
           path: '/dashboard/patients'
         },
         {
           id: 'consultations',
-          label: 'Reviews',
+          label: t('mobileNav.reviews'),
           icon: '',
           path: '/dashboard/consultations'
         },
         {
           id: 'appointments',
-          label: 'Schedule',
+          label: t('mobileNav.schedule'),
           icon: '',
           path: '/dashboard/appointments'
         },
         {
           id: 'reports',
-          label: 'Reports',
+          label: t('mobileNav.reports'),
           icon: '',
           path: '/dashboard/reports'
         }
@@ -87,25 +89,25 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
       OFFICIAL: [
         {
           id: 'reviews',
-          label: 'Reviews',
+          label: t('mobileNav.reviews'),
           icon: '',
           path: '/dashboard/reviews'
         },
         {
           id: 'patients',
-          label: 'Patients',
+          label: t('mobileNav.patients'),
           icon: '',
           path: '/dashboard/patients'
         },
         {
           id: 'escalations',
-          label: 'Escalate',
+          label: t('mobileNav.escalate'),
           icon: '',
           path: '/dashboard/escalations'
         },
         {
           id: 'community',
-          label: 'Community',
+          label: t('mobileNav.community'),
           icon: '',
           path: '/dashboard/community'
         }
@@ -113,19 +115,19 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
       ADMIN: [
         {
           id: 'users',
-          label: 'Users',
+          label: t('mobileNav.users'),
           icon: '',
           path: '/dashboard/users'
         },
         {
           id: 'analytics',
-          label: 'Analytics',
+          label: t('mobileNav.analytics'),
           icon: '',
           path: '/dashboard/analytics'
         },
         {
           id: 'settings',
-          label: 'Settings',
+          label: t('mobileNav.settings'),
           icon: '',
           path: '/dashboard/settings'
         }
@@ -149,7 +151,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ userRole }) => {
     
     // For skin capture, show coming soon for now
     if (item.id === 'skin-capture') {
-      alert('🚀 Skin Lesion Capture coming in Phase 4!\n\nThis will include:\n• Camera integration\n• AI analysis\n• Body region selection\n• Risk assessment');
+      alert(t('mobileNav.skinCaptureComingSoon'));
       return;
     }
     

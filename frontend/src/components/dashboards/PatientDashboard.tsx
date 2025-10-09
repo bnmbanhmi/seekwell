@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './PatientDashboard.module.css';
 
 const PatientDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleNewAnalysis = () => {
@@ -16,31 +18,31 @@ const PatientDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Patient Dashboard</h2>
-        <p className={styles.subtitle}>Welcome to your personal skin health center.</p>
+        <h2 className={styles.title}>{t('dashboard.patient.title')}</h2>
+        <p className={styles.subtitle}>{t('dashboard.patient.subtitle')}</p>
       </div>
 
       <div className={styles.actionsGrid}>
         <div className={styles.actionCard} onClick={handleNewAnalysis}>
           <div className={styles.actionIcon}>🔍</div>
           <div className={styles.actionInfo}>
-            <h3 className={styles.actionTitle}>New AI Skin Analysis</h3>
-            <p className={styles.actionDescription}>Upload a photo to get an instant analysis of a skin lesion.</p>
+            <h3 className={styles.actionTitle}>{t('dashboard.patient.newAnalysis')}</h3>
+            <p className={styles.actionDescription}>{t('dashboard.patient.newAnalysisDesc')}</p>
           </div>
         </div>
         
         <div className={styles.actionCard} onClick={handleViewHistory}>
           <div className={styles.actionIcon}>📜</div>
           <div className={styles.actionInfo}>
-            <h3 className={styles.actionTitle}>View Analysis History</h3>
-            <p className={styles.actionDescription}>Review your past results and track your skin's health over time.</p>
+            <h3 className={styles.actionTitle}>{t('dashboard.patient.viewHistory')}</h3>
+            <p className={styles.actionDescription}>{t('dashboard.patient.viewHistoryDesc')}</p>
           </div>
         </div>
       </div>
 
       <div className={styles.infoBox}>
-        <h4>What's Next?</h4>
-        <p>If the AI detects a high-risk lesion, you will be notified. An official may contact you to coordinate further steps with a doctor.</p>
+        <h4>{t('dashboard.patient.whatsNext')}</h4>
+        <p>{t('dashboard.patient.whatsNextDesc')}</p>
       </div>
     </div>
   );

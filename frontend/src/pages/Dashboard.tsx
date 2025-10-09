@@ -1,8 +1,7 @@
 // pages/Dashboard.tsx
 import React from 'react';
-
 import { Routes, Route } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
 import {UserRole} from '../types/UserType'; // Adjust the import path as necessary
 
 import BaseDashboard from '../components/layout/BaseDashboard';
@@ -29,6 +28,8 @@ type Props = {
  * 'staff', and 'admin'.
  */
 const Dashboard: React.FC<Props> = ({ role }) => {
+  const { t } = useTranslation();
+  
   const renderDashboard = () => {
     const dashboardMap: Record<Props['role'], React.ReactNode> = {
       DOCTOR: <DoctorDashboard />,

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styles from './Profile.module.css'; // Import CSS module
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
@@ -32,6 +34,7 @@ interface UserProfileForm {
 }
 
 const Profile: React.FC = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [userData, setUserData] = useState<UserProfileForm>({
         full_name: '',
@@ -242,11 +245,11 @@ const Profile: React.FC = () => {
             // Generic user
             return (
                 <>
-                    <p><strong>Name:</strong> {safeDisplay(userData.full_name)}</p>
-                    <p><strong>Username:</strong> {safeDisplay(userData.username)}</p>
-                    <p><strong>Email:</strong> {safeDisplay(userData.email)}</p>
-                    <p><strong>Phone Number:</strong> {safeDisplay(userData.phone)}</p>
-                    <p><strong>Address:</strong> {safeDisplay(userData.address)}</p>
+                    <p><strong>{t('profile.name')}:</strong> {safeDisplay(userData.full_name)}</p>
+                    <p><strong>{t('profile.username')}:</strong> {safeDisplay(userData.username)}</p>
+                    <p><strong>{t('profile.email')}:</strong> {safeDisplay(userData.email)}</p>
+                    <p><strong>{t('profile.phone')}:</strong> {safeDisplay(userData.phone)}</p>
+                    <p><strong>{t('profile.address')}:</strong> {safeDisplay(userData.address)}</p>
                 </>
             );
         }
@@ -258,32 +261,32 @@ const Profile: React.FC = () => {
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Name:
+                        {t('profile.name')}:
                         <input name="doctor_name" value={formData.doctor_name || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Username:
+                        {t('profile.username')}:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Email:
+                        {t('profile.email')}:
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Specialty:
+                        {t('profile.specialty')}:
                         <input name="major" value={formData.major || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Hospital ID:
+                        {t('profile.hospitalId')}:
                         <input name="hospital_id" value={formData.hospital_id || ''} onChange={handleChange} className={styles['profile-input']} type="number" disabled />
                     </label>
                     <label className={styles['profile-label']}>
-                        New Password:
+                        {t('profile.newPassword')}:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>{t('common.save')}</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>{t('common.cancel')}</button>
                     </div>
                 </form>
             );
@@ -292,71 +295,71 @@ const Profile: React.FC = () => {
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Name:
+                        {t('profile.name')}:
                         <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Username:
+                        {t('profile.username')}:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Email:
+                        {t('profile.email')}:
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Phone Number:
+                        {t('profile.phone')}:
                         <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Address:
+                        {t('profile.address')}:
                         <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Date of Birth:
+                        {t('profile.dateOfBirth')}:
                         <input name="date_of_birth" value={formData.date_of_birth || ''} onChange={handleChange} type="date" className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Gender:
+                        {t('profile.gender.label')}:
                         <select name="gender" value={formData.gender || ''} onChange={handleChange} className={styles['profile-input']}>
-                            <option value="">Select</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <option value="">{t('profile.gender.select')}</option>
+                            <option value="male">{t('profile.gender.male')}</option>
+                            <option value="female">{t('profile.gender.female')}</option>
+                            <option value="other">{t('profile.gender.other')}</option>
                         </select>
                     </label>
                     <label className={styles['profile-label']}>
-                        Ethnicity:
+                        {t('profile.ethnicity')}:
                         <input name="ethnic_group" value={formData.ethnic_group || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Health Insurance Card No:
+                        {t('profile.healthInsurance')}:
                         <input name="health_insurance_card_no" value={formData.health_insurance_card_no || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        ID Card Number:
+                        {t('profile.idCard')}:
                         <input name="identification_id" value={formData.identification_id || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Occupation:
+                        {t('profile.occupation')}:
                         <input name="job" value={formData.job || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Patient Category:
+                        {t('profile.patientCategory.label')}:
                         <select name="class_role" value={formData.class_role || ''} onChange={handleChange} className={styles['profile-input']}>
-                            <option value="">Select</option>
-                            <option value="Assisted">Assisted</option>
-                            <option value="Normal">Normal</option>
-                            <option value="Free">Free</option>
-                            <option value="Other">Other</option>
+                            <option value="">{t('profile.patientCategory.select')}</option>
+                            <option value="Assisted">{t('profile.patientCategory.assisted')}</option>
+                            <option value="Normal">{t('profile.patientCategory.normal')}</option>
+                            <option value="Free">{t('profile.patientCategory.free')}</option>
+                            <option value="Other">{t('profile.patientCategory.other')}</option>
                         </select>
                     </label>
                     <label className={styles['profile-label']}>
-                        New Password:
+                        {t('profile.newPassword')}:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>{t('common.save')}</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>{t('common.cancel')}</button>
                     </div>
                 </form>
             );
@@ -365,32 +368,32 @@ const Profile: React.FC = () => {
             return (
                 <form className={styles['profile-form']} onSubmit={handleSubmit}>
                     <label className={styles['profile-label']}>
-                        Name:
+                        {t('profile.name')}:
                         <input name="full_name" value={formData.full_name} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Username:
+                        {t('profile.username')}:
                         <input name="username" value={formData.username || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Email:
+                        {t('profile.email')}:
                         <input name="email" value={formData.email || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Phone Number:
+                        {t('profile.phone')}:
                         <input name="phone" value={formData.phone || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        Address:
+                        {t('profile.address')}:
                         <input name="address" value={formData.address || ''} onChange={handleChange} className={styles['profile-input']} />
                     </label>
                     <label className={styles['profile-label']}>
-                        New Password:
+                        {t('profile.newPassword')}:
                         <input name="password" type="password" value={formData.password || ''} onChange={handleChange} autoComplete="new-password" className={styles['profile-input']} />
                     </label>
                     <div className={styles['profile-form-actions']}>
-                        <button type="submit" disabled={loading} className={styles['profile-button']}>Save</button>
-                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>Cancel</button>
+                        <button type="submit" disabled={loading} className={styles['profile-button']}>{t('common.save')}</button>
+                        <button type="button" onClick={handleCancel} disabled={loading} className={styles['profile-button-cancel']}>{t('common.cancel')}</button>
                     </div>
                 </form>
             );
@@ -398,7 +401,7 @@ const Profile: React.FC = () => {
     };
 
     if (loading) {
-        return <div className={styles['profile-container']}>Loading...</div>;
+        return <div className={styles['profile-container']}>{t('common.loading')}</div>;
     }
 
     if (error) {
@@ -407,14 +410,17 @@ const Profile: React.FC = () => {
 
     return (
         <div className={styles['profile-container']}>
-            <h1 className={styles['profile-title']}>User Profile</h1>
+            <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
+                <LanguageSwitcher variant="icon" size="small" />
+            </div>
+            <h1 className={styles['profile-title']}>{t('profile.title')}</h1>
             {error && <div className={styles['profile-error']}>{error}</div>}
             {editMode ? (
                 renderEditForm()
             ) : (
                 <div className={styles['profile-details']}>
                     {renderProfileDetails()}
-                    <button onClick={handleEdit} className={styles['profile-button']}>Edit Profile</button>
+                    <button onClick={handleEdit} className={styles['profile-button']}>{t('profile.editButton')}</button>
                 </div>
             )}
         </div>

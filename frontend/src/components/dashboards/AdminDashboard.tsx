@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import styles from './AdminDashboard.module.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
@@ -12,6 +14,7 @@ interface DashboardStats {
 }
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalOfficials: 0,
@@ -55,8 +58,11 @@ const AdminDashboard = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Administrator Dashboard</h2>
-        <p className={styles.subtitle}>Manage users and monitor system activity.</p>
+        <div>
+          <h2 className={styles.title}>{t('dashboard.admin.title')}</h2>
+          <p className={styles.subtitle}>{t('dashboard.admin.subtitle')}</p>
+        </div>
+        <LanguageSwitcher />
       </div>
 
       {error && (
@@ -69,7 +75,7 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>👥</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalUsers}</h3>
-            <p className={styles.statLabel}>Total Users</p>
+            <p className={styles.statLabel}>{t('dashboard.admin.totalUsers')}</p>
           </div>
         </div>
         
@@ -77,7 +83,7 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>😟</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.urgentCases}</h3>
-            <p className={styles.statLabel}>Urgent Cases</p>
+            <p className={styles.statLabel}>{t('dashboard.admin.urgentCases')}</p>
           </div>
         </div>
         
@@ -85,28 +91,28 @@ const AdminDashboard = () => {
           <div className={styles.statIcon}>👩‍💼</div>
           <div className={styles.statInfo}>
             <h3 className={styles.statNumber}>{loading ? '...' : stats.totalOfficials}</h3>
-            <p className={styles.statLabel}>Officials</p>
+            <p className={styles.statLabel}>{t('dashboard.admin.officials')}</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className={styles.actions}>
-        <h3 className={styles.actionsTitle}>Quick Actions</h3>
+        <h3 className={styles.actionsTitle}>{t('dashboard.admin.quickActions')}</h3>
         <div className={styles.actionsGrid}>
           <Link to="/dashboard/users" className={styles.actionCard}>
             <div className={styles.actionIcon}>👤</div>
             <div className={styles.actionInfo}>
-              <h4>Manage Users</h4>
-              <p>Add, edit, or remove user accounts.</p>
+              <h4>{t('dashboard.admin.manageUsers')}</h4>
+              <p>{t('dashboard.admin.manageUsersDesc')}</p>
             </div>
           </Link>
           
           <Link to="/dashboard/reports" className={styles.actionCard}>
             <div className={styles.actionIcon}>📈</div>
             <div className={styles.actionInfo}>
-              <h4>View Reports</h4>
-              <p>Access system analytics and reports.</p>
+              <h4>{t('dashboard.admin.viewReports')}</h4>
+              <p>{t('dashboard.admin.viewReportsDesc')}</p>
             </div>
           </Link>
         </div>
