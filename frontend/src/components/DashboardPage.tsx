@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent, PropsWithChildren, HTMLAttributes, OlHTMLAttributes, LiHTMLAttributes } from 'react';
+import React, { useState, useEffect, FormEvent, HTMLAttributes, OlHTMLAttributes, LiHTMLAttributes } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'; // For rendering Markdown
 import { toast } from 'react-toastify';
@@ -30,7 +30,7 @@ interface ChatMessage {
 // Custom Markdown renderers
 
 // For <p>
-type CustomParagraphProps = PropsWithChildren<{ node?: any } & Omit<HTMLAttributes<HTMLParagraphElement>, 'ref'>>;
+type CustomParagraphProps = { children?: any; node?: any } & Omit<HTMLAttributes<HTMLParagraphElement>, 'ref'>;
 const CustomParagraph: React.FC<CustomParagraphProps> = ({ children, node, style, ...rest }) => {
   return (
     <p {...rest} style={{ ...style, marginBottom: '0.5em' }}>
@@ -40,7 +40,7 @@ const CustomParagraph: React.FC<CustomParagraphProps> = ({ children, node, style
 };
 
 // For <ul>
-type CustomUlProps = PropsWithChildren<{ node?: any } & Omit<HTMLAttributes<HTMLUListElement>, 'ref'>>;
+type CustomUlProps = { children?: any; node?: any } & Omit<HTMLAttributes<HTMLUListElement>, 'ref'>;
 const CustomUl: React.FC<CustomUlProps> = ({ children, node, style, ...rest }) => {
   return (
     <ul {...rest} style={{ ...style, paddingLeft: '20px', marginTop: '0.5em', marginBottom: '0.5em' }}>
@@ -50,7 +50,7 @@ const CustomUl: React.FC<CustomUlProps> = ({ children, node, style, ...rest }) =
 };
 
 // For <ol>
-type CustomOlProps = PropsWithChildren<{ node?: any } & Omit<OlHTMLAttributes<HTMLOListElement>, 'ref'>>;
+type CustomOlProps = { children?: any; node?: any } & Omit<OlHTMLAttributes<HTMLOListElement>, 'ref'>;
 const CustomOl: React.FC<CustomOlProps> = ({ children, node, style, ...rest }) => {
   return (
     <ol {...rest} style={{ ...style, paddingLeft: '20px', marginTop: '0.5em', marginBottom: '0.5em' }}>
@@ -60,7 +60,7 @@ const CustomOl: React.FC<CustomOlProps> = ({ children, node, style, ...rest }) =
 };
 
 // For <li>
-type CustomLiProps = PropsWithChildren<{ node?: any } & Omit<LiHTMLAttributes<HTMLLIElement>, 'ref'>>;
+type CustomLiProps = { children?: any; node?: any } & Omit<LiHTMLAttributes<HTMLLIElement>, 'ref'>;
 const CustomLi: React.FC<CustomLiProps> = ({ children, node, style, ...rest }) => {
   return (
     <li {...rest} style={{ ...style, marginBottom: '0.25em' }}>

@@ -45,6 +45,7 @@ http://localhost:3000
 - **Frontend:** React + TypeScript + Material-UI
 - **AI:** HuggingFace (bnmbanhmi/seekwell-skin-cancer)
 - **Auth:** JWT
+- **i18n:** English 🇺🇸 & Vietnamese 🇻🇳 (800+ translations)
 
 ## Structure
 

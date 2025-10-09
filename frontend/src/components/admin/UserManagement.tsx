@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../types/UserType';
-import LanguageSwitcher from '../common/LanguageSwitcher';
 import styles from './UserManagement.module.css';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
@@ -32,7 +30,6 @@ interface EditUserForm {
 }
 
 const UserManagement: React.FC = () => {
-  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

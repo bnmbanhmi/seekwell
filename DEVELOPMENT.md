@@ -11,9 +11,9 @@
 ### Backend
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python setup_seekwell_database.py  # Creates DB + admin
+python3 setup_seekwell_database.py  # Creates DB + admin
 uvicorn app.main:app --reload
 ```
 
@@ -90,23 +90,52 @@ const pollUrl = `${HF_URL}/gradio_api/queue/data?session_hash=${sessionHash}`;
 
 **Roles:** Patient (own data), Doctor/Official (all patients + notes), Admin (full access)
 
-## i18n (In Progress)
+## i18n Implementation
+
+**Status:** ✅ Complete (12 components support English 🇺🇸 and Vietnamese 🇻🇳)
 
 **Structure:**
 ```
 frontend/src/i18n/
-├── config.ts
+├── config.ts              # i18next initialization
 └── locales/
-    ├── en.json
-    └── vi.json
+    ├── en.json           # English translations (800+ keys)
+    └── vi.json           # Vietnamese translations (800+ keys)
 ```
 
-**Usage:**
+**Dependencies:**
+- `i18next@23.15.1` (v24 incompatible with TS 4.9.5)
+- `react-i18next@14.1.2`
+- `i18next-browser-languagedetector@8.0.2`
+
+**Converted Components:**
+1. LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage
+2. PatientDashboard, DoctorDashboard, OfficialDashboard, AdminDashboard
+3. Profile, AISkinAnalysisPage, MobileNavigation, PatientSearch
+
+**Usage Pattern:**
 ```typescript
 import { useTranslation } from 'react-i18next';
-const { t } = useTranslation();
-return <h1>{t('dashboard.title')}</h1>;
+import LanguageSwitcher from '../common/LanguageSwitcher';
+
+const Component = () => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <LanguageSwitcher /> {/* 🇺🇸 🇻🇳 flag buttons */}
+      <h1>{t('dashboard.title')}</h1>
+    </div>
+  );
+};
 ```
+
+**Features:**
+- Persistent language selection (localStorage)
+- Auto-detection from browser language
+- LanguageSwitcher component with flag icons
+- 800+ translation keys organized by namespace
+
+**Key Namespaces:** common, login, register, dashboard.*, profile, aiAnalysis, mobileNav, patientSearch
 
 ## Deployment
 
@@ -141,7 +170,7 @@ return <h1>{t('dashboard.title')}</h1>;
 
 **Backend:** fastapi 0.115.12, sqlalchemy 2.0.36, psycopg2-binary 2.9.10, python-jose 3.3.0, passlib 1.7.4
 
-**Frontend:** react 19.1.0, typescript 4.9.5, @mui/material 7.1.1, axios 1.7.9, react-i18next 15.1.3
+**Frontend:** react 19.1.0, typescript 4.9.5, @mui/material 7.1.1, axios 1.7.9, i18next 23.15.1, react-i18next 14.1.2
 
 ## Resources
 

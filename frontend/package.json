@@ -67,6 +67,7 @@
     ]
   },
   "devDependencies": {
+    "@types/i18next": "^12.1.0",
     "@types/next": "^8.0.7"
   }
 }
