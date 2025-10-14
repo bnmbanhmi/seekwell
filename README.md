@@ -4,8 +4,12 @@
 
 ## Quick Links
 
-- [TODO.md](TODO.md) - Task tracker
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Technical guide
+- 🚀 [SETUP.md](SETUP.md) - **Start here!** Complete setup guide
+- 💻 [LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md) - Local dev environment setup
+- 🌐 [DEPLOYMENT.md](DEPLOYMENT.md) - Vercel/Render deployment guide
+- ✅ [TODO.md](TODO.md) - Task tracker
+- 📖 [DEVELOPMENT.md](DEVELOPMENT.md) - Technical guide
+- 🤖 [.github/copilot-instructions.md](.github/copilot-instructions.md) - AI coding agent guide
 
 ## What is SeekWell?
 
@@ -17,6 +21,8 @@ AI platform for early skin disease detection:
 
 ## Quick Start
 
+**New to SeekWell?** → See [SETUP.md](SETUP.md) for detailed setup instructions
+
 ### Prerequisites
 Python 3.11+, Node.js 16+, PostgreSQL 14+
 
@@ -25,7 +31,14 @@ Python 3.11+, Node.js 16+, PostgreSQL 14+
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+
+# Create .env from template (edit with your settings)
+cp .env.example .env
+
+# Initialize database with default accounts
 python setup_seekwell_database.py
+
+# Start server
 uvicorn app.main:app --reload
 ```
 http://localhost:8000
@@ -37,7 +50,7 @@ npm install && npm start
 ```
 http://localhost:3000
 
-**Login:** admin@seekwell.com / admin123
+**Default Login:** admin@seekwell.health / SeekWell2025!
 
 ## Tech Stack
 
