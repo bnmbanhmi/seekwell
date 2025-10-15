@@ -22,8 +22,8 @@ AI-powered skin lesion detection platform for community health workers.
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-# Edit .env: Set DATABASE_URL and generate SECRET_KEY with: openssl rand -hex 32
+# Create .env file with required variables (see Environment Configuration section)
+# Generate SECRET_KEY with: openssl rand -hex 32
 python setup_seekwell_database.py
 uvicorn app.main:app --reload
 ```
@@ -34,7 +34,7 @@ API Docs: http://localhost:8000/docs
 ```bash
 cd frontend
 npm install
-cp .env.example .env  # Optional - defaults work for local dev
+# Create .env file if needed (optional - defaults work for local dev)
 npm start
 ```
 App: http://localhost:3000

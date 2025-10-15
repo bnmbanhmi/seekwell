@@ -5,6 +5,7 @@
 - **DRY**: Don't repeat README.md content - reference it instead
 - **Update README.md only**: When new project details emerge, edit README.md (keep it minimal)
 - **No new markdown files**: All documentation goes in README.md or here
+ - **No unnecessary setup scripts**: No unnecessary additional setup scripts or helper scripts.
 
 ## Project Context
 FastAPI backend + React/TypeScript frontend + HuggingFace AI model. See README.md for setup, deployment, and architecture.
