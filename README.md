@@ -21,7 +21,19 @@ AI-powered skin lesion detection platform for community health workers.
 ```bash
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
+# Make sure the virtual environment is created inside the `backend/` directory.
+# Always activate the backend venv before installing packages so they are installed
+# into `backend/.venv` and not the project root. Example commands:
+#
+# Create and activate the venv inside backend/
+# python3 -m venv .venv
+# source .venv/bin/activate
+#
+# Install packages while the venv is active (preferred):
 pip install -r requirements.txt
+#
+# Or, without activating the venv, use the venv's python to install packages:
+# backend/.venv/bin/python -m pip install -r backend/requirements.txt
 # Create .env file with required variables (see Environment Configuration section)
 # Generate SECRET_KEY with: openssl rand -hex 32
 python setup_seekwell_database.py
