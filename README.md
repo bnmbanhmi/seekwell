@@ -151,7 +151,9 @@ REACT_APP_ENABLE_PWA=true
 **Branch:** main (auto-deploy)  
 **Root Directory:** backend/  
 **Docker:** Uses `backend/Dockerfile`  
-**Start Command:** uvicorn app.main:app --host 0.0.0.0 --port $PORT
+**Start Command:** uvicorn app.main:app --host 0.0.0.0 --port $PORT  
+**Python Version:** 3.11.9 (specified in `backend/runtime.txt`)  
+**Database Driver:** psycopg v3 (replaces psycopg2 for Python 3.11-3.13 compatibility)
 
 **Environment Variables:**
 ```bash
