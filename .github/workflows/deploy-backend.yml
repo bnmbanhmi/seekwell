@@ -42,14 +42,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r ../requirements.txt
+          pip install -r backend/requirements.txt
           pip install pytest pytest-asyncio pytest-cov black flake8 bandit safety
 
       - name: Run code formatting check
@@ -61,7 +61,7 @@ jobs:
       - name: Run security checks
         run: |
           bandit -r app/ -ll
-          safety check -r ../requirements.txt
+          safety check -r backend/requirements.txt
 
       - name: Run tests
         env:

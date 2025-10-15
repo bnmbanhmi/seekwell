@@ -30,7 +30,7 @@ python3 -m venv .venv && source .venv/bin/activate
 # source .venv/bin/activate
 #
 # Install packages while the venv is active (preferred):
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 #
 # Or, without activating the venv, use the venv's python to install packages:
 # backend/.venv/bin/python -m pip install -r backend/requirements.txt
