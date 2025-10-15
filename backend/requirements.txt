@@ -9,7 +9,7 @@ python-multipart==0.0.20
 
 # Database
 SQLAlchemy==2.0.41
-psycopg2-binary==2.9.9
+psycopg[binary]==3.2.3
 
 # Authentication & Security
 python-jose==3.4.0
