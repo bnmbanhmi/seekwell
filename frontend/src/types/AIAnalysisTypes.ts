@@ -113,3 +113,6 @@ export const CONFIDENCE_LEVEL_COLORS = {
   LOW: '#ffc933',       // Yellow (from palette)
   VERY_LOW: '#4a5568'   // Dark Gray (from palette)
 };
+
+// Confidence threshold for uncertain results
+export const CONFIDENCE_THRESHOLD = 0.30; // 30%

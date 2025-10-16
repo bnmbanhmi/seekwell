@@ -291,7 +291,109 @@
       "invalidFormat": "Invalid image format. Please use JPG, PNG, or JPEG.",
       "fileTooLarge": "File too large. Maximum size is 5MB."
     },
-    "success": "Analysis completed successfully!"
+    "success": "Analysis completed successfully!",
+    "diseaseNames": {
+      "melanoma": "Melanoma",
+      "basal_cell_carcinoma": "Basal Cell Carcinoma",
+      "squamous_cell_carcinoma": "Squamous Cell Carcinoma",
+      "actinic_keratosis": "Actinic Keratosis",
+      "seborrheic_keratosis": "Seborrheic Keratosis",
+      "nevus": "Nevus/Mole",
+      "dermatofibroma": "Dermatofibroma",
+      "vascular_lesion": "Vascular Lesion"
+    },
+    "results": {
+      "title": "Your Analysis Results",
+      "aiPredicts": "AI predicts this is most likely:",
+      "accuracy": "AI Accuracy:",
+      "analysisTime": "Analysis Time:",
+      "riskLabels": {
+        "URGENT": "URGENT RISK - IMMEDIATE ACTION REQUIRED",
+        "HIGH": "HIGH RISK - ACTION REQUIRED",
+        "MEDIUM": "MEDIUM RISK - MONITORING NEEDED",
+        "LOW": "LOW RISK - CONTINUE MONITORING"
+      },
+      "diseaseInfo": {
+        "title": "What is",
+        "melanoma": {
+          "description": "This is the most serious type of skin cancer as it can metastasize (spread) to other parts of the body. However, if detected early, the cure rate is very high. The most important thing now is to get examined soon."
+        },
+        "basal_cell_carcinoma": {
+          "description": "This is the most common type of skin cancer but less dangerous than melanoma. It usually grows slowly and rarely spreads. However, it needs timely treatment to avoid serious skin damage."
+        },
+        "squamous_cell_carcinoma": {
+          "description": "This is the second most common type of skin cancer, which can spread if not treated. The cure rate is high if detected early. You need to see a doctor for appropriate treatment."
+        },
+        "actinic_keratosis": {
+          "description": "This is a precancerous skin lesion that can develop into squamous cell carcinoma if not treated. Usually caused by prolonged sun exposure. Requires monitoring and timely treatment."
+        },
+        "seborrheic_keratosis": {
+          "description": "This is a benign (non-cancerous) skin lesion, common in older adults. Not harmful to health but may be cosmetically bothersome. Still should see a doctor to confirm diagnosis."
+        },
+        "nevus": {
+          "description": "This is a common mole, mostly benign. However, some moles can change over time. Need monitoring and see a doctor if you notice changes in size, color, or shape."
+        },
+        "default": {
+          "description": "This skin lesion needs to be evaluated in depth by a dermatologist to accurately determine the type of lesion and appropriate treatment plan."
+        }
+      },
+      "nextSteps": {
+        "title": "WHAT TO DO NOW:",
+        "urgent": [
+          "Stay calm: Early detection is very fortunate. This result is a warning to take action, not a final diagnosis.",
+          "Schedule an appointment with a dermatologist IMMEDIATELY: Don't delay, call to schedule an appointment within 1-2 days. This is the most important step.",
+          "A local health worker will contact you: According to the project protocol, a local health worker will contact you soon to assist with next steps and arrange consultation if needed.",
+          "Monitor the mole: While waiting for the exam, pay attention to whether the mole changes in size, color, or shape.",
+          "Protect from sunlight: Protect the area with the mole from sunlight."
+        ],
+        "high": [
+          "Stay calm: This result is just initial screening, not a final diagnosis.",
+          "Schedule an appointment with a dermatologist: Call to schedule within 3-5 days.",
+          "Health worker will contact: A local health worker will contact you to assist.",
+          "Monitor changes: Pay attention to whether the mole changes.",
+          "Protect skin: Shield the area from sunlight."
+        ],
+        "medium": [
+          "Schedule checkup: Should schedule a dermatologist appointment in the next few weeks.",
+          "Monitor regularly: Pay attention to changes in size, color, shape.",
+          "Take tracking photos: Take photos again after a few weeks to compare.",
+          "Protect skin: Use sunscreen and avoid direct sun exposure."
+        ],
+        "low": [
+          "Regular monitoring: Check the mole once a month.",
+          "Keep photo records: Take photos to track changes over time.",
+          "Regular checkups: Should see a dermatologist at least once a year.",
+          "Protect skin: Use sunscreen daily."
+        ]
+      },
+      "otherPossibilities": "Other possibilities AI considered:",
+      "disclaimer": {
+        "title": "Important Note:",
+        "text": "This AI analysis is for reference and initial screening only. This result does NOT replace professional medical diagnosis by a doctor. Always consult a doctor for health decisions."
+      }
+    },
+    "uncertainResults": {
+      "title": "Your Analysis Results",
+      "statusLabel": "UNCERTAIN RESULT",
+      "mainFinding": "The AI cannot clearly identify the skin lesion from this image.",
+      "analysisTime": "Analysis Time:",
+      "explanation": {
+        "title": "What does this mean?",
+        "text": "This result may be due to several reasons: the photo quality is not good enough (blurry, insufficient lighting), or your skin lesion is not among the 6 common diseases that the AI was trained to recognize. The important thing is not to be complacent."
+      },
+      "nextSteps": {
+        "title": "What should you do?",
+        "steps": [
+          "Retake the photo: Try taking another photo that is clearer and better lit according to the guidelines for more accurate results.",
+          "Self-monitor: Continue to observe the mole or skin area. If there are any changes in size, shape, color, or if you feel itching/pain, see a doctor immediately.",
+          "Consider seeing a doctor: If you are still worried, it is always best to consult directly with a dermatologist. They can provide the most accurate diagnosis."
+        ]
+      },
+      "disclaimer": {
+        "title": "Important Note:",
+        "text": "This AI analysis is for reference and initial screening only. This result does NOT replace professional medical diagnosis by a doctor. Always consult a doctor for health decisions."
+      }
+    }
   },
   "aiAnalysisPage": {
     "title": "SeekWell AI Skin Analysis",

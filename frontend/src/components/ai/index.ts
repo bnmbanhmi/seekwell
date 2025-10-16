@@ -1,6 +1,7 @@
 // AI Analysis Components
 export { default as ImageUpload } from './ImageUpload';
 export { default as AnalysisResults } from './AnalysisResults';
+export { default as UncertainResults } from './UncertainResults';
 export { default as AnalysisHistory } from './AnalysisHistory';
 export { AISkinAnalysisDashboard } from './AISkinAnalysisDashboard';
 

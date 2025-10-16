@@ -5,9 +5,10 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
-import { AIAnalysisResult } from '../../types/AIAnalysisTypes';
+import { AIAnalysisResult, CONFIDENCE_THRESHOLD } from '../../types/AIAnalysisTypes';
 import { ImageUpload } from './ImageUpload';
 import { AnalysisResults } from './AnalysisResults';
+import { UncertainResults } from './UncertainResults';
 import HuggingFaceAIService from '../../services/HuggingFaceAIService';
 
 interface AISkinAnalysisDashboardProps {
@@ -69,6 +70,18 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
     setSuccess(null);
   };
 
+  const handleRetakePhoto = () => {
+    setShowResults(false);
+    setCurrentResult(null);
+  };
+
+  // Check if result has uncertain confidence
+  const isUncertainResult = (result: AIAnalysisResult): boolean => {
+    const topPrediction = result.top_prediction || result.predictions[0];
+    const confidence = topPrediction.percentage / 100; // Convert percentage to decimal
+    return confidence <= CONFIDENCE_THRESHOLD;
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Main Content */}
@@ -77,6 +90,11 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
           patientId={patientId}
           onAnalysisComplete={handleAnalysisComplete}
           onError={handleError}
+        />
+      ) : currentResult && isUncertainResult(currentResult) ? (
+        <UncertainResults 
+          result={currentResult} 
+          onRetakePhoto={handleRetakePhoto}
         />
       ) : (
         <AnalysisResults result={currentResult!} />

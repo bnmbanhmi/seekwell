@@ -291,7 +291,109 @@
       "invalidFormat": "Định dạng ảnh không hợp lệ. Vui lòng sử dụng JPG, PNG hoặc JPEG.",
       "fileTooLarge": "Tệp quá lớn. Kích thước tối đa là 5MB."
     },
-    "success": "Phân tích hoàn tất thành công!"
+    "success": "Phân tích hoàn tất thành công!",
+    "diseaseNames": {
+      "melanoma": "U hắc tố",
+      "basal_cell_carcinoma": "Ung thư biểu mô tế bào đáy",
+      "squamous_cell_carcinoma": "Ung thư biểu mô tế bào vảy",
+      "actinic_keratosis": "Dày sừng ánh sáng",
+      "seborrheic_keratosis": "Dày sừng tiết bã",
+      "nevus": "Nốt ruồi",
+      "dermatofibroma": "U sợi da",
+      "vascular_lesion": "Tổn thương mạch máu"
+    },
+    "results": {
+      "title": "Kết quả Phân tích của bạn",
+      "aiPredicts": "AI dự đoán nhiều khả năng là:",
+      "accuracy": "Độ chính xác của AI:",
+      "analysisTime": "Thời gian phân tích:",
+      "riskLabels": {
+        "URGENT": "NGUY CƠ KHẨN CẤP - CẦN HÀNH ĐỘNG NGAY",
+        "HIGH": "NGUY CƠ CAO - CẦN HÀNH ĐỘNG NGAY",
+        "MEDIUM": "NGUY CƠ TRUNG BÌNH - CẦN THEO DÕI",
+        "LOW": "NGUY CƠ THẤP - TIẾP TỤC THEO DÕI"
+      },
+      "diseaseInfo": {
+        "title": "là gì?",
+        "melanoma": {
+          "description": "Đây là loại ung thư da nghiêm trọng nhất vì có khả năng di căn (lan rộng) sang các bộ phận khác của cơ thể. Tuy nhiên, nếu được phát hiện sớm, tỷ lệ chữa khỏi là rất cao. Điều quan trọng nhất lúc này là phải đi khám sớm."
+        },
+        "basal_cell_carcinoma": {
+          "description": "Là loại ung thư da phổ biến nhất nhưng ít nguy hiểm hơn U hắc tố. Thường phát triển chậm và hiếm khi lan rộng. Tuy nhiên, cần được điều trị kịp thời để tránh tổn thương da nghiêm trọng."
+        },
+        "squamous_cell_carcinoma": {
+          "description": "Là loại ung thư da phổ biến thứ hai, có khả năng lan rộng nếu không được điều trị. Tỷ lệ chữa khỏi cao nếu phát hiện sớm. Cần đi khám để có phương án điều trị phù hợp."
+        },
+        "actinic_keratosis": {
+          "description": "Là tổn thương da tiền ung thư, có thể phát triển thành ung thư da tế bào vảy nếu không được điều trị. Thường xuất hiện do tiếp xúc lâu dài với ánh nắng mặt trời. Cần theo dõi và điều trị kịp thời."
+        },
+        "seborrheic_keratosis": {
+          "description": "Là một tổn thương da lành tính (không phải ung thư), thường gặp ở người lớn tuổi. Không nguy hiểm đến sức khỏe nhưng có thể gây khó chịu về mặt thẩm mỹ. Vẫn nên đi khám để xác nhận chẩn đoán."
+        },
+        "nevus": {
+          "description": "Là nốt ruồi thường, phần lớn là lành tính. Tuy nhiên, một số nốt ruồi có thể thay đổi theo thời gian. Cần theo dõi và đi khám nếu thấy có thay đổi về kích thước, màu sắc hay hình dạng."
+        },
+        "default": {
+          "description": "Đây là tổn thương da cần được bác sĩ da liễu đánh giá chuyên sâu để xác định chính xác loại tổn thương và phương án điều trị phù hợp."
+        }
+      },
+      "nextSteps": {
+        "title": "VIỆC CẦN LÀM NGAY BÂY GIỜ:",
+        "urgent": [
+          "Giữ bình tĩnh: Việc phát hiện sớm là một điều rất may mắn. Kết quả này là một cảnh báo để hành động, không phải là chẩn đoán cuối cùng.",
+          "Đặt lịch hẹn với bác sĩ da liễu NGAY LẬP TỨC: Không trì hoãn, hãy gọi điện đặt lịch hẹn trong vòng 1-2 ngày tới. Đây là bước quan trọng nhất.",
+          "Sẽ có cán bộ y tế địa phương liên hệ: Theo quy trình của dự án, một cán bộ y tế tại địa phương sẽ sớm liên hệ với bạn để hỗ trợ các bước tiếp theo và sắp xếp tư vấn nếu cần.",
+          "Theo dõi nốt ruồi: Trong lúc chờ khám, hãy để ý xem nốt ruồi có thay đổi về kích thước, màu sắc hay hình dạng không.",
+          "Che chắn khỏi ánh nắng: Bảo vệ vùng da có nốt ruồi khỏi ánh nắng mặt trời."
+        ],
+        "high": [
+          "Giữ bình tĩnh: Kết quả này chỉ là sàng lọc ban đầu, không phải chẩn đoán cuối cùng.",
+          "Đặt lịch hẹn với bác sĩ da liễu: Hãy gọi điện đặt lịch trong vòng 3-5 ngày tới.",
+          "Cán bộ y tế sẽ liên hệ: Một cán bộ y tế địa phương sẽ liên hệ để hỗ trợ bạn.",
+          "Theo dõi các thay đổi: Chú ý xem nốt ruồi có thay đổi không.",
+          "Bảo vệ da: Che chắn vùng da khỏi ánh nắng mặt trời."
+        ],
+        "medium": [
+          "Đặt lịch khám: Nên đặt lịch khám với bác sĩ da liễu trong vài tuần tới.",
+          "Theo dõi thường xuyên: Chú ý các thay đổi về kích thước, màu sắc, hình dạng.",
+          "Chụp ảnh theo dõi: Chụp lại ảnh sau vài tuần để so sánh.",
+          "Bảo vệ da: Sử dụng kem chống nắng và tránh tiếp xúc trực tiếp với ánh nắng."
+        ],
+        "low": [
+          "Theo dõi định kỳ: Kiểm tra nốt ruồi mỗi tháng một lần.",
+          "Chụp ảnh lưu trữ: Chụp ảnh để theo dõi sự thay đổi theo thời gian.",
+          "Khám định kỳ: Nên đi khám da liễu ít nhất mỗi năm một lần.",
+          "Bảo vệ da: Sử dụng kem chống nắng hàng ngày."
+        ]
+      },
+      "otherPossibilities": "Các khả năng khác AI đã xem xét:",
+      "disclaimer": {
+        "title": "Lưu ý quan trọng:",
+        "text": "Phân tích của AI này chỉ mang tính tham khảo và sàng lọc ban đầu. Kết quả này KHÔNG thay thế cho chẩn đoán y khoa của bác sĩ chuyên nghiệp. Hãy luôn tham khảo ý kiến bác sĩ để có quyết định về sức khỏe."
+      }
+    },
+    "uncertainResults": {
+      "title": "Kết quả Phân tích của bạn",
+      "statusLabel": "KẾT QUẢ KHÔNG CHẮC CHẮN",
+      "mainFinding": "AI không thể xác định rõ ràng tổn thương trên da của bạn từ hình ảnh này.",
+      "analysisTime": "Thời gian phân tích:",
+      "explanation": {
+        "title": "Điều này có nghĩa là gì?",
+        "text": "Kết quả này có thể do nhiều nguyên nhân: chất lượng ảnh chụp chưa đủ tốt (bị mờ, thiếu sáng), hoặc tổn thương trên da của bạn không nằm trong 6 loại bệnh phổ biến mà AI được huấn luyện để nhận biết. Điều quan trọng là không nên chủ quan."
+      },
+      "nextSteps": {
+        "title": "Vậy bạn nên làm gì?",
+        "steps": [
+          "Chụp lại ảnh khác: Hãy thử chụp lại một tấm ảnh khác rõ nét hơn, đủ sáng hơn theo phần hướng dẫn để có kết quả chính xác hơn.",
+          "Tự theo dõi: Tiếp tục quan sát nốt ruồi hoặc vùng da đó. Nếu có bất kỳ thay đổi nào về kích thước, hình dạng, màu sắc, hoặc nếu bạn cảm thấy ngứa/đau, hãy đi khám ngay.",
+          "Cân nhắc đi khám bác sĩ: Nếu bạn vẫn cảm thấy lo lắng, cách tốt nhất luôn là tham khảo ý kiến trực tiếp từ bác sĩ da liễu. Họ có thể đưa ra chẩn đoán chính xác nhất."
+        ]
+      },
+      "disclaimer": {
+        "title": "Lưu ý quan trọng:",
+        "text": "Phân tích của AI này chỉ mang tính tham khảo và sàng lọc ban đầu. Kết quả này KHÔNG thay thế cho chẩn đoán y khoa của bác sĩ chuyên nghiệp. Hãy luôn tham khảo ý kiến bác sĩ để có quyết định về sức khỏe."
+      }
+    }
   },
   "aiAnalysisPage": {
     "title": "Phân Tích Da SeekWell Bằng AI",
