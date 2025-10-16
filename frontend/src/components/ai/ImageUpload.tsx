@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -6,46 +7,24 @@ import {
   Typography,
   Button,
   TextField,
-  MenuItem,
   CircularProgress,
   LinearProgress,
-  Alert,
   Grid,
   Paper,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import {
   CloudUpload,
   PhotoCamera,
-  Cancel,
-  Refresh,
-  Info,
-  Warning,
   CheckCircle,
+  Cancel,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import { BodyRegion, BODY_REGIONS, UploadProgress } from '../../types/AIAnalysisTypes';
 import HuggingFaceAIService from '../../services/HuggingFaceAIService';
 
 // Styled components
-const UploadBox = styled(Box)(({ theme, isDragActive }: { theme?: any; isDragActive: boolean }) => ({
-  border: `2px dashed ${isDragActive ? theme.palette.primary.main : theme.palette.grey[300]}`,
-  borderRadius: theme.shape.borderRadius * 2,
-  padding: theme.spacing(4),
-  textAlign: 'center',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  backgroundColor: isDragActive ? theme.palette.action.hover : 'transparent',
-  '&:hover': {
-    borderColor: theme.palette.primary.main,
-    backgroundColor: theme.palette.action.hover,
-  },
-}));
-
 const PreviewImage = styled('img')({
   maxWidth: '100%',
-  maxHeight: '300px',
+  maxHeight: '400px',
   borderRadius: '8px',
   objectFit: 'contain',
 });
@@ -53,6 +32,33 @@ const PreviewImage = styled('img')({
 const HiddenInput = styled('input')({
   display: 'none',
 });
+
+const ExampleImage = styled('img')({
+  width: '100%',
+  height: '200px',
+  objectFit: 'cover',
+  borderRadius: '8px',
+  border: '2px solid',
+});
+
+const ActionButton = styled(Button)(({ theme }) => ({
+  padding: theme.spacing(3, 6),
+  fontSize: '1.1rem',
+  fontWeight: 600,
+  borderRadius: 16,
+  textTransform: 'none',
+  minWidth: 250,
+  minHeight: 70,
+  boxShadow: '0 4px 20px rgba(54, 164, 29, 0.3)',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    boxShadow: '0 8px 30px rgba(54, 164, 29, 0.4)',
+  },
+  '&:active': {
+    transform: 'translateY(-2px)',
+  },
+}));
 
 interface ImageUploadProps {
   patientId: number;
@@ -65,16 +71,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   onAnalysisComplete,
   onError,
 }) => {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [bodyRegion, setBodyRegion] = useState<BodyRegion>('other');
   const [notes, setNotes] = useState('');
-  const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
+  const [uploadProgress, setUploadProgress] = useState({
     progress: 0,
-    status: 'idle',
+    status: 'idle' as 'idle' | 'uploading' | 'analyzing' | 'complete' | 'error',
+    message: '',
   });
-  const [isDragActive, setIsDragActive] = useState(false);
-  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -83,13 +88,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const handleFileSelect = useCallback((file: File) => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      onError('Please select a valid image file');
+      onError(t('aiAnalysis.errors.invalidFormat'));
       return;
     }
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      onError('Image size must be less than 10MB');
+      onError(t('aiAnalysis.errors.fileTooLarge'));
       return;
     }
 
@@ -99,53 +104,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     
-    // Validate image quality
-    validateImage(file);
-  }, [onError]);
-
-  // Validate image
-  const validateImage = async (file: File) => {
-    try {
-      setValidationMessage('Validating image...');
-      // Basic client-side validation
-      const img = new Image();
-      img.onload = () => {
-        if (img.width >= 224 && img.height >= 224) {
-          setValidationMessage('✅ Image is suitable for analysis');
-        } else {
-          setValidationMessage('⚠️ Image resolution is low, consider using higher quality');
-        }
-      };
-      img.src = URL.createObjectURL(file);
-    } catch (error) {
-      setValidationMessage('Unable to validate image');
-    }
-  };
-
-  // Handle drag and drop
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragActive(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragActive(false);
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragActive(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFileSelect(files[0]);
-    }
-  }, [handleFileSelect]);
+    // Auto-analyze after selection
+    analyzeImage(file);
+  }, [onError, t]);
 
   // Handle file input change
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,233 +123,228 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
-    setValidationMessage(null);
-    setUploadProgress({ progress: 0, status: 'idle' });
+    setUploadProgress({ progress: 0, status: 'idle', message: '' });
     
     // Clear file inputs
     if (fileInputRef.current) fileInputRef.current.value = '';
     if (cameraInputRef.current) cameraInputRef.current.value = '';
   };
 
-  // Submit for analysis
-  const handleAnalyze = async () => {
-    if (!selectedFile) {
-      onError('Please select an image first');
-      return;
-    }
-
+  // Analyze image
+  const analyzeImage = async (file: File) => {
     try {
-      setUploadProgress({ progress: 0, status: 'uploading', message: 'Connecting to AI...' });
+      setUploadProgress({ 
+        progress: 0, 
+        status: 'uploading', 
+        message: t('aiAnalysis.analyzing')
+      });
 
-      // Create HuggingFace AI service instance
       const aiService = new HuggingFaceAIService();
       
-      setUploadProgress({ progress: 30, status: 'analyzing', message: 'Analyzing with AI...' });
+      setUploadProgress({ 
+        progress: 30, 
+        status: 'analyzing', 
+        message: t('aiAnalysis.pleaseWait')
+      });
 
-      // Use HuggingFace Space API for analysis
       const result = await aiService.analyzeImageAI(
-        selectedFile,
-        { body_region: bodyRegion, notes }
+        file,
+        { body_region: 'other', notes }
       );
 
-      // Save to local history
       HuggingFaceAIService.saveAnalysisToHistory(result);
 
-      setUploadProgress({ progress: 100, status: 'complete', message: 'Analysis complete!' });
-      onAnalysisComplete(result);
+      setUploadProgress({ 
+        progress: 100, 
+        status: 'complete', 
+        message: t('aiAnalysis.success')
+      });
       
-      // Keep the image for reference but clear the form
-      setNotes('');
-      setBodyRegion('other');
+      onAnalysisComplete(result);
 
     } catch (error: any) {
-      setUploadProgress({ progress: 0, status: 'error', message: error.message });
-      onError(error.message || 'Analysis failed');
+      setUploadProgress({ 
+        progress: 0, 
+        status: 'error', 
+        message: error.message 
+      });
+      onError(error.message || t('aiAnalysis.errors.analysisFailed'));
     }
   };
 
   const isAnalyzing = uploadProgress.status === 'uploading' || uploadProgress.status === 'analyzing';
-  const canAnalyze = selectedFile && !isAnalyzing && uploadProgress.status !== 'complete';
 
   return (
-    <Card elevation={3}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <PhotoCamera color="primary" />
-          Skin Lesion Image Upload
+    <Card elevation={0} sx={{ boxShadow: 'none' }}>
+      <CardContent sx={{ p: 0 }}>
+        {/* Page Title */}
+        <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 700, textAlign: 'center' }}>
+          {t('aiAnalysis.pageTitle')}
         </Typography>
 
-        <Grid container spacing={3}>
-          {/* Image Upload Area */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            {!selectedFile ? (
-              <UploadBox
-                isDragActive={isDragActive}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <CloudUpload sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" gutterBottom>
-                  {isDragActive ? 'Drop image here' : 'Upload Skin Lesion Image'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Drag and drop an image here, or click to select
-                </Typography>
-                <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'center' }}>
-                  <Button variant="outlined" size="small">
-                    Choose File
-                  </Button>
-                  <Button 
-                    variant="outlined" 
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      cameraInputRef.current?.click();
-                    }}
-                  >
-                    Take Photo
-                  </Button>
-                </Box>
-                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                  Supported: JPEG, PNG (max 10MB)
-                </Typography>
-              </UploadBox>
-            ) : (
-              <Paper elevation={1} sx={{ p: 2, position: 'relative' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    Selected Image
-                  </Typography>
-                  <IconButton onClick={clearSelection} size="small">
-                    <Cancel />
-                  </IconButton>
-                </Box>
+        {/* Notes Field - Moved to Top */}
+        <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
+          <TextField
+            label={t('aiAnalysis.notesLabel')}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            multiline
+            rows={3}
+            fullWidth
+            placeholder={t('aiAnalysis.notesPlaceholder')}
+          />
+        </Paper>
+
+        {/* Upload Module */}
+        <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+            {t('aiAnalysis.uploadTitle')}
+          </Typography>
+
+          {!selectedFile ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
+                <ActionButton 
+                  variant="contained" 
+                  size="large"
+                  startIcon={<PhotoCamera sx={{ fontSize: 28 }} />}
+                  onClick={() => cameraInputRef.current?.click()}
+                  sx={{
+                    background: 'linear-gradient(135deg, #36a41d 0%, #2d8617 100%)',
+                    color: 'white',
+                    border: 'none',
+                  }}
+                >
+                  {t('aiAnalysis.takePhoto')}
+                </ActionButton>
                 
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                  <PreviewImage src={previewUrl || ''} alt="Selected skin lesion" />
-                </Box>
-
-                <Typography variant="body2" color="text.secondary">
-                  {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                </Typography>
-
-                {validationMessage && (
-                  <Alert 
-                    severity={validationMessage.includes('✅') ? 'success' : 'warning'} 
-                    sx={{ mt: 1 }}
+                <ActionButton 
+                  variant="outlined" 
+                  size="large"
+                  startIcon={<CloudUpload sx={{ fontSize: 28 }} />}
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={{
+                    background: 'white',
+                    color: '#36a41d',
+                    border: '2px solid #36a41d',
+                    boxShadow: '0 4px 20px rgba(54, 164, 29, 0.2)',
+                    '&:hover': {
+                      border: '2px solid #36a41d',
+                      background: 'white',
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 30px rgba(54, 164, 29, 0.3)',
+                    },
+                  }}
+                >
+                  {t('aiAnalysis.chooseFile')}
+                </ActionButton>
+              </Box>
+            </Box>
+          ) : (
+            <Box>
+              <Box sx={{ position: 'relative', mb: 2 }}>
+                <PreviewImage src={previewUrl || ''} alt="Selected mole" />
+                {uploadProgress.status !== 'analyzing' && uploadProgress.status !== 'uploading' && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Cancel />}
+                    onClick={clearSelection}
+                    sx={{ mt: 2 }}
                   >
-                    {validationMessage}
-                  </Alert>
+                    Chọn ảnh khác
+                  </Button>
                 )}
-              </Paper>
-            )}
-
-            {/* Hidden file inputs */}
-            <HiddenInput
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileInputChange}
-            />
-            <HiddenInput
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileInputChange}
-            />
-          </Grid>
-
-          {/* Analysis Settings */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <TextField
-                select
-                label="Body Region"
-                value={bodyRegion}
-                onChange={(e) => setBodyRegion(e.target.value as BodyRegion)}
-                fullWidth
-                required
-                helperText="Select where the lesion is located"
-              >
-                {BODY_REGIONS.map((region) => (
-                  <MenuItem key={region.value} value={region.value}>
-                    {region.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-                <TextField
-                label="Additional Notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                multiline
-                rows={3}
-                fullWidth
-                placeholder="Any additional information about the lesion (optional)&#x000A;Include a link to the image (in Google Drive or other cloud storage, set to anyone can view) for the doctor to review"
-                helperText="Describe any symptoms, changes, or concerns"
-                />
+              </Box>
 
               {/* Analysis Progress */}
-              {uploadProgress.status !== 'idle' && (
-                <Box>
+              {isAnalyzing && (
+                <Box sx={{ my: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    {uploadProgress.status === 'complete' ? (
-                      <CheckCircle color="success" />
-                    ) : uploadProgress.status === 'error' ? (
-                      <Warning color="error" />
-                    ) : (
-                      <CircularProgress size={20} />
-                    )}
+                    <CircularProgress size={20} />
                     <Typography variant="body2">
                       {uploadProgress.message}
                     </Typography>
                   </Box>
-                  
-                  {isAnalyzing && (
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={uploadProgress.progress} 
-                      sx={{ mb: 1 }}
-                    />
-                  )}
+                  <LinearProgress variant="determinate" value={uploadProgress.progress} />
                 </Box>
               )}
 
-              {/* Action Buttons */}
-              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                <Button
-                  variant="contained"
-                  onClick={handleAnalyze}
-                  disabled={!canAnalyze}
-                  startIcon={isAnalyzing ? <CircularProgress size={20} /> : <CloudUpload />}
-                  fullWidth
-                >
-                  {isAnalyzing ? 'Analyzing...' : 'Analyze Image'}
-                </Button>
-                
-                {selectedFile && (
-                  <Tooltip title="Select a different image">
-                    <IconButton onClick={clearSelection}>
-                      <Refresh />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Box>
-
-              {/* Info Alert */}
-              <Alert severity="info" icon={<Info />}>
-                <Typography variant="body2">
-                  <strong>AI Analysis:</strong> Our AI will analyze the image and provide a risk assessment. 
-                  Results will be reviewed by healthcare professionals.
-                </Typography>
-              </Alert>
+              {uploadProgress.status === 'complete' && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 2, color: 'success.main' }}>
+                  <CheckCircle />
+                  <Typography variant="body2">
+                    {uploadProgress.message}
+                  </Typography>
+                </Box>
+              )}
             </Box>
+          )}
+
+          {/* Hidden file inputs */}
+          <HiddenInput
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileInputChange}
+          />
+          <HiddenInput
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileInputChange}
+          />
+        </Paper>
+
+        {/* How to Photograph Section */}
+        <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+            {t('aiAnalysis.howToPhotoTitle')}
+          </Typography>
+
+          <Grid container spacing={3}>
+            {/* Good Example */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
+                  ✅
+                </Typography>
+                <ExampleImage 
+                  src="https://hikarieyecare.com/wp-content/uploads/Not-ruoi-lanh-tinh-co-2-nua-doi-xung-ve-hinh-dang-thuong-la-hinh-tron-hoac-bau-duc.png"
+                  alt="Good example"
+                  sx={{ borderColor: 'success.main' }}
+                />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'success.main' }}>
+                  {t('aiAnalysis.goodExampleLabel')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('aiAnalysis.goodExampleDesc')}
+                </Typography>
+              </Box>
+            </Grid>
+
+            {/* Bad Example */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
+                  ❌
+                </Typography>
+                <ExampleImage 
+                  src="https://benhvienthammykangnam.vn/wp-content/webp-express/webp-images/uploads/2019/12/1-17.jpg.webp"
+                  alt="Bad example"
+                  sx={{ borderColor: 'error.main' }}
+                />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'error.main' }}>
+                  {t('aiAnalysis.badExampleLabel')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('aiAnalysis.badExampleDesc')}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
+        </Paper>
       </CardContent>
     </Card>
   );

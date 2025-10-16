@@ -9,11 +9,11 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
 
   const handleNewAnalysis = () => {
-    navigate('/dashboard/ai-analysis');
+    navigate('/ai-analysis');
   };
 
   const handleViewHistory = () => {
-    navigate('/dashboard/ai-analysis?tab=history');
+    navigate('/ai-analysis?tab=history');
   };
 
   return (

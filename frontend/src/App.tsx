@@ -10,7 +10,8 @@ import DashboardWrapper from './pages/DashboardWrapper'; // Import DashboardWrap
 import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import ChatbotWidget
 import DebugAnalysisHistory from './components/debug/DebugAnalysisHistory'; // Import debug component
 import { Analytics } from "@vercel/analytics/react"
-import Profile from './pages/Profile'; 
+import Profile from './pages/Profile';
+import AISkinAnalysisPage from './pages/AISkinAnalysisPage'; // Import AI Analysis page 
 
 import { UserRole } from './types/UserType'; // Import UserRole type
 
@@ -85,6 +86,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Standalone AI Analysis Route */}
+          <Route 
+            path="/ai-analysis" 
+            element={
+              <ProtectedRoute>
+                <AISkinAnalysisPage />
               </ProtectedRoute>
             }
           />

@@ -14,7 +14,7 @@ type Props = {
 const sidebarItems: Record<Props['role'], { label: string; path: string }[]> = {
   PATIENT: [
     { label: 'Dashboard', path: '/dashboard' },
-    { label: 'AI Skin Analysis', path: '/dashboard/ai-analysis' },
+    { label: 'AI Skin Analysis', path: '/ai-analysis' },
     { label: 'Analysis History', path: '/dashboard/analysis-history' },
     { label: 'Profile', path: '/dashboard/profile' },
   ],

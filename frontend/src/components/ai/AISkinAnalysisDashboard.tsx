@@ -2,32 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
-  Typography,
-  Paper,
   Alert,
   Snackbar,
-  Tabs,
-  Tab,
 } from '@mui/material';
 import { AIAnalysisResult } from '../../types/AIAnalysisTypes';
 import { ImageUpload } from './ImageUpload';
 import { AnalysisResults } from './AnalysisResults';
-import { AnalysisHistory } from './AnalysisHistory';
 import HuggingFaceAIService from '../../services/HuggingFaceAIService';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
-  return (
-    <div role="tabpanel" hidden={value !== index}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-};
 
 interface AISkinAnalysisDashboardProps {
   patientId: number;
@@ -43,7 +24,7 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [tabValue, setTabValue] = useState(initialTab);
+  const [showResults, setShowResults] = useState(false);
 
   // Load analysis history on component mount
   useEffect(() => {
@@ -68,7 +49,7 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
   const handleAnalysisComplete = (result: AIAnalysisResult) => {
     setCurrentResult(result);
     setSuccess('Image analysis completed successfully!');
-    setTabValue(1); // Switch to results tab
+    setShowResults(true);
     
     // Add to history
     setAnalysisHistory(prev => [result, ...prev]);
@@ -83,10 +64,6 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
     setError(errorMessage);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
   const handleCloseSnackbar = () => {
     setError(null);
     setSuccess(null);
@@ -94,57 +71,16 @@ export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = (
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        🩺 AI Skin Analysis
-      </Typography>
-
       {/* Main Content */}
-      <Paper elevation={2} sx={{ mb: 3 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab label="Upload & Analyze" />
-          <Tab label="Analysis Results" disabled={!currentResult} />
-          <Tab label="My History" />
-        </Tabs>
-
-        <TabPanel value={tabValue} index={0}>
-          <ImageUpload
-            patientId={patientId}
-            onAnalysisComplete={handleAnalysisComplete}
-            onError={handleError}
-          />
-        </TabPanel>
-
-        <TabPanel value={tabValue} index={1}>
-          {currentResult ? (
-            <AnalysisResults result={currentResult} />
-          ) : (
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h6" color="text.secondary">
-                No analysis results yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Upload an image to get started with AI analysis
-              </Typography>
-            </Box>
-          )}
-        </TabPanel>
-
-        <TabPanel value={tabValue} index={2}>
-          <AnalysisHistory
-            history={analysisHistory}
-            loading={loading}
-            onSelectAnalysis={(result: AIAnalysisResult) => {
-              setCurrentResult(result);
-              setTabValue(1);
-            }}
-            onRefresh={loadAnalysisHistory}
-          />
-        </TabPanel>
-      </Paper>
+      {!showResults ? (
+        <ImageUpload
+          patientId={patientId}
+          onAnalysisComplete={handleAnalysisComplete}
+          onError={handleError}
+        />
+      ) : (
+        <AnalysisResults result={currentResult!} />
+      )}
 
       {/* Notifications */}
       <Snackbar

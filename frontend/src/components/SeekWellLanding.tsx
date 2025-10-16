@@ -143,7 +143,7 @@ const SeekWellLanding: React.FC = () => {
             <Button
               variant="contained"
               size="large"
-              onClick={() => navigate('/dashboard/ai-analysis')}
+              onClick={() => navigate('/ai-analysis')}
               sx={{
                 bgcolor: 'rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
