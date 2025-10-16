@@ -292,6 +292,8 @@
       "fileTooLarge": "Tệp quá lớn. Kích thước tối đa là 5MB."
     },
     "success": "Phân tích hoàn tất thành công!",
+    "refreshHistory": "Làm mới",
+    "noHistory": "Không có lịch sử phân tích. Bắt đầu bằng cách tải lên một hình ảnh để phân tích.",
     "diseaseNames": {
       "melanoma": "U hắc tố",
       "basal_cell_carcinoma": "Ung thư biểu mô tế bào đáy",

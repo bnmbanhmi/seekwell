@@ -13,7 +13,7 @@ const PatientDashboard = () => {
   };
 
   const handleViewHistory = () => {
-    navigate('/ai-analysis?tab=history');
+    navigate('/analysis-history');
   };
 
   return (

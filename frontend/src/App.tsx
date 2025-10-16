@@ -11,7 +11,8 @@ import ChatbotWidget from './components/Chatbot/ChatbotWidget'; // Import Chatbo
 import DebugAnalysisHistory from './components/debug/DebugAnalysisHistory'; // Import debug component
 import { Analytics } from "@vercel/analytics/react"
 import Profile from './pages/Profile';
-import AISkinAnalysisPage from './pages/AISkinAnalysisPage'; // Import AI Analysis page 
+import AISkinAnalysisPage from './pages/AISkinAnalysisPage'; // Import AI Analysis page
+import AnalysisHistoryPage from './pages/AnalysisHistoryPage'; // Import Analysis History page
 
 import { UserRole } from './types/UserType'; // Import UserRole type
 
@@ -96,6 +97,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <AISkinAnalysisPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Standalone Analysis History Route */}
+          <Route 
+            path="/analysis-history" 
+            element={
+              <ProtectedRoute>
+                <AnalysisHistoryPage />
               </ProtectedRoute>
             }
           />

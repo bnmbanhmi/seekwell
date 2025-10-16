@@ -292,6 +292,8 @@
       "fileTooLarge": "File too large. Maximum size is 5MB."
     },
     "success": "Analysis completed successfully!",
+    "refreshHistory": "Refresh",
+    "noHistory": "No analysis history found. Start by uploading an image for analysis.",
     "diseaseNames": {
       "melanoma": "Melanoma",
       "basal_cell_carcinoma": "Basal Cell Carcinoma",

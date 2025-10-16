@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Container } from '@mui/material';
 import { AISkinAnalysisDashboard } from '../components/ai';
 import Logo from '../components/common/Logo';
 import { toast } from 'react-toastify';
+import { AIAnalysisResult } from '../types/AIAnalysisTypes';
 import '../components/layout/BaseDashboard.css';
 
 /**
@@ -14,10 +15,14 @@ export const AISkinAnalysisPage: React.FC = () => {
   const mockPatientId = 1;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  
+  // Get selected result from navigation state (if coming from history page)
+  const selectedResult = location.state?.selectedResult as AIAnalysisResult | undefined;
   
   const tab = searchParams.get('tab');
   
@@ -89,11 +94,13 @@ export const AISkinAnalysisPage: React.FC = () => {
             <span></span>
           </button>
           
-          <Logo 
-            className="logo"
-            alt="SeekWell Logo"
-            height={36}
-          />
+          <div onClick={goToDashboard} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <Logo 
+              className="logo"
+              alt="SeekWell Logo"
+              height={36}
+            />
+          </div>
         </div>
 
         {/* Center section with Language Switcher */}
@@ -150,7 +157,11 @@ export const AISkinAnalysisPage: React.FC = () => {
       <Container maxWidth="xl" sx={{ flex: 1 }}>
         <Box sx={{ py: 4 }}>
           {/* Main AI Analysis Dashboard */}
-          <AISkinAnalysisDashboard patientId={mockPatientId} initialTab={initialTab} />
+          <AISkinAnalysisDashboard 
+            patientId={mockPatientId} 
+            initialTab={initialTab} 
+            selectedResult={selectedResult}
+          />
         </Box>
       </Container>
     </Box>

@@ -14,23 +14,33 @@ import HuggingFaceAIService from '../../services/HuggingFaceAIService';
 interface AISkinAnalysisDashboardProps {
   patientId: number;
   initialTab?: number;
+  selectedResult?: AIAnalysisResult; // Result from history navigation
 }
 
 export const AISkinAnalysisDashboard: React.FC<AISkinAnalysisDashboardProps> = ({
   patientId,
   initialTab = 0,
+  selectedResult,
 }) => {
-  const [currentResult, setCurrentResult] = useState<AIAnalysisResult | null>(null);
+  const [currentResult, setCurrentResult] = useState<AIAnalysisResult | null>(selectedResult || null);
   const [analysisHistory, setAnalysisHistory] = useState<AIAnalysisResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [showResults, setShowResults] = useState(false);
+  const [showResults, setShowResults] = useState(!!selectedResult); // Show results if coming from history
 
   // Load analysis history on component mount
   useEffect(() => {
     loadAnalysisHistory();
   }, [patientId]);
+
+  // Update when selectedResult changes (from navigation)
+  useEffect(() => {
+    if (selectedResult) {
+      setCurrentResult(selectedResult);
+      setShowResults(true);
+    }
+  }, [selectedResult]);
 
   const loadAnalysisHistory = () => {
     try {
