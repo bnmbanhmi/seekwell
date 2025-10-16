@@ -55,77 +55,176 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 
     const getWelcomeMessage = () => {
         if (!isAuthenticated) {
-            return `👋 Hello! I'm your SeekWell AI assistant for community health.
+            return `👋 **Xin chào! / Hello!**
 
-🔍 **What I can help with:**
-- Learn about **SeekWell's AI skin cancer detection**
-- Get guidance on **capturing photos** for analysis
-- Understand **skin health basics** and prevention
-- Find **community health centers** and services
-- Connect with **local health cadres** in your area
+🌟 **Tôi là trợ lý AI SeekWell - người bạn đồng hành sức khỏe da của bạn!**
+🌟 **I'm your SeekWell AI Assistant - your skin health companion!**
 
-💡 **About SeekWell:** We're building a network of AI-powered community health services across ASEAN, focusing on early skin cancer detection and connecting you with local health workers.
+---
 
-How can I assist you today? 🌟`;
+� **Tôi có thể giúp gì cho bạn? / How can I help you?**
+
+📱 **Hướng dẫn sử dụng ứng dụng / App Guide:**
+- Cách chụp ảnh cho phân tích AI / How to take photos for AI analysis
+- Hiểu kết quả phân tích / Understanding analysis results  
+- Xem lại lịch sử phân tích / Viewing analysis history
+- Điều hướng trong ứng dụng / Navigating the app
+
+🔍 **Giải thích kết quả / Results Explanation:**
+- Các loại bệnh da khác nhau / Different skin conditions
+- Mức độ rủi ro và màu sắc / Risk levels and colors
+- Kết quả không chắc chắn / Uncertain results
+- Khi nào cần gặp bác sĩ / When to see a doctor
+
+�️ **Phòng ngừa ung thư da / Skin Cancer Prevention:**
+- Bảo vệ da khỏi ánh nắng / Sun protection tips
+- Tự kiểm tra da hàng tháng / Monthly self-examination
+- Dấu hiệu cảnh báo / Warning signs
+- Thói quen chăm sóc da / Healthy skin habits
+
+---
+
+**💡 Mẹo:** Hỏi tôi bằng tiếng Việt hoặc tiếng Anh - tôi sẽ trả lời bằng ngôn ngữ bạn chọn!
+**💡 Tip:** Ask me in Vietnamese or English - I'll respond in your language!`;
         }
 
         switch (userRole) {
             case 'PATIENT':
-                return `👋 Welcome back! I'm your personal SeekWell health assistant.
+                return `👋 **Xin chào! Chào mừng trở lại! / Hello! Welcome back!**
 
-🏥 **I can help you with:**
-- **Track your health journey** and AI analysis results
-- **Prepare for visits** with community health cadres
-- **Understand your skin health** and prevention tips
-- **Schedule appointments** with local health workers
-- **Navigate the referral pathway** to specialists when needed
+🌟 **Tôi là trợ lý AI SeekWell cá nhân của bạn!**
+🌟 **I'm your personal SeekWell AI Assistant!**
 
-📱 **Quick Tips:** 
-- Use the mobile-friendly skin analysis anytime
-- Your local health cadre can provide follow-up care
-- Regular check-ups help catch issues early
+---
 
-What would you like to know today? 💚`;
+💬 **Tôi có thể giúp bạn với: / I can help you with:**
+
+📱 **Sử dụng ứng dụng / Using the App:**
+- Hướng dẫn chụp ảnh rõ nét / Taking clear photos for analysis
+- Cách phân tích da / How to analyze skin lesions
+- Xem lịch sử kết quả / Viewing your analysis history
+- Chuyển đổi ngôn ngữ / Switching languages
+
+📊 **Hiểu kết quả của bạn / Understanding Your Results:**
+- Giải thích tên bệnh và mức độ rủi ro / Disease names and risk levels
+- Khi nào kết quả "không chắc chắn" / When results are "uncertain"
+- Cách đọc độ tin cậy / Reading confidence percentages
+- Các bước tiếp theo cần làm / Next steps to take
+
+🏥 **Chăm sóc sức khỏe / Healthcare Guidance:**
+- Khi nào cần gặp bác sĩ / When to see a doctor
+- Dấu hiệu khẩn cấp / Emergency warning signs
+- Chuẩn bị cho cuộc hẹn / Preparing for appointments
+- Theo dõi sức khỏe da / Monitoring skin health
+
+🛡️ **Phòng ngừa / Prevention:**
+- Bảo vệ da khỏi tia UV / UV protection
+- Tự kiểm tra da / Self-examination tips
+- Thói quen lành mạnh / Healthy habits
+- Phát hiện sớm / Early detection
+
+---
+
+**Hãy hỏi tôi bất cứ điều gì về sức khỏe da của bạn! 💚**
+**Ask me anything about your skin health! 💚**`;
 
             case 'OFFICIAL':
-                return `🌟 Welcome, Health Official! I'm here to support your vital work.
+                return `🌟 **Welcome, Health Official! / Chào mừng, Cán bộ Y tế!**
 
-🤝 **I can assist with:**
-- Understanding AI analysis results.
-- Guidance on how to handle urgent cases.
-- Information on connecting with doctors for case reviews.
+🤝 **I'm here to support your vital community health work!**
+🤝 **Tôi ở đây để hỗ trợ công việc y tế cộng đồng quan trọng của bạn!**
 
-How can I support you today? 🌟`;
+---
+
+💬 **I can assist with: / Tôi có thể hỗ trợ:**
+
+🔍 **AI Analysis Support:**
+- Understanding AI results and confidence levels
+- Handling urgent cases effectively
+- Connecting with doctors for case reviews
+- Patient communication and education
+
+🏥 **Community Care:**
+- Guidance for home visits
+- Mobile workflow and offline tools
+- Patient follow-up strategies
+- Referral pathway coordination
+
+📊 **Documentation:**
+- EMR updates and patient tracking
+- Case documentation best practices
+- Progress monitoring tools
+
+---
+
+**How can I support you today? / Tôi có thể giúp gì cho bạn hôm nay? 🌟**`;
 
             case 'DOCTOR':
-                return `👩‍⚕️ Welcome, Doctor! I'm your clinical support assistant.
+                return `👩‍⚕️ **Welcome, Doctor! / Chào mừng, Bác sĩ!**
 
-🏥 **I can help with:**
-- Reviewing urgent cases flagged by the AI.
-- Accessing patient analysis history.
-- Understanding the AI model's performance.
+🏥 **I'm your clinical support assistant!**
+🏥 **Tôi là trợ lý hỗ trợ lâm sàng của bạn!**
 
-What clinical support do you need today? 🩺`;
+---
+
+💬 **I can help with: / Tôi có thể giúp:**
+
+🔍 **Clinical Support:**
+- Reviewing urgent AI-flagged cases
+- Accessing patient analysis history
+- Understanding AI model performance
+- Complex case diagnosis support
+
+📊 **System Insights:**
+- EMR documentation and review
+- Referral case management
+- Treatment planning guidance
+- Follow-up coordination
+
+---
+
+**What clinical support do you need today? / Bạn cần hỗ trợ lâm sàng gì hôm nay? 🩺**`;
 
             case 'ADMIN':
-                return `⚙️ Welcome, Administrator! I'm your SeekWell system management assistant.
+                return `⚙️ **Welcome, Administrator! / Chào mừng, Quản trị viên!**
 
-📊 **I can help with:**
-- **System analytics** and performance monitoring
-- **Cadre management** - assignments, training, coverage
-- **Health center network** coordination and resources
-- **User management** and access control
-- **Data insights** and community health trends
-- **Platform configuration** and workflow optimization
+📊 **I'm your SeekWell system management assistant!**
+📊 **Tôi là trợ lý quản lý hệ thống SeekWell của bạn!**
 
-🌐 **System Overview:** You're managing a community health network that combines AI technology with human expertise to serve ASEAN communities effectively.
+---
 
-What would you like to manage today? 🛠️`;
+💬 **I can help with: / Tôi có thể giúp:**
+
+🔧 **System Management:**
+- System analytics and monitoring
+- User management and access control
+- Platform configuration
+- Workflow optimization
+
+📈 **Network Coordination:**
+- Health center management
+- Staff assignments and training
+- Community health trends
+- Resource allocation
+
+---
+
+**What would you like to manage today? / Bạn muốn quản lý gì hôm nay? 🛠️**`;
 
             default:
-                return `👋 Hello! I'm the SeekWell AI assistant for community health.
+                return `👋 **Xin chào! / Hello!**
 
-🌟 I can provide information about our platform, community health services, and skin health guidance. How can I help you today?`;
+🌟 **I'm the SeekWell AI assistant for community health.**
+🌟 **Tôi là trợ lý AI SeekWell về sức khỏe cộng đồng.**
+
+---
+
+💬 **I can provide information about: / Tôi có thể cung cấp thông tin về:**
+- Our platform and services / Nền tảng và dịch vụ của chúng tôi
+- Skin health guidance / Hướng dẫn sức khỏe da
+- Community health resources / Tài nguyên y tế cộng đồng
+
+**How can I help you? / Tôi có thể giúp gì cho bạn? 💚**`;
         }
     };
 
