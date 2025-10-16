@@ -69,9 +69,24 @@ App: http://localhost:3000
 
 ### Default Login
 ```
-Admin:    admin@seekwell.health / SeekWell2025!
-Doctor:   dermatologist@seekwell.health / DermExpert2025
-Official: cadre.thailand@seekwell.health / CadreThailand2025
+Admin:     admin@seekwell.health / 123456  (username: admin@seekwell.health)
+
+Doctors:   0901234567 / 123456  (Dr. Maria Santos)
+           0901234568 / 123456  (Dr. James Chen)
+           0901234569 / 123456  (Dr. Priya Sharma)
+
+Officials: 0902345671 / 123456  (Thai Official)
+           0902345672 / 123456  (Indonesian Official)
+           0902345673 / 123456  (Filipino Official)
+           0902345674 / 123456  (Vietnamese Official)
+
+Patients:  0903456781 / 123456  (Nguyen Van A) - Demo account
+           0903456782 / 123456  (Tran Thi B)
+           0903456783 / 123456  (Le Van C)
+           0903456784 / 123456  (Pham Thi D)
+           0903456785 / 123456  (Hoang Van E)
+
+Note: Login with phone number (username) OR email. All passwords are "123456".
 ```
 
 ## Database Setup
@@ -94,8 +109,10 @@ python setup_seekwell_database.py
 
 **Creates:**
 - Tables: users, patients, analysis_results, chat_messages
-- Admin account + 3 specialist doctors + 4 community health workers
-- Regional health center with proper relationships
+- Admin account (email-based login)
+- 3 Doctor accounts (phone-based login)
+- 4 Official accounts (phone-based login)
+- 5 Patient accounts (phone-based login) with patient profiles
 
 **Options:**
 - `--skip-users` - Schema only, no user creation

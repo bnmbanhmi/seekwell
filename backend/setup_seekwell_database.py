@@ -134,37 +134,61 @@ def sync_user_role_enum():
 def create_mock_users():
     """
     Creates a set of mock users for testing purposes.
+    All users use simple passwords (123456) and phone numbers as usernames.
     """
     print("\n👥 Creating mock users for testing...")
     db = SessionLocal()
     try:
         mock_users = [
-            # Doctors
-            {"username": "drsantos", "email": "dermatologist@seekwell.health", "password": "DermExpert2025", "full_name": "Dr. Maria Santos", "role": UserRole.DOCTOR},
-            {"username": "drchen", "email": "oncologist@seekwell.health", "password": "OncoSpecialist2025", "full_name": "Dr. James Chen", "role": UserRole.DOCTOR},
-            {"username": "drsharma", "email": "pathologist@seekwell.health", "password": "PathExpert2025", "full_name": "Dr. Priya Sharma", "role": UserRole.DOCTOR},
-            # Officials
-            {"username": "official_th", "email": "official.thailand@seekwell.health", "password": "OfficialThailand2025", "full_name": "Thai Official", "role": UserRole.OFFICIAL},
-            {"username": "official_id", "email": "official.indonesia@seekwell.health", "password": "OfficialIndonesia2025", "full_name": "Indonesian Official", "role": UserRole.OFFICIAL},
-            {"username": "official_ph", "email": "official.philippines@seekwell.health", "password": "OfficialPhilippines2025", "full_name": "Filipino Official", "role": UserRole.OFFICIAL},
-            {"username": "official_vn", "email": "official.vietnam@seekwell.health", "password": "OfficialVietnam2025", "full_name": "Vietnamese Official", "role": UserRole.OFFICIAL},
-            # Patients
-            {"username": "patient1", "email": "patient1@example.com", "password": "password123", "full_name": "Patient One", "role": UserRole.PATIENT},
-            {"username": "patient2", "email": "patient2@example.com", "password": "password123", "full_name": "Patient Two", "role": UserRole.PATIENT},
-            {"username": "patient3", "email": "patient3@example.com", "password": "password123", "full_name": "Patient Three", "role": UserRole.PATIENT},
+            # Admin (using email as username per admin pattern)
+            {"username": "admin@seekwell.health", "email": "admin@seekwell.health", "password": "123456", "full_name": "Admin User", "role": UserRole.ADMIN, "phone": None},
+            
+            # Doctors (phone as username)
+            {"username": "0901234567", "email": "doctor1@seekwell.health", "password": "123456", "full_name": "Dr. Maria Santos", "role": UserRole.DOCTOR, "phone": "0901234567"},
+            {"username": "0901234568", "email": "doctor2@seekwell.health", "password": "123456", "full_name": "Dr. James Chen", "role": UserRole.DOCTOR, "phone": "0901234568"},
+            {"username": "0901234569", "email": "doctor3@seekwell.health", "password": "123456", "full_name": "Dr. Priya Sharma", "role": UserRole.DOCTOR, "phone": "0901234569"},
+            
+            # Officials (phone as username)
+            {"username": "0902345671", "email": "official.thailand@seekwell.health", "password": "123456", "full_name": "Thai Official", "role": UserRole.OFFICIAL, "phone": "0902345671"},
+            {"username": "0902345672", "email": "official.indonesia@seekwell.health", "password": "123456", "full_name": "Indonesian Official", "role": UserRole.OFFICIAL, "phone": "0902345672"},
+            {"username": "0902345673", "email": "official.philippines@seekwell.health", "password": "123456", "full_name": "Filipino Official", "role": UserRole.OFFICIAL, "phone": "0902345673"},
+            {"username": "0902345674", "email": "official.vietnam@seekwell.health", "password": "123456", "full_name": "Vietnamese Official", "role": UserRole.OFFICIAL, "phone": "0902345674"},
+            
+            # Patients (phone as username) - matching demo login
+            {"username": "0903456781", "email": "patient1@seekwell.health", "password": "123456", "full_name": "Nguyen Van A", "role": UserRole.PATIENT, "phone": "0903456781"},
+            {"username": "0903456782", "email": "patient2@seekwell.health", "password": "123456", "full_name": "Tran Thi B", "role": UserRole.PATIENT, "phone": "0903456782"},
+            {"username": "0903456783", "email": "patient3@seekwell.health", "password": "123456", "full_name": "Le Van C", "role": UserRole.PATIENT, "phone": "0903456783"},
+            {"username": "0903456784", "email": "patient4@seekwell.health", "password": "123456", "full_name": "Pham Thi D", "role": UserRole.PATIENT, "phone": "0903456784"},
+            {"username": "0903456785", "email": "patient5@seekwell.health", "password": "123456", "full_name": "Hoang Van E", "role": UserRole.PATIENT, "phone": "0903456785"},
         ]
 
+        created_count = 0
         for user_data in mock_users:
+            phone = user_data.pop("phone", None)
             user = crud.get_user_by_username(db, username=user_data["username"])
             if not user:
                 user_in = schemas.UserCreate(**user_data)
-                crud.create_user(db, user=user_in)
-                print(f"✅ Mock user '{user_data['username']}' created.")
+                created_user = crud.create_user(db, user=user_in)
+                
+                # If patient and has phone, update patient profile
+                if phone and user_data["role"] == UserRole.PATIENT:
+                    patient = db.query(crud.models.Patient).filter(
+                        crud.models.Patient.patient_id == created_user.user_id
+                    ).first()
+                    if patient:
+                        patient.phone_number = phone
+                        db.commit()
+                
+                print(f"✅ Mock user '{user_data['username']}' ({user_data['full_name']}) created.")
+                created_count += 1
             else:
                 print(f"ℹ️ Mock user '{user_data['username']}' already exists. Skipping.")
+        
+        print(f"\n✅ Created {created_count} new mock users.")
 
     except Exception as e:
         print(f"❌ Error creating mock users: {e}")
+        db.rollback()
     finally:
         db.close()
 

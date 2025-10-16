@@ -27,8 +27,8 @@ const LoginPage: React.FC = () => {
 
         try {
             const formData = new URLSearchParams();
-            formData.append('username', 'patient1@seekwell.health');
-            formData.append('password', 'PatientDemo2025');
+            formData.append('username', '0903456781'); // Phone number of patient1
+            formData.append('password', '123456');
 
             const response = await axios.post(API_CONFIG.BACKEND_URL + '/auth/token', formData, {
                 headers: {
