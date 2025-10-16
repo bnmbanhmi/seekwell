@@ -61,6 +61,42 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
+  flex: 1;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+/* Language Switcher Button */
+.language-switcher-button {
+  background: transparent;
+  border: none;
+  color: var(--seekwell-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.language-switcher-button:hover {
+  background: rgba(54, 164, 29, 0.1);
+}
+
+.language-switcher-button:active {
+  transform: scale(0.95);
+}
+
+.account-menu {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* Hamburger Menu */
@@ -224,6 +260,16 @@
   
   .hamburger-menu {
     display: flex; /* Always show hamburger on mobile */
+  }
+
+  /* Language switcher on mobile - smaller text */
+  .language-switcher-button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+
+  .header-center {
+    flex: 0.5;
   }
 }
 

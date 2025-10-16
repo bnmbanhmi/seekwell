@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
 import Logo from '../common/Logo';
 import { UserRole } from '../../types/UserType';
@@ -18,6 +19,7 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,6 +55,12 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'vi' ? 'en' : 'vi';
+    i18n.changeLanguage(newLang);
+    localStorage.setItem('preferredLanguage', newLang);
+  };
+
   return (
     <div className="layout">
       {/* Sidebar */}
@@ -84,6 +92,17 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
               alt="SeekWell Logo"
               height={36}
             />
+          </div>
+
+          {/* Center section with Language Switcher */}
+          <div className="header-center">
+            <button
+              className="language-switcher-button"
+              onClick={toggleLanguage}
+              type="button"
+            >
+              {t('login.languageSwitcher')}
+            </button>
           </div>
 
           {/* Account dropdown */}

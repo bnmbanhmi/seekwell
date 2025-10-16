@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CameraAlt, History } from '@mui/icons-material';
 import styles from './PatientDashboard.module.css';
 
 const PatientDashboard = () => {
@@ -17,32 +18,42 @@ const PatientDashboard = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>{t('dashboard.patient.title')}</h2>
-        <p className={styles.subtitle}>{t('dashboard.patient.subtitle')}</p>
-      </div>
-
-      <div className={styles.actionsGrid}>
-        <div className={styles.actionCard} onClick={handleNewAnalysis}>
-          <div className={styles.actionIcon}>🔍</div>
-          <div className={styles.actionInfo}>
-            <h3 className={styles.actionTitle}>{t('dashboard.patient.newAnalysis')}</h3>
-            <p className={styles.actionDescription}>{t('dashboard.patient.newAnalysisDesc')}</p>
-          </div>
-        </div>
+      {/* Main Action Buttons */}
+      <div className={styles.actionsContainer}>
+        <button className={styles.primaryActionButton} onClick={handleNewAnalysis}>
+          <CameraAlt className={styles.buttonIcon} />
+          <span className={styles.buttonText}>{t('dashboard.patient.newAnalysis')}</span>
+        </button>
         
-        <div className={styles.actionCard} onClick={handleViewHistory}>
-          <div className={styles.actionIcon}>📜</div>
-          <div className={styles.actionInfo}>
-            <h3 className={styles.actionTitle}>{t('dashboard.patient.viewHistory')}</h3>
-            <p className={styles.actionDescription}>{t('dashboard.patient.viewHistoryDesc')}</p>
-          </div>
-        </div>
+        <button className={styles.secondaryActionButton} onClick={handleViewHistory}>
+          <History className={styles.buttonIcon} />
+          <span className={styles.buttonText}>{t('dashboard.patient.viewHistory')}</span>
+        </button>
       </div>
 
-      <div className={styles.infoBox}>
-        <h4>{t('dashboard.patient.whatsNext')}</h4>
-        <p>{t('dashboard.patient.whatsNextDesc')}</p>
+      {/* About SeekWell Project Section */}
+      <div className={styles.aboutSection}>
+        <h3 className={styles.aboutTitle}>{t('dashboard.patient.aboutProject')}</h3>
+        
+        <div className={styles.aboutContent}>
+          <h4 className={styles.aboutSubtitle}>{t('dashboard.patient.aboutProjectWhat')}</h4>
+          <p className={styles.aboutText}>{t('dashboard.patient.aboutProjectWhatDesc')}</p>
+
+          <h4 className={styles.aboutSubtitle}>{t('dashboard.patient.aboutProjectWhy')}</h4>
+          <p className={styles.aboutText}>{t('dashboard.patient.aboutProjectWhyDesc')}</p>
+
+          <h4 className={styles.aboutSubtitle}>{t('dashboard.patient.aboutProjectHow')}</h4>
+          <ol className={styles.aboutList}>
+            <li>{t('dashboard.patient.aboutProjectHowStep1')}</li>
+            <li>{t('dashboard.patient.aboutProjectHowStep2')}</li>
+            <li>{t('dashboard.patient.aboutProjectHowStep3')}</li>
+          </ol>
+
+          <p className={styles.aboutImportantNote}>
+            <strong>{t('dashboard.patient.aboutProjectImportantNote')}</strong>{' '}
+            {t('dashboard.patient.aboutProjectImportantNoteDesc')}
+          </p>
+        </div>
       </div>
     </div>
   );
