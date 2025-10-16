@@ -2,7 +2,7 @@ from sqlalchemy import (
     Column, Integer, String, Date, DateTime, Text, ForeignKey, Enum, Float, Boolean
 )
 from sqlalchemy.orm import relationship
-from .database import Gender, UserRole, Base
+from .database import Gender, UserRole, Base, PatientClass
 from datetime import datetime
 
 
@@ -29,7 +29,7 @@ class Patient(Base):
     gender = Column(Enum(Gender), nullable=True) # Make nullable
     address = Column(String(255), nullable=True)
     phone_number = Column(String(20), unique=True, nullable=True)
-    class_role = Column(String(50), nullable=True) # Concession to the stubborn legacy schema
+    class_role = Column(Enum(PatientClass), nullable=True) # Use PatientClass enum for legacy schema
 
     user = relationship("User", back_populates="patient_profile")
     analysis_results = relationship("AnalysisResult", back_populates="patient", cascade="all, delete-orphan")

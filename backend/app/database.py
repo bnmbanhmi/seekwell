@@ -34,6 +34,13 @@ class Gender(str, enum.Enum):
     FEMALE = "Female"
     OTHER = "Other"
 
+class PatientClass(str, enum.Enum):
+    """Patient classification for legacy schema compatibility"""
+    ASSISTED = "ASSISTED"
+    NORMAL = "NORMAL"
+    FREE = "FREE"
+    OTHER = "OTHER"
+
 def get_db():
     db = SessionLocal()
     try:

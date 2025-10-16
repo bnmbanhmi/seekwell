@@ -18,7 +18,7 @@ from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 
 from . import models, schemas
-from .database import pwd_context, UserRole, Gender
+from .database import pwd_context, UserRole, Gender, PatientClass
 
 # ============================================================================
 # USER CRUD OPERATIONS
@@ -73,7 +73,7 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
                 full_name=db_user.full_name,
                 date_of_birth=date(1900, 1, 1),
                 gender=Gender.OTHER,
-                class_role="NORMAL" # Add default for the stubborn legacy column
+                class_role=PatientClass.NORMAL  # Use PatientClass enum instead of string
             )
             db.add(db_patient)
 
