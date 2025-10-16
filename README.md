@@ -10,6 +10,22 @@ AI-powered skin lesion detection platform for community health workers.
 **Deployment:** Backend on Render, Frontend on Vercel  
 **i18n:** English & Vietnamese (react-i18next)
 
+## Internationalization (i18n)
+
+**Languages:** English (en), Vietnamese (vi)  
+**Library:** react-i18next with browser language detection  
+**Files:** `frontend/src/i18n/locales/{en,vi}.json` (521 lines each)
+
+**Usage:**
+```typescript
+import { useTranslation } from 'react-i18next';
+const { t } = useTranslation();
+<h1>{t('login.title')}</h1>  // "Welcome Back" or "Chào Mừng Trở Lại"
+```
+
+**Language Switcher:** `<LanguageSwitcher variant="icon" />` (persists to localStorage)  
+**⚠️ Rule:** ALL new features MUST include both EN + VI translations before committing
+
 ## Quick Start
 
 ### Prerequisites

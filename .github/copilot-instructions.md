@@ -5,7 +5,8 @@
 - **DRY**: Don't repeat README.md content - reference it instead
 - **Update README.md only**: When new project details emerge, edit README.md (keep it minimal)
 - **No new markdown files**: All documentation goes in README.md or here
- - **No unnecessary setup scripts**: No unnecessary additional setup scripts or helper scripts.
+- **No unnecessary setup scripts**: No unnecessary additional setup scripts or helper scripts.
+- **Bilingual requirement**: ALL new/modified features MUST include both English AND Vietnamese translations in `frontend/src/i18n/locales/{en,vi}.json` before committing
 
 ## Project Context
 FastAPI backend + React/TypeScript frontend + HuggingFace AI model. See README.md for setup, deployment, and architecture.
@@ -38,12 +39,16 @@ Token payload: `{"sub": email, "role": role}`. Middleware in `backend/app/depend
 - `get_current_active_doctor()` - role-specific guard
 - Use `Depends(get_current_active_doctor)` in routes
 
-### i18n Pattern
+### i18n Pattern (CRITICAL)
+**ALWAYS add both EN + VI translations before committing new features.**
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 const { t } = useTranslation();
 <h1>{t('login.title')}</h1>
 ```
+
+Update `frontend/src/i18n/locales/en.json` AND `vi.json` with matching keys.
 
 **TypeScript workaround**: Use `@ts-ignore` before `.use()` calls (TS 4.9.5 compatibility issue)
 
