@@ -7,6 +7,7 @@
 - **No new markdown files**: All documentation goes in README.md or here
 - **No unnecessary setup scripts**: No unnecessary additional setup scripts or helper scripts.
 - **Bilingual requirement**: ALL new/modified features MUST include both English AND Vietnamese translations in `frontend/src/i18n/locales/{en,vi}.json` before committing
+- **Preserve package-lock.json**: DO NOT modify `package-lock.json`, only use npm install
 
 ## Project Context
 FastAPI backend + React/TypeScript frontend + HuggingFace AI model. See README.md for setup, deployment, and architecture.

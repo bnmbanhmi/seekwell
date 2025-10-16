@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './LoginPageMobile.module.css';
 import { toast } from 'react-toastify';
 import { API_CONFIG } from '../config/api';
-import LanguageSwitcher from './common/LanguageSwitcher';
 
 const LoginPage: React.FC = () => {
-    const { t } = useTranslation();
-    const [username, setUsername] = useState('');
+    const { t, i18n } = useTranslation();
+    const [fullName, setFullName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'vi' ? 'en' : 'vi';
+        i18n.changeLanguage(newLang);
+        localStorage.setItem('preferredLanguage', newLang);
+    };
+
+    const handleDemoLogin = async () => {
         setError('');
         setLoading(true);
 
         try {
             const formData = new URLSearchParams();
-            formData.append('username', username);
-            formData.append('password', password);
+            formData.append('username', 'patient1@seekwell.health');
+            formData.append('password', 'PatientDemo2025');
 
             const response = await axios.post(API_CONFIG.BACKEND_URL + '/auth/token', formData, {
                 headers: {
@@ -41,36 +45,141 @@ const LoginPage: React.FC = () => {
                 navigate('/dashboard');
             }
         } catch (err: any) {
-            if (axios.isAxiosError(err) && err.response) {
-                const status = err.response.status;
-                if (status === 401 || status === 403) {
-                    setError(t('login.errors.invalidCredentials'));
-                    toast.error(t('login.errors.invalidCredentials'));
-                } else {
-                    setError(`${t('common.error')}: ${err.response.data.detail || t('login.errors.serverError')}`);
-                }
-            } else {
-                setError(t('login.errors.serverError'));
-            }
-            console.error("Login error:", err);
+            console.error("Demo login error:", err);
+            setError(t('login.errors.serverError'));
+            toast.error(t('login.errors.serverError'));
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRegister = () => {
-        navigate('/register');
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setError('');
+        setLoading(true);
+
+        if (!phoneNumber) {
+            setError(t('login.errors.phoneRequired'));
+            setLoading(false);
+            return;
+        }
+        if (!password) {
+            setError(t('login.errors.passwordRequired'));
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const loginFormData = new URLSearchParams();
+            loginFormData.append('username', phoneNumber);
+            loginFormData.append('password', password);
+
+            try {
+                const loginResponse = await axios.post(API_CONFIG.BACKEND_URL + '/auth/token', loginFormData, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                });
+
+                if (loginResponse.data.access_token) {
+                    localStorage.setItem('accessToken', loginResponse.data.access_token);
+                    localStorage.setItem('role', loginResponse.data.role);
+                    localStorage.setItem('user_id', loginResponse.data.user_id);
+                    
+                    toast.success(t('login.success'));
+                    navigate('/dashboard');
+                }
+            } catch (loginErr: any) {
+                if (axios.isAxiosError(loginErr) && loginErr.response?.status === 401) {
+                    if (!fullName) {
+                        setError(t('login.errors.fullNameRequired'));
+                        setLoading(false);
+                        return;
+                    }
+
+                    const registerData = {
+                        username: phoneNumber,
+                        email: `${phoneNumber}@seekwell.temp`,
+                        full_name: fullName,
+                        password: password,
+                        role: 'PATIENT'
+                    };
+
+                    const registerResponse = await axios.post(
+                        API_CONFIG.BACKEND_URL + '/auth/register/',
+                        registerData,
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+
+                    if (registerResponse.status === 200) {
+                        const autoLoginFormData = new URLSearchParams();
+                        autoLoginFormData.append('username', phoneNumber);
+                        autoLoginFormData.append('password', password);
+
+                        const autoLoginResponse = await axios.post(
+                            API_CONFIG.BACKEND_URL + '/auth/token',
+                            autoLoginFormData,
+                            {
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            }
+                        );
+
+                        if (autoLoginResponse.data.access_token) {
+                            localStorage.setItem('accessToken', autoLoginResponse.data.access_token);
+                            localStorage.setItem('role', autoLoginResponse.data.role);
+                            localStorage.setItem('user_id', autoLoginResponse.data.user_id);
+                            
+                            toast.success(t('login.success'));
+                            navigate('/dashboard');
+                        }
+                    }
+                } else {
+                    throw loginErr;
+                }
+            }
+        } catch (err: any) {
+            if (axios.isAxiosError(err) && err.response) {
+                const status = err.response.status;
+                if (status === 401 || status === 403) {
+                    setError(t('login.errors.invalidCredentials'));
+                    toast.error(t('login.errors.invalidCredentials'));
+                } else if (status === 400) {
+                    const detail = err.response.data.detail;
+                    if (detail.includes('already registered') || detail.includes('Username already')) {
+                        setError(t('login.errors.invalidCredentials'));
+                        toast.error(t('login.errors.invalidCredentials'));
+                    } else {
+                        setError(`${t('common.error')}: ${detail}`);
+                    }
+                } else {
+                    setError(t('login.errors.serverError'));
+                }
+            } else {
+                setError(t('login.errors.serverError'));
+            }
+            console.error("Login/Register error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className={`${styles.container} mobile-container safe-area-top`}>
             <div className={styles.card}>
-                {/* Language Switcher */}
-                <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
-                    <LanguageSwitcher variant="icon" size="small" />
-                </div>
+                <button
+                    onClick={toggleLanguage}
+                    className={styles.languageSwitcher}
+                    type="button"
+                >
+                    {t('login.languageSwitcher')}
+                </button>
                 
-                {/* SeekWell Branding */}
                 <div className={styles.brandingSection}>
                     <h1 className={`${styles.appName} mobile-heading-responsive`}>{t('appName')}</h1>
                     <p className={`${styles.tagline} mobile-text-responsive`}>
@@ -80,51 +189,44 @@ const LoginPage: React.FC = () => {
 
                 <div className={styles.loginSection}>
                     <h2 className={`${styles.heading} mobile-text-xl`}>{t('login.title')}</h2>
-                    <p className={`${styles.subHeading} mobile-text-sm`}>
-                        {t('login.subtitle')}
-                    </p>
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.formGroup}>
-                            <label htmlFor="username" className={`${styles.label} mobile-text-base`}>
-                                {t('login.username')}
-                            </label>
                             <input
                                 type="text"
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
+                                id="fullName"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
                                 className={`${styles.input} touch-target`}
-                                placeholder={t('login.username')}
-                                autoComplete="email"
+                                placeholder={t('login.fullNamePlaceholder')}
+                                autoComplete="name"
                             />
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="password" className={`${styles.label} mobile-text-base`}>
-                                {t('login.password')}
-                            </label>
-                            <div className={styles.passwordInputGroup}>
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    id="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className={`${styles.input} ${styles.passwordInput} touch-target`}
-                                    placeholder={t('login.password')}
-                                    autoComplete="current-password"
-                                />
-                                <button
-                                    type="button"
-                                    className={`${styles.passwordToggle} touch-target`}
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
-                                >
-                                    {showPassword ? t('login.hidePassword').split(' ')[0] : t('login.showPassword').split(' ')[0]}
-                                </button>
-                            </div>
+                            <input
+                                type="tel"
+                                id="phoneNumber"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                required
+                                className={`${styles.input} touch-target`}
+                                placeholder={t('login.phoneNumberPlaceholder')}
+                                autoComplete="tel"
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className={`${styles.input} touch-target`}
+                                placeholder={t('login.passwordPlaceholder')}
+                                autoComplete="current-password"
+                            />
                         </div>
 
                         {error && (
@@ -148,85 +250,14 @@ const LoginPage: React.FC = () => {
                             )}
                         </button>
 
-                        <div className={styles.divider}>
-                            <span className="mobile-text-sm">{t('common.or') || 'or'}</span>
-                        </div>
-
                         <button
                             type="button"
-                            onClick={handleRegister}
+                            onClick={handleDemoLogin}
+                            disabled={loading}
                             className={`${styles.button} ${styles.secondaryButton} mobile-button touch-target haptic-light`}
                         >
-                            {t('login.register')}
+                            {t('login.tryDemo')}
                         </button>
-
-                        <div className={styles.forgotPassword}>
-                            <Link 
-                                to="/forgot-password" 
-                                className={`${styles.link} mobile-text-sm touch-target`}
-                            >
-                                {t('login.forgotPassword')}
-                            </Link>
-                        </div>
-
-                        {/* Demo Account Section */}
-                        <div className={styles.demoSection}>
-                            <h3 className="mobile-text-lg" style={{ margin: '0 0 12px 0', color: '#374151', fontWeight: '600' }}>
-                                🚀 Try SeekWell Instantly
-                            </h3>
-                            <p className="mobile-text-sm" style={{ margin: '0 0 16px 0', color: '#64748b' }}>
-                                Use our demo patient account to explore SeekWell's features:
-                            </p>
-                            
-                            <div style={{
-                                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                                border: '2px solid #22c55e',
-                                borderRadius: '12px',
-                                padding: '16px',
-                                marginBottom: '16px'
-                            }}>
-                                <div style={{ textAlign: 'left', marginBottom: '12px' }}>
-                                    <strong style={{ color: '#16a34a', fontSize: '0.875rem' }}>Email:</strong>
-                                    <div style={{
-                                        fontFamily: 'monospace',
-                                        background: 'rgba(255,255,255,0.8)',
-                                        padding: '8px',
-                                        borderRadius: '6px',
-                                        border: '1px solid #d1d5db',
-                                        marginTop: '4px',
-                                        fontSize: '0.875rem'
-                                    }}>
-                                        patient1@seekwell.health
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: 'left' }}>
-                                    <strong style={{ color: '#16a34a', fontSize: '0.875rem' }}>Password:</strong>
-                                    <div style={{
-                                        fontFamily: 'monospace',
-                                        background: 'rgba(255,255,255,0.8)',
-                                        padding: '8px',
-                                        borderRadius: '6px',
-                                        border: '1px solid #d1d5db',
-                                        marginTop: '4px',
-                                        fontSize: '0.875rem'
-                                    }}>
-                                        PatientDemo2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setUsername('patient1@seekwell.health');
-                                    setPassword('PatientDemo2025');
-                                }}
-                                className={`${styles.button} ${styles.secondaryButton} mobile-button touch-target haptic-light`}
-                                style={{ fontSize: '0.875rem' }}
-                            >
-                                Fill Demo Credentials
-                            </button>
-                        </div>
                     </form>
                 </div>
             </div>

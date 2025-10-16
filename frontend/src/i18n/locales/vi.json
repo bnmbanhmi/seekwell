@@ -26,22 +26,23 @@
     "descending": "Giảm Dần"
   },
   "login": {
-    "title": "Chào Mừng Trở Lại",
-    "subtitle": "Đăng nhập để truy cập bảng điều khiển sức khỏe",
-    "username": "Email",
+    "title": "Bắt đầu kiểm tra da",
+    "subtitle": "",
+    "fullName": "Họ và tên",
+    "fullNamePlaceholder": "Điền họ và tên của bạn (nếu đây là lần đầu)",
+    "phoneNumber": "Số điện thoại",
+    "phoneNumberPlaceholder": "Điền số điện thoại của bạn",
     "password": "Mật khẩu",
-    "rememberMe": "Ghi nhớ đăng nhập",
-    "forgotPassword": "Quên mật khẩu?",
-    "submit": "Đăng Nhập",
-    "noAccount": "Chưa có tài khoản?",
-    "register": "Đăng Ký",
-    "showPassword": "Hiện mật khẩu",
-    "hidePassword": "Ẩn mật khẩu",
+    "passwordPlaceholder": "Tạo mật khẩu dễ nhớ",
+    "submit": "BẮT ĐẦU",
+    "tryDemo": "Dùng thử không cần tài khoản",
+    "languageSwitcher": "English",
     "errors": {
-      "invalidCredentials": "Thông tin đăng nhập không hợp lệ hoặc truy cập bị từ chối",
-      "serverError": "Đăng nhập thất bại. Đã xảy ra lỗi không mong muốn.",
-      "emailRequired": "Vui lòng nhập email",
-      "passwordRequired": "Vui lòng nhập mật khẩu"
+      "invalidCredentials": "Số điện thoại hoặc mật khẩu không đúng",
+      "serverError": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "phoneRequired": "Vui lòng nhập số điện thoại",
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+      "fullNameRequired": "Vui lòng nhập họ và tên cho lần đầu sử dụng"
     },
     "success": "Chào mừng đến với SeekWell! 🎉"
   },
@@ -464,7 +465,7 @@
     "logout": "Đăng Xuất"
   },
   "appName": "SeekWell",
-  "tagline": "Trợ Lý Sức Khỏe Hỗ Trợ AI",
+  "tagline": "Kiểm tra các nốt ruồi đáng ngờ ngay trên điện thoại",
   "footer": {
     "copyright": "© 2025 SeekWell. Bảo lưu mọi quyền.",
     "privacy": "Chính Sách Bảo Mật",

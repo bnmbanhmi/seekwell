@@ -26,22 +26,23 @@
     "descending": "Descending"
   },
   "login": {
-    "title": "Welcome Back",
-    "subtitle": "Sign in to access your health dashboard",
-    "username": "Email",
+    "title": "Start Skin Check",
+    "subtitle": "",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name (first time only)",
+    "phoneNumber": "Phone Number",
+    "phoneNumberPlaceholder": "Enter your phone number",
     "password": "Password",
-    "rememberMe": "Remember me",
-    "forgotPassword": "Forgot Password?",
-    "submit": "Sign In",
-    "noAccount": "Don't have an account?",
-    "register": "Register",
-    "showPassword": "Show password",
-    "hidePassword": "Hide password",
+    "passwordPlaceholder": "Create an easy password",
+    "submit": "START",
+    "tryDemo": "Try without account",
+    "languageSwitcher": "Tiếng Việt",
     "errors": {
-      "invalidCredentials": "Invalid credentials or unauthorized access",
-      "serverError": "Login failed. An unexpected error occurred.",
-      "emailRequired": "Email is required",
-      "passwordRequired": "Password is required"
+      "invalidCredentials": "Incorrect phone number or password",
+      "serverError": "An error occurred. Please try again.",
+      "phoneRequired": "Please enter phone number",
+      "passwordRequired": "Please enter password",
+      "fullNameRequired": "Please enter full name for first time use"
     },
     "success": "Welcome to SeekWell! 🎉"
   },
@@ -464,7 +465,7 @@
     "logout": "Logout"
   },
   "appName": "SeekWell",
-  "tagline": "AI-Powered Health Companion",
+  "tagline": "Check suspicious moles right on your phone",
   "footer": {
     "copyright": "© 2025 SeekWell. All rights reserved.",
     "privacy": "Privacy Policy",

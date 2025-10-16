@@ -33,6 +33,30 @@
   animation: slideUp 0.6s ease-out;
 }
 
+/* Language Switcher Button */
+.languageSwitcher {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: var(--seekwell-primary);
+  font-size: var(--mobile-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.languageSwitcher:hover {
+  background: rgba(54, 164, 29, 0.1);
+}
+
+.languageSwitcher:active {
+  transform: scale(0.95);
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -93,20 +117,12 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--mobile-spacing-lg);
+  gap: var(--mobile-spacing-md);
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--mobile-spacing-sm);
-}
-
-.label {
-  font-weight: 600;
-  color: #374151;
-  font-size: var(--mobile-text-sm);
-  letter-spacing: 0.025em;
 }
 
 .input {
@@ -128,67 +144,6 @@
 
 .input::placeholder {
   color: #9ca3af;
-}
-
-/* Password Input Group */
-.passwordInputGroup {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.passwordInput {
-  padding-right: 50px;
-  width: 100%;
-}
-
-.passwordToggle {
-  position: absolute;
-  right: var(--mobile-spacing-sm);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--seekwell-primary);
-  border: none;
-  color: white;
-  font-size: var(--mobile-text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  padding: var(--mobile-spacing-xs) var(--mobile-spacing-sm);
-  border-radius: 6px;
-  text-transform: capitalize;
-  line-height: 1;
-  box-sizing: border-box;
-  transition: none !important;
-  margin: 0;
-  outline: none;
-  text-decoration: none;
-  width: auto;
-  height: auto;
-  min-width: 40px;
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Password toggle hover states - completely static */
-.passwordToggle:hover,
-.passwordToggle:focus,
-.passwordToggle:active {
-  position: absolute !important;
-  right: var(--mobile-spacing-sm) !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  background: #2d8a17 !important;
-  color: white !important;
-  transition: none !important;
-  border: none !important;
-  outline: none !important;
-  min-width: 40px !important;
-  min-height: 28px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
 }
 
 /* Button Styles */
@@ -271,29 +226,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Divider */
-.divider {
-  position: relative;
-  text-align: center;
-  margin: var(--mobile-spacing-lg) 0;
-}
-
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #e5e7eb;
-}
-
-.divider span {
-  background: white;
-  padding: 0 var(--mobile-spacing-md);
-  color: #9ca3af;
-}
-
 /* Error Text */
 .errorText {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
@@ -308,35 +240,6 @@
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
-}
-
-/* Forgot Password Link */
-.forgotPassword {
-  text-align: center;
-  margin-top: var(--mobile-spacing-md);
-}
-
-.link {
-  color: var(--seekwell-primary);
-  text-decoration: none;
-  font-weight: 500;
-  padding: var(--mobile-spacing-sm);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  display: inline-block;
-}
-
-.link:hover {
-  background: rgba(54, 164, 29, 0.1);
-  text-decoration: underline;
-}
-
-/* Demo Section */
-.demoSection {
-  text-align: center;
-  padding-top: var(--mobile-spacing-lg);
-  border-top: 1px solid #f1f5f9;
-  margin-top: var(--mobile-spacing-lg);
 }
 
 /* Responsive Design */
