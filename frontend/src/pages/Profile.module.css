@@ -171,3 +171,98 @@
   border-top: 1.5px solid var(--secondary-200);
   margin: var(--spacing-6) 0 var(--spacing-5) 0;
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .profile-container {
+    background-color: #2d2d2d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .profile-title {
+    color: #e0e0e0;
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .profile-details {
+    color: #e0e0e0;
+    border-bottom-color: #4a4a4a;
+  }
+
+  .profile-details strong {
+    color: #64b5f6;
+  }
+
+  .profile-form {
+    background: #242424;
+    border-color: #4a4a4a;
+  }
+
+  .profile-label {
+    color: #d0d0d0;
+  }
+
+  .profile-input {
+    background: #1a1a1a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .profile-input::placeholder {
+    color: #888;
+  }
+
+  .profile-input:focus {
+    border-color: #64b5f6;
+    box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.3);
+  }
+
+  .profile-button {
+    background: linear-gradient(90deg, #1976d2 60%, #1565c0 100%);
+  }
+
+  .profile-button:hover:not(:disabled),
+  .profile-button:focus-visible:not(:disabled) {
+    background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
+  }
+
+  .profile-button:active:not(:disabled) {
+    background: #0d47a1;
+  }
+
+  .profile-button-cancel {
+    background: #3a3a3a;
+    color: #d0d0d0;
+  }
+
+  .profile-button-cancel:hover:not(:disabled),
+  .profile-button-cancel:focus-visible:not(:disabled) {
+    background: #4a4a4a;
+    color: #64b5f6;
+  }
+
+  .profile-button:disabled,
+  .profile-button-cancel:disabled {
+    background: #555;
+    color: #888;
+  }
+
+  .profile-success {
+    background: #1a3a1a;
+    color: #81c784;
+    border-color: #388e3c;
+  }
+
+  .profile-error {
+    background: #4a1a1a;
+    color: #ef5350;
+    border-color: #c62828;
+  }
+
+  .profile-section-divider {
+    border-top-color: #4a4a4a;
+  }
+}

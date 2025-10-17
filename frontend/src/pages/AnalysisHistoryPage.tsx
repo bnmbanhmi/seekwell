@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Container, Typography, Card, CardContent, List, ListItem, Chip, Button, Alert } from '@mui/material';
+import { Box, Container, Typography, Card, CardContent, List, ListItem, Chip, Button, Alert, ThemeProvider } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 import Logo from '../components/common/Logo';
 import { toast } from 'react-toastify';
 import HuggingFaceAIService from '../services/HuggingFaceAIService';
 import { AIAnalysisResult, RISK_LEVEL_COLORS, CONFIDENCE_THRESHOLD } from '../types/AIAnalysisTypes';
+import { getTheme, useDarkMode } from '../theme/darkTheme';
 import '../components/layout/BaseDashboard.css';
 
 /**
@@ -17,8 +18,9 @@ export const AnalysisHistoryPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [history, setHistory] = useState<AIAnalysisResult[]>([]);
-  const [loading, setLoading] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isDarkMode = useDarkMode();
+  const theme = getTheme(isDarkMode);
 
   useEffect(() => {
     loadHistory();
@@ -39,15 +41,12 @@ export const AnalysisHistoryPage: React.FC = () => {
   }, [menuOpen]);
 
   const loadHistory = () => {
-    setLoading(true);
     try {
       const historyData = HuggingFaceAIService.getAnalysisHistory();
       setHistory(historyData);
     } catch (error) {
       console.error('Failed to load history:', error);
       toast.error('Failed to load analysis history');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -102,9 +101,10 @@ export const AnalysisHistoryPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Navigation Header */}
-      <header className="header" style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+        {/* Navigation Header */}
+        <header className="header" style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: isDarkMode ? '#2d2d2d' : 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
         <div className="header-left">
           <button
             className="hamburger-menu"
@@ -244,6 +244,7 @@ export const AnalysisHistoryPage: React.FC = () => {
         )}
       </Container>
     </Box>
+    </ThemeProvider>
   );
 };
 

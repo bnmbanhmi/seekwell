@@ -250,3 +250,58 @@
   outline: 3px solid var(--seekwell-primary);
   outline-offset: 2px;
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #1a1a1a;
+  }
+
+  .secondaryActionButton {
+    background: #2d2d2d;
+    color: #66bb6a;
+    border-color: #66bb6a;
+  }
+
+  .secondaryActionButton:hover {
+    background: #3a3a3a;
+  }
+
+  .aboutSection {
+    background: #2d2d2d;
+    border-color: #4a4a4a;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .aboutTitle {
+    color: #66bb6a;
+    border-bottom-color: #66bb6a;
+  }
+
+  .aboutContent {
+    color: #d0d0d0;
+  }
+
+  .aboutSubtitle {
+    color: #d0d0d0;
+  }
+
+  .aboutText,
+  .aboutList {
+    color: #b0b0b0;
+  }
+
+  .aboutList li {
+    color: #b0b0b0;
+  }
+
+  .aboutImportantNote {
+    background: linear-gradient(135deg, #3a3200 0%, #4a4000 100%);
+    border-left-color: #ffa726;
+    color: #d0d0d0;
+  }
+
+  .aboutImportantNote strong {
+    color: #ffa726;
+  }
+}

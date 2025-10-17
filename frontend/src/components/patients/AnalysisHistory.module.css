@@ -95,4 +95,70 @@
       box-shadow: 0 0 0 0 rgba(156, 39, 176, 0);
     }
   }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .container {
+      background-color: #1a1a1a;
+    }
+
+    .title {
+      color: #e0e0e0;
+    }
+
+    .historyCard {
+      background: #2d2d2d;
+      border-color: #4a4a4a;
+      color: #e0e0e0;
+    }
+
+    .historyCard:hover {
+      box-shadow: 0 4px 8px rgba(100, 181, 246, 0.2);
+    }
+
+    .cardHeader {
+      color: #e0e0e0;
+    }
+
+    .cardBody p {
+      color: #b0b0b0;
+    }
+
+    /* Dark mode for risk levels */
+    .low {
+      border-left-color: #66bb6a;
+    }
+
+    .medium {
+      border-left-color: #ffa726;
+    }
+
+    .high {
+      border-left-color: #ef5350;
+    }
+
+    .urgent {
+      border-left-color: #ab47bc;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(171, 71, 188, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(171, 71, 188, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(171, 71, 188, 0);
+      }
+    }
+
+    .loading {
+      color: #64b5f6;
+    }
+
+    .error {
+      color: #ef5350;
+    }
+  }
   

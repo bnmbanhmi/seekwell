@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Container } from '@mui/material';
+import { Box, Container, ThemeProvider } from '@mui/material';
 import { AISkinAnalysisDashboard } from '../components/ai';
 import Logo from '../components/common/Logo';
 import { toast } from 'react-toastify';
 import { AIAnalysisResult } from '../types/AIAnalysisTypes';
+import { getTheme, useDarkMode } from '../theme/darkTheme';
 import '../components/layout/BaseDashboard.css';
 
 /**
@@ -18,8 +19,9 @@ export const AISkinAnalysisPage: React.FC = () => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isDarkMode = useDarkMode();
+  const theme = getTheme(isDarkMode);
   
   // Get selected result from navigation state (if coming from history page)
   const selectedResult = location.state?.selectedResult as AIAnalysisResult | undefined;
@@ -63,10 +65,6 @@ export const AISkinAnalysisPage: React.FC = () => {
     }, 1000);
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
   const toggleLanguage = () => {
     const newLang = i18n.language === 'vi' ? 'en' : 'vi';
     i18n.changeLanguage(newLang);
@@ -78,13 +76,14 @@ export const AISkinAnalysisPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Navigation Header */}
-      <header className="header" style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+        {/* Navigation Header */}
+        <header className="header" style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: isDarkMode ? '#2d2d2d' : 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
         <div className="header-left">
           {/* Hamburger menu button */}
           <button
-            className={`hamburger-menu ${sidebarOpen ? 'hamburger-active' : ''}`}
+            className="hamburger-menu"
             onClick={goToDashboard}
             aria-label="Back to dashboard"
             title="Back to Dashboard"
@@ -165,6 +164,7 @@ export const AISkinAnalysisPage: React.FC = () => {
         </Box>
       </Container>
     </Box>
+    </ThemeProvider>
   );
 };
 

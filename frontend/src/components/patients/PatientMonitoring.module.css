@@ -507,6 +507,113 @@
   color: #007bff;
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #1a1a1a;
+  }
+
+  .title,
+  .patientListHeader h3,
+  .patientInfo h4,
+  .patientBasicInfo h3,
+  .sectionTitle,
+  .caseHeader h5,
+  .historyHeader h6,
+  .noSelection h3 {
+    color: #e0e0e0;
+  }
+
+  .subtitle,
+  .patientInfo p,
+  .patientBasicInfo p,
+  .caseDetails p,
+  .historyDetails p,
+  .recommendations ul,
+  .noData,
+  .noSelection {
+    color: #b0b0b0;
+  }
+
+  .patientListContainer,
+  .patientDetail,
+  .historyCard {
+    background: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  .searchBar input {
+    background: #1a1a1a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .searchBar input::placeholder {
+    color: #888;
+  }
+
+  .searchBar input:focus {
+    border-color: #64b5f6;
+    box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+  }
+
+  .patientCard {
+    background: #242424;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .patientCard:hover {
+    border-color: #64b5f6;
+    box-shadow: 0 4px 12px rgba(100, 181, 246, 0.2);
+  }
+
+  .patientCard.selected {
+    border-color: #64b5f6;
+    background-color: #1a2a3a;
+    box-shadow: 0 2px 8px rgba(100, 181, 246, 0.3);
+  }
+
+  .patientStats {
+    border-top-color: #4a4a4a;
+  }
+
+  .stat span {
+    color: #64b5f6;
+  }
+
+  .stat small {
+    color: #888;
+  }
+
+  .patientHeader {
+    border-bottom-color: #4a4a4a;
+  }
+
+  .overviewCard,
+  .caseCard {
+    background: #242424;
+  }
+
+  .overviewCard h4 {
+    color: #64b5f6;
+  }
+
+  .overviewCard p {
+    color: #b0b0b0;
+  }
+
+  .error {
+    color: #ef5350;
+    background: #4a1a1a;
+    border-color: #ef5350;
+  }
+
+  .loading {
+    color: #64b5f6;
+  }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .content {

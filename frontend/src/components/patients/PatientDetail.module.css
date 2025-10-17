@@ -498,6 +498,163 @@
   justify-content: flex-end;
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #1a1a1a;
+  }
+
+  .title,
+  .patientBasicInfo h3,
+  .sectionTitle,
+  .caseHeader h5,
+  .historyHeader h6 {
+    color: #e0e0e0;
+  }
+
+  .content,
+  .historyCard {
+    background: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  .header,
+  .patientHeader {
+    border-bottom-color: #4a4a4a;
+  }
+
+  .patientBasicInfo p,
+  .overviewCard p,
+  .caseDetails p,
+  .historyDetails p,
+  .recommendations ul,
+  .noData {
+    color: #b0b0b0;
+  }
+
+  .overviewCard,
+  .caseCard {
+    background: #242424;
+  }
+
+  .fullClassifications,
+  .notesHistory {
+    background-color: #242424;
+    border-left-color: #007bff;
+  }
+
+  .classificationItem,
+  .noteEntry {
+    background: #2d2d2d;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .classLabel,
+  .noteContent {
+    color: #b0b0b0;
+  }
+
+  .patientNotes,
+  .historyNotes {
+    background-color: #3a3200;
+    border-left-color: #ffc107;
+  }
+
+  .notesContent,
+  .historyNotes p {
+    color: #d0d0d0;
+  }
+
+  .noteHeader {
+    border-bottom-color: #4a4a4a;
+  }
+
+  .noteAuthor {
+    color: #d0d0d0;
+  }
+
+  .noteTimestamp,
+  .editedIndicator {
+    color: #888;
+  }
+
+  .editNoteSection {
+    background-color: #242424;
+    border-color: #4a4a4a;
+  }
+
+  .editNoteTextarea {
+    background: #1a1a1a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .editNoteTextarea::placeholder {
+    color: #888;
+  }
+
+  .editNoteBtn:hover {
+    background-color: #1a3a52;
+  }
+
+  .deleteNoteBtn:hover {
+    background-color: #4a1a1a;
+  }
+
+  .classificationPreview {
+    background: #1a1a1a;
+    color: #b0b0b0;
+  }
+
+  .moreClassifications {
+    color: #888;
+  }
+
+  .loading {
+    color: #64b5f6;
+  }
+
+  .error {
+    color: #ef5350;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .patientProfile {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .patientOverview {
+    grid-template-columns: 1fr;
+  }
+  
+  .caseCard {
+    flex-direction: column;
+  }
+  
+  .caseImage {
+    flex: none;
+    align-self: center;
+  }
+}
+
 .saveNoteBtn,
 .cancelNoteBtn {
   padding: 6px 12px;

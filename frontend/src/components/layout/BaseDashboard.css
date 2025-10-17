@@ -302,3 +302,67 @@
     display: none; /* Hide hamburger on desktop */
   }
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .layout {
+    background-color: #1a1a1a;
+  }
+
+  .sidebar {
+    background-color: #0d1b2a;
+  }
+
+  .header {
+    background-color: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .hamburger-menu span {
+    background-color: #e0e0e0;
+  }
+
+  .hamburger-menu:hover span {
+    background-color: #64b5f6;
+  }
+
+  .language-switcher-button {
+    color: #66bb6a;
+  }
+
+  .language-switcher-button:hover {
+    background: rgba(102, 187, 106, 0.1);
+  }
+
+  .account-button {
+    color: #e0e0e0;
+  }
+
+  .account-button:hover {
+    background-color: #3a3a3a;
+  }
+
+  .account-avatar {
+    background-color: #1976d2;
+  }
+
+  .dropdown {
+    background-color: #2d2d2d;
+    border-color: #4a4a4a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .dropdown-item {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  .dropdown-item:hover {
+    background-color: #3a3a3a;
+    color: #64b5f6;
+  }
+
+  .content {
+    background-color: #1a1a1a;
+  }
+}

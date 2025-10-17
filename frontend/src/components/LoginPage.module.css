@@ -93,3 +93,55 @@
   margin-top: var(--spacing-1);
   margin-bottom: var(--spacing-2);
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
+  }
+
+  .card {
+    background-color: #2d2d2d;
+    border-color: #4a4a4a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .heading {
+    color: #e0e0e0;
+  }
+
+  .subheading {
+    color: #b0b0b0;
+  }
+
+  .label {
+    color: #d0d0d0;
+  }
+
+  .input {
+    background-color: #1a1a1a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .input::placeholder {
+    color: #888;
+  }
+
+  .input:focus {
+    border-color: #64b5f6;
+    box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+  }
+
+  .button {
+    background-color: #1976d2;
+  }
+
+  .button:hover {
+    background-color: #1565c0;
+  }
+
+  .errorText {
+    color: #ef5350;
+  }
+}
