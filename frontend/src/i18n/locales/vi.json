@@ -595,7 +595,19 @@
     "profile": "Hồ Sơ",
     "settings": "Cài Đặt",
     "help": "Trợ Giúp",
-    "logout": "Đăng Xuất"
+    "logout": "Đăng Xuất",
+    "account": "Tài Khoản"
+  },
+  "sidebar": {
+    "title": "Điều Hướng",
+    "dashboard": "Bảng Điều Khiển",
+    "aiSkinAnalysis": "Phân Tích Da AI",
+    "analysisHistory": "Lịch Sử Phân Tích",
+    "profile": "Hồ Sơ",
+    "urgentCases": "Trường Hợp Khẩn Cấp",
+    "patientMonitoring": "Giám Sát Bệnh Nhân",
+    "userManagement": "Quản Lý Người Dùng",
+    "analytics": "Phân Tích Dữ Liệu"
   },
   "appName": "SeekWell",
   "tagline": "Kiểm tra các nốt ruồi đáng ngờ ngay trên điện thoại",

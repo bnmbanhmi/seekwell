@@ -215,11 +215,11 @@ const Profile: React.FC = () => {
             const doctorData = userData as any;
             return (
                 <>
-                    <p><strong>Name:</strong> {safeDisplay(doctorData.doctor_name || doctorData.full_name)}</p>
-                    <p><strong>Username:</strong> {safeDisplay(doctorData.username)}</p>
-                    <p><strong>Email:</strong> {safeDisplay(doctorData.email)}</p>
-                    <p><strong>Specialty:</strong> {safeDisplay(doctorData.major)}</p>
-                    <p><strong>Hospital ID:</strong> {safeDisplay(doctorData.hospital_id?.toString())}</p>
+                    <p><strong>{t('profile.name')}:</strong> {safeDisplay(doctorData.doctor_name || doctorData.full_name)}</p>
+                    <p><strong>{t('profile.username')}:</strong> {safeDisplay(doctorData.username)}</p>
+                    <p><strong>{t('profile.email')}:</strong> {safeDisplay(doctorData.email)}</p>
+                    <p><strong>{t('profile.specialty')}:</strong> {safeDisplay(doctorData.major)}</p>
+                    <p><strong>{t('profile.hospitalId')}:</strong> {safeDisplay(doctorData.hospital_id?.toString())}</p>
                 </>
             );
         } else if ('patient_id' in userData) {
@@ -227,18 +227,18 @@ const Profile: React.FC = () => {
             const patientData = userData as any;
             return (
                 <>
-                    <p><strong>Name:</strong> {safeDisplay(patientData.full_name)}</p>
-                    <p><strong>Username:</strong> {safeDisplay(patientData.username)}</p>
-                    <p><strong>Email:</strong> {safeDisplay(patientData.email)}</p>
-                    <p><strong>Phone Number:</strong> {safeDisplay(patientData.phone_number)}</p>
-                    <p><strong>Address:</strong> {safeDisplay(patientData.address)}</p>
-                    <p><strong>Date of Birth:</strong> {safeDisplay(patientData.date_of_birth)}</p>
-                    <p><strong>Gender:</strong> {safeDisplay(patientData.gender)}</p>
-                    <p><strong>Ethnic Group:</strong> {safeDisplay(patientData.ethnic_group)}</p>
-                    <p><strong>Health Insurance Card:</strong> {safeDisplay(patientData.health_insurance_card_no)}</p>
-                    <p><strong>ID Number:</strong> {safeDisplay(patientData.identification_id)}</p>
-                    <p><strong>Occupation:</strong> {safeDisplay(patientData.job)}</p>
-                    <p><strong>Patient Class:</strong> {safeDisplay(patientData.class_role)}</p>
+                    <p><strong>{t('profile.name')}:</strong> {safeDisplay(patientData.full_name)}</p>
+                    <p><strong>{t('profile.username')}:</strong> {safeDisplay(patientData.username)}</p>
+                    <p><strong>{t('profile.email')}:</strong> {safeDisplay(patientData.email)}</p>
+                    <p><strong>{t('profile.phone')}:</strong> {safeDisplay(patientData.phone_number)}</p>
+                    <p><strong>{t('profile.address')}:</strong> {safeDisplay(patientData.address)}</p>
+                    <p><strong>{t('profile.dateOfBirth')}:</strong> {safeDisplay(patientData.date_of_birth)}</p>
+                    <p><strong>{t('profile.gender.label')}:</strong> {safeDisplay(patientData.gender)}</p>
+                    <p><strong>{t('profile.ethnicity')}:</strong> {safeDisplay(patientData.ethnic_group)}</p>
+                    <p><strong>{t('profile.healthInsurance')}:</strong> {safeDisplay(patientData.health_insurance_card_no)}</p>
+                    <p><strong>{t('profile.idCard')}:</strong> {safeDisplay(patientData.identification_id)}</p>
+                    <p><strong>{t('profile.occupation')}:</strong> {safeDisplay(patientData.job)}</p>
+                    <p><strong>{t('profile.patientCategory.label')}:</strong> {safeDisplay(patientData.class_role)}</p>
                 </>
             );
         } else {

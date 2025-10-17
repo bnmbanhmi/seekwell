@@ -113,7 +113,7 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
               aria-label="Account menu"
             >
               <span className="account-avatar">A</span>
-              <span className="account-label">Account</span>
+              <span className="account-label">{t('navigation.account')}</span>
               <svg
                 className="chevron"
                 fill="none"
@@ -131,13 +131,13 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
                   className="dropdown-item"
                   onClick={handleProfile}
                 >
-                  Profile
+                  {t('navigation.profile')}
                 </button>
                 <button
                   className="dropdown-item"
                   onClick={handleLogout}
                 >
-                  Logout
+                  {t('navigation.logout')}
                 </button>
               </div>
             )}

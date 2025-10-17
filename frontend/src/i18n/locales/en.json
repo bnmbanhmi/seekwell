@@ -595,7 +595,19 @@
     "profile": "Profile",
     "settings": "Settings",
     "help": "Help",
-    "logout": "Logout"
+    "logout": "Logout",
+    "account": "Account"
+  },
+  "sidebar": {
+    "title": "Navigation",
+    "dashboard": "Dashboard",
+    "aiSkinAnalysis": "AI Skin Analysis",
+    "analysisHistory": "Analysis History",
+    "profile": "Profile",
+    "urgentCases": "Urgent Cases",
+    "patientMonitoring": "Patient Monitoring",
+    "userManagement": "User Management",
+    "analytics": "Analytics"
   },
   "appName": "SeekWell",
   "tagline": "Check suspicious moles right on your phone",
