@@ -87,11 +87,13 @@ const BaseDashboard: React.FC<Props> = ({ role, children }) => {
               <span></span>
             </button>
             
-            <Logo 
-              className="logo"
-              alt="SeekWell Logo"
-              height={36}
-            />
+            <div onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Logo 
+                className="logo"
+                alt="SeekWell Logo"
+                height={36}
+              />
+            </div>
           </div>
 
           {/* Center section with Language Switcher */}
