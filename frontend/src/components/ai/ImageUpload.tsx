@@ -11,6 +11,9 @@ import {
   LinearProgress,
   Grid,
   Paper,
+  Checkbox,
+  FormControlLabel,
+  Alert,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -75,6 +78,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
+  const [allowDataCollection, setAllowDataCollection] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({
     progress: 0,
     status: 'idle' as 'idle' | 'uploading' | 'analyzing' | 'complete' | 'error',
@@ -83,6 +87,28 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // Upload image to ImgBB
+  const uploadToImgBB = async (file: File): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=f4808957a454827017c2f8c137f4a035`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      }
+      return null;
+    } catch (error) {
+      console.error('ImgBB upload failed:', error);
+      return null;
+    }
+  };
 
   // Handle file selection
   const handleFileSelect = useCallback((file: File) => {
@@ -139,6 +165,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         message: t('aiAnalysis.analyzing')
       });
 
+      // Upload to ImgBB if user consented
+      let imgbbUrl = null;
+      if (allowDataCollection) {
+        imgbbUrl = await uploadToImgBB(file);
+      }
+
       const aiService = new HuggingFaceAIService();
       
       setUploadProgress({ 
@@ -149,7 +181,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       const result = await aiService.analyzeImageAI(
         file,
-        { body_region: 'other', notes }
+        { 
+          body_region: 'other', 
+          notes: imgbbUrl ? `${notes}\n[Image URL: ${imgbbUrl}]` : notes 
+        }
       );
 
       HuggingFaceAIService.saveAnalysisToHistory(result);
@@ -178,11 +213,87 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     <Card elevation={0} sx={{ boxShadow: 'none' }}>
       <CardContent sx={{ p: 0 }}>
         {/* Page Title */}
-        <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 700, textAlign: 'center' }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 2, fontWeight: 700, textAlign: 'center' }}>
           {t('aiAnalysis.pageTitle')}
         </Typography>
 
-        {/* Notes Field - Moved to Top */}
+        {/* Scroll Down Hint */}
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            mb: 4, 
+            textAlign: 'center', 
+            color: 'text.secondary',
+            fontWeight: 500,
+            animation: 'bounce 2s infinite'
+          }}
+        >
+          {t('aiAnalysis.scrollDownHint')}
+        </Typography>
+
+        {/* How to Photograph Section - MOVED TO TOP */}
+        <Paper elevation={2} sx={{ p: 4, mb: 4, bgcolor: 'info.lighter' }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+            {t('aiAnalysis.howToPhotoTitle')}
+          </Typography>
+
+          {/* Photography Tips */}
+          <Box sx={{ mb: 3, bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              {t('aiAnalysis.photoTips.title')}
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Typography variant="body1">{t('aiAnalysis.photoTips.tip1')}</Typography>
+              <Typography variant="body1">{t('aiAnalysis.photoTips.tip2')}</Typography>
+              <Typography variant="body1">{t('aiAnalysis.photoTips.tip3')}</Typography>
+              <Typography variant="body1">{t('aiAnalysis.photoTips.tip4')}</Typography>
+            </Box>
+          </Box>
+
+          <Grid container spacing={3}>
+            {/* Good Example */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
+                  ✅
+                </Typography>
+                <ExampleImage 
+                  src="https://hikarieyecare.com/wp-content/uploads/Not-ruoi-lanh-tinh-co-2-nua-doi-xung-ve-hinh-dang-thuong-la-hinh-tron-hoac-bau-duc.png"
+                  alt="Good example"
+                  sx={{ borderColor: 'success.main' }}
+                />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'success.main' }}>
+                  {t('aiAnalysis.goodExampleLabel')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('aiAnalysis.goodExampleDesc')}
+                </Typography>
+              </Box>
+            </Grid>
+
+            {/* Bad Example */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
+                  ❌
+                </Typography>
+                <ExampleImage 
+                  src="https://benhvienthammykangnam.vn/wp-content/webp-express/webp-images/uploads/2019/12/1-17.jpg.webp"
+                  alt="Bad example"
+                  sx={{ borderColor: 'error.main' }}
+                />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'error.main' }}>
+                  {t('aiAnalysis.badExampleLabel')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('aiAnalysis.badExampleDesc')}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Notes Field */}
         <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
           <TextField
             label={t('aiAnalysis.notesLabel')}
@@ -193,6 +304,25 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             fullWidth
             placeholder={t('aiAnalysis.notesPlaceholder')}
           />
+          
+          {/* Data Collection Consent */}
+          <Box sx={{ mt: 3 }}>
+            <FormControlLabel
+              control={
+                <Checkbox 
+                  checked={allowDataCollection}
+                  onChange={(e) => setAllowDataCollection(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label={t('aiAnalysis.allowDataCollection')}
+            />
+            <Alert severity="info" sx={{ mt: 1 }}>
+              <Typography variant="body2">
+                {t('aiAnalysis.dataCollectionNote')}
+              </Typography>
+            </Alert>
+          </Box>
         </Paper>
 
         {/* Upload Module */}
@@ -295,55 +425,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             capture="environment"
             onChange={handleFileInputChange}
           />
-        </Paper>
-
-        {/* How to Photograph Section */}
-        <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-            {t('aiAnalysis.howToPhotoTitle')}
-          </Typography>
-
-          <Grid container spacing={3}>
-            {/* Good Example */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
-                  ✅
-                </Typography>
-                <ExampleImage 
-                  src="https://hikarieyecare.com/wp-content/uploads/Not-ruoi-lanh-tinh-co-2-nua-doi-xung-ve-hinh-dang-thuong-la-hinh-tron-hoac-bau-duc.png"
-                  alt="Good example"
-                  sx={{ borderColor: 'success.main' }}
-                />
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'success.main' }}>
-                  {t('aiAnalysis.goodExampleLabel')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('aiAnalysis.goodExampleDesc')}
-                </Typography>
-              </Box>
-            </Grid>
-
-            {/* Bad Example */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h1" sx={{ fontSize: '48px', mb: 2 }}>
-                  ❌
-                </Typography>
-                <ExampleImage 
-                  src="https://benhvienthammykangnam.vn/wp-content/webp-express/webp-images/uploads/2019/12/1-17.jpg.webp"
-                  alt="Bad example"
-                  sx={{ borderColor: 'error.main' }}
-                />
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600, color: 'error.main' }}>
-                  {t('aiAnalysis.badExampleLabel')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('aiAnalysis.badExampleDesc')}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
         </Paper>
       </CardContent>
     </Card>
