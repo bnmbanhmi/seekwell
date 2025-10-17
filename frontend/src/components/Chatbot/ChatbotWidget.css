@@ -449,7 +449,83 @@
   }
 }
 
-/* Dark mode support (if needed) */
+/* Dark mode class (for programmatic theme switching) */
+.chatbot-window.dark-mode,
+.dark-mode .chatbot-window {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.dark-mode .chatbot-messages {
+  background: #1a202c;
+}
+
+.dark-mode .chatbot-message-ai .chatbot-message-content {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .chatbot-message-content strong {
+  color: #e2e8f0;
+}
+
+.dark-mode .chatbot-message-content code {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.dark-mode .chatbot-message-content pre {
+  background: #1a202c;
+  color: #e2e8f0;
+}
+
+.dark-mode .chatbot-message-content blockquote {
+  color: #cbd5e0;
+}
+
+.dark-mode .chatbot-message-time {
+  color: #a0aec0;
+}
+
+.dark-mode .chatbot-input {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.dark-mode .chatbot-textarea {
+  background: #1a202c;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .chatbot-textarea::placeholder {
+  color: #a0aec0;
+}
+
+.dark-mode .chatbot-textarea:disabled {
+  background: #1a202c;
+  color: #718096;
+}
+
+.dark-mode .chatbot-error {
+  background: #2d1b1b;
+  color: #feb2b2;
+}
+
+.dark-mode .chatbot-messages::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+
+.dark-mode .chatbot-messages::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+
+.dark-mode .chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .chatbot-window {
     background: #2d3748;
@@ -466,6 +542,29 @@
     border-color: #4a5568;
   }
   
+  /* Fix grey text in dark mode - make it lighter */
+  .chatbot-message-content strong {
+    color: #e2e8f0;
+  }
+  
+  .chatbot-message-content code {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+  
+  .chatbot-message-content pre {
+    background: #1a202c;
+    color: #e2e8f0;
+  }
+  
+  .chatbot-message-content blockquote {
+    color: #cbd5e0;
+  }
+  
+  .chatbot-message-time {
+    color: #a0aec0;
+  }
+  
   .chatbot-input {
     background: #2d3748;
     border-color: #4a5568;
@@ -477,8 +576,30 @@
     border-color: #4a5568;
   }
   
+  .chatbot-textarea::placeholder {
+    color: #a0aec0;
+  }
+  
+  .chatbot-textarea:disabled {
+    background: #1a202c;
+    color: #718096;
+  }
+  
   .chatbot-error {
     background: #2d1b1b;
     color: #feb2b2;
+  }
+  
+  /* Scrollbar dark mode */
+  .chatbot-messages::-webkit-scrollbar-track {
+    background: #1a202c;
+  }
+  
+  .chatbot-messages::-webkit-scrollbar-thumb {
+    background: #4a5568;
+  }
+  
+  .chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: #718096;
   }
 }

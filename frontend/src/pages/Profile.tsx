@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styles from './Profile.module.css'; // Import CSS module
-import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/+$/, '');
 
@@ -410,9 +409,6 @@ const Profile: React.FC = () => {
 
     return (
         <div className={styles['profile-container']}>
-            <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
-                <LanguageSwitcher variant="icon" size="small" />
-            </div>
             <h1 className={styles['profile-title']}>{t('profile.title')}</h1>
             {error && <div className={styles['profile-error']}>{error}</div>}
             {editMode ? (
