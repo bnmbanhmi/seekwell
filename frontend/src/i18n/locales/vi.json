@@ -318,25 +318,32 @@
       "diseaseInfo": {
         "title": "là gì?",
         "melanoma": {
-          "description": "Đây là loại ung thư da nghiêm trọng nhất vì có khả năng di căn (lan rộng) sang các bộ phận khác của cơ thể. Tuy nhiên, nếu được phát hiện sớm, tỷ lệ chữa khỏi là rất cao. Điều quan trọng nhất lúc này là phải đi khám sớm."
+          "description": "Đây là loại ung thư da nghiêm trọng nhất vì có khả năng di căn (lan rộng) sang các bộ phận khác của cơ thể. Tuy nhiên, nếu được phát hiện sớm, tỷ lệ chữa khỏi là rất cao. Điều quan trọng nhất lúc này là phải đi khám sớm.",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Melanoma.jpg/250px-Melanoma.jpg"
         },
         "basal_cell_carcinoma": {
-          "description": "Là loại ung thư da phổ biến nhất nhưng ít nguy hiểm hơn U hắc tố. Thường phát triển chậm và hiếm khi lan rộng. Tuy nhiên, cần được điều trị kịp thời để tránh tổn thương da nghiêm trọng."
+          "description": "Là loại ung thư da phổ biến nhất nhưng ít nguy hiểm hơn U hắc tố. Thường phát triển chậm và hiếm khi lan rộng. Tuy nhiên, cần được điều trị kịp thời để tránh tổn thương da nghiêm trọng.",
+          "imageUrl": "https://mdsearchlight.com/wp-content/uploads/2024/07/21262-1721752423361-728x420.jpg"
         },
         "squamous_cell_carcinoma": {
-          "description": "Là loại ung thư da phổ biến thứ hai, có khả năng lan rộng nếu không được điều trị. Tỷ lệ chữa khỏi cao nếu phát hiện sớm. Cần đi khám để có phương án điều trị phù hợp."
+          "description": "Là loại ung thư da phổ biến thứ hai, có khả năng lan rộng nếu không được điều trị. Tỷ lệ chữa khỏi cao nếu phát hiện sớm. Cần đi khám để có phương án điều trị phù hợp.",
+          "imageUrl": "https://floridaskindoctor.com/wp-content/uploads/2023/09/squamous_cell_carcinoma_1_opt.jpg"
         },
         "actinic_keratosis": {
-          "description": "Là tổn thương da tiền ung thư, có thể phát triển thành ung thư da tế bào vảy nếu không được điều trị. Thường xuất hiện do tiếp xúc lâu dài với ánh nắng mặt trời. Cần theo dõi và điều trị kịp thời."
+          "description": "Là tổn thương da tiền ung thư, có thể phát triển thành ung thư da tế bào vảy nếu không được điều trị. Thường xuất hiện do tiếp xúc lâu dài với ánh nắng mặt trời. Cần theo dõi và điều trị kịp thời.",
+          "imageUrl": "https://azskincancerinstitute.org/sites/default/files/actinic_keratosis.jpg"
         },
         "seborrheic_keratosis": {
-          "description": "Là một tổn thương da lành tính (không phải ung thư), thường gặp ở người lớn tuổi. Không nguy hiểm đến sức khỏe nhưng có thể gây khó chịu về mặt thẩm mỹ. Vẫn nên đi khám để xác nhận chẩn đoán."
+          "description": "Là một tổn thương da lành tính (không phải ung thư), thường gặp ở người lớn tuổi. Không nguy hiểm đến sức khỏe nhưng có thể gây khó chịu về mặt thẩm mỹ. Vẫn nên đi khám để xác nhận chẩn đoán.",
+          "imageUrl": "https://www.rodeoderm.com/wp-content/uploads/Seborrheic-Keratosis.jpg"
         },
         "nevus": {
-          "description": "Là nốt ruồi thường, phần lớn là lành tính. Tuy nhiên, một số nốt ruồi có thể thay đổi theo thời gian. Cần theo dõi và đi khám nếu thấy có thay đổi về kích thước, màu sắc hay hình dạng."
+          "description": "Là nốt ruồi thường, phần lớn là lành tính. Tuy nhiên, một số nốt ruồi có thể thay đổi theo thời gian. Cần theo dõi và đi khám nếu thấy có thay đổi về kích thước, màu sắc hay hình dạng.",
+          "imageUrl": "https://hikarieyecare.com/wp-content/uploads/Not-ruoi-lanh-tinh-co-2-nua-doi-xung-ve-hinh-dang-thuong-la-hinh-tron-hoac-bau-duc.png"
         },
         "default": {
-          "description": "Đây là tổn thương da cần được bác sĩ da liễu đánh giá chuyên sâu để xác định chính xác loại tổn thương và phương án điều trị phù hợp."
+          "description": "Đây là tổn thương da cần được bác sĩ da liễu đánh giá chuyên sâu để xác định chính xác loại tổn thương và phương án điều trị phù hợp.",
+          "imageUrl": "https://via.placeholder.com/300x200?text=Skin+Lesion"
         }
       },
       "nextSteps": {

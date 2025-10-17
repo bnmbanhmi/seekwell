@@ -153,7 +153,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-            {/* Image Placeholder */}
+            {/* Disease Image */}
             <Box 
               sx={{ 
                 flexShrink: 0,
@@ -167,9 +167,19 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 justifyContent: 'center',
               }}
             >
-              <Typography variant="body2" color="text.secondary">
-                [Disease Image]
-              </Typography>
+              <img
+                src={t(`aiAnalysis.results.diseaseInfo.${diseaseKey}.imageUrl`)}
+                alt={getTranslatedDiseaseName(topPrediction.label, t)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Disease+Image';
+                }}
+              />
             </Box>
 
             {/* Disease Description */}
